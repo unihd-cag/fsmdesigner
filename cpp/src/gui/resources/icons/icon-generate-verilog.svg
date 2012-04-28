@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48px"
+   height="48px"
+   id="svg2985"
+   version="1.1"
+   inkscape:version="0.48.2 r9819"
+   sodipodi:docname="icon-generate-verilog.svg"
+   inkscape:export-filename="/local/home/rleys/git/fsmdesigner/cpp/src/gui/resources/icons/icon-generate-verilog-28.png"
+   inkscape:export-xdpi="52.5"
+   inkscape:export-ydpi="52.5">
+  <defs
+     id="defs2987">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3773">
+      <stop
+         style="stop-color:#008000;stop-opacity:1;"
+         offset="0"
+         id="stop3775" />
+      <stop
+         style="stop-color:#008000;stop-opacity:0;"
+         offset="1"
+         id="stop3777" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3773"
+       id="linearGradient3779"
+       x1="9.4553576"
+       y1="23.562778"
+       x2="30.745535"
+       y2="35.277065"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.3286372,0,0,1.3286373,-9.8691323,-9.7697546)" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7"
+     inkscape:cx="41.982142"
+     inkscape:cy="14.676737"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1146"
+     inkscape:window-x="0"
+     inkscape:window-y="26"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata2990">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <text
+       xml:space="preserve"
+       style="font-size:53.14548874px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:url(#linearGradient3779);fill-opacity:1;stroke:none;font-family:Sans"
+       x="2.2784081"
+       y="40.908272"
+       id="text2993"
+       sodipodi:linespacing="125%"
+       transform="scale(1.1767282,0.84981392)"><tspan
+         sodipodi:role="line"
+         id="tspan2995"
+         x="2.2784081"
+         y="40.908272"
+         style="fill:url(#linearGradient3779);fill-opacity:1">V</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:33.84964371px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="1.4622468"
+       y="44.800636"
+       id="text3785"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.99157044,-0.00812124,0.00798542,1.0084358,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan3787"
+         x="1.4622468"
+         y="44.800636"
+         style="font-size:11.84737492px;font-weight:bold;-inkscape-font-specification:Sans Bold">verilog</tspan></text>
+  </g>
+</svg>

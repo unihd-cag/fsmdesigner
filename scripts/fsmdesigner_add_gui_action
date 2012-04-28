@@ -1,0 +1,50 @@
+#!/usr/bin/tclsh 
+
+package require odfi.common 1.0.0
+
+## This script generates an Action for the GUI
+##################
+
+
+## Command line must have a name
+odfi::common::getOptionsFromArgument "name:" "baseClass:?" "f?"
+
+set actionName "${odfi::common::argv_name}Action"
+set actionHeaderFile [file dirname [file normalize [info script]]]/../cpp/include/gui/actions/${actionName}.h
+set actionSrcFile [file dirname [file normalize [info script]]]/../cpp/src/gui/actions/${actionName}.cpp
+
+## Determine base class
+############################
+set actionBaseClassTemplate "FSMAction"
+set actionBaseClass "FSMAction"
+set actionBaseClassTemplateParameter ""
+if {${odfi::common::argv_baseClass}!=false} {
+    set actionBaseClass ${odfi::common::argv_baseClass}
+    
+    ## Remove eventual Template parameter
+    regexp {([a-zA-Z]+)(?:<.*>)?} $actionBaseClass -> actionBaseClassTemplate
+    
+}
+
+## Verify Generation template for baseclass is provided
+##############################
+if {![file exists [file dirname [file normalize [info script]]]/actions_template/Template${actionBaseClassTemplate}.cpp]} {
+    error "Template for base class $actionBaseClass is not provided"
+}
+
+## Verify named action does not already exists if not forcing
+#######################
+if {${odfi::common::argv_f}==false && [file exists $actionHeaderFile]} {
+    error "Header File already exists: $actionHeaderFile"
+}
+if {${odfi::common::argv_f}==false && [file exists $actionSrcFile]} {
+    error "Source File already exists: $actionSrcFile"
+}
+
+
+## Generate
+#######################
+odfi::common::embeddedTclFromFileToFile [file dirname [file normalize [info script]]]/actions_template/Template${actionBaseClassTemplate}.cpp $actionSrcFile 
+odfi::common::embeddedTclFromFileToFile [file dirname [file normalize [info script]]]/actions_template/Template${actionBaseClassTemplate}.h $actionHeaderFile
+
+

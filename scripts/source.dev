@@ -1,0 +1,26 @@
+echo "Determining your system..."
+
+## Determine system and set FSMDESIGNER_HOME that will be used to set paths
+## Now only supports:
+## 	Ubuntu 11.04 x86_64
+##	Ubuntu 11.10 x86_64
+########################################################
+
+location=$(dirname "$(readlink -f ${BASH_SOURCE[0]})")
+FSMDESIGNERHOME=${location}/../
+
+## Add Dev tools
+######################
+export PATH=$FSMDESIGNERHOME/scripts/:$PATH
+
+## Make Exports and so on
+##############################
+export PATH=$FSMDESIGNERHOME/cpp/build/:$PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$FSMDESIGNERHOME/build
+
+echo "FSM Designer 5 sourced :"
+
+echo "	fsmdesigner: FSM Designer with GUI"
+echo "	fsmdesignerTabbed: FSM Designer with tabbed GUI (experimental)"
+
+#echo "fsmdesignerGenVerilog"

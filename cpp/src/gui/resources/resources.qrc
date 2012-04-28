@@ -1,0 +1,75 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/FSMDesignerlogo.png</file>
+        <file>icons/FSMDesignerlogoicon.png</file>
+        <file>icons/FSMDesignerlogosmall.png</file>
+        <file>icons/choose.png</file>
+        <file>icons/editcopy.png</file>
+        <file>icons/editcut.png</file>
+        <file>icons/editdelete.png</file>
+        <file>icons/editpaste.png</file>
+        <file>icons/fileclose.png</file>
+        <file>icons/filenew.png</file>
+        <file>icons/fileopen.png</file>
+        <file>icons/fileprint.png</file>
+        <file>icons/filesave.png</file>
+        <file>icons/filesaveas.png</file>
+        <file>icons/folder_new.png</file>
+        <file>icons/genverilog.png</file>
+        <file>icons/genvhdl.png</file>
+        <file>icons/grid.png</file>
+        <file>icons/grid1.png</file>
+        <file>icons/hierarchy.png</file>
+        <file>icons/hyper.png</file>
+        <file>icons/join.png</file>
+        <file>icons/link.png</file>
+        <file>icons/linkconnector.png</file>
+        <file>icons/lsralogo.png</file>
+        <file>icons/minimize.png</file>
+        <file>icons/movetoback.png</file>
+        <file>icons/movetofront.png</file>
+        <file>icons/newfsm.png</file>
+        <file>icons/redo.png</file>
+        <file>icons/reload.png</file>
+        <file>icons/remove.png</file> 
+        <file>icons/state.png</file>
+        <file>icons/trans.png</file>
+        <file>icons/undo.png</file>
+        <file>icons/unilogo.png</file>
+        <file>icons/verification.png</file>
+        <file>icons/viewmag+.png</file>
+        <file>icons/viewmag-.png</file>
+        <file>icons/Folder-icon.png</file>
+        <file>icons/add.png</file>
+        <file>icons/cancel.png</file>
+        <file>icons/Actions-arrow-left-icon.png</file>
+        <file>icons/Lock-icon.png</file>  
+    </qresource>
+    <qresource prefix="/icons">   
+        <file alias="ArrowRightGreenCircled">icons/Arrow-Right-Green-Circled.png</file>     
+        <file alias="Clear-brush">icons/Actions-edit-clear-icon.png</file>
+        <file alias="ExclamationMark1">icons/Exclamation-mark-icon.png</file>
+        <file alias="ExclamationMark2">icons/Exclamation-mark-icon-2.png</file>
+        <file alias="GenerateVerilog28">icons/icon-generate-verilog-28.png</file>
+        <file alias="Rename">icons/Actions-edit-rename-icon.png</file>   
+        <file alias="Save">icons/Actions-save-icon.png</file>
+        <file alias="SaveAll">icons/Actions-save-all-icon.png</file>
+        <file alias="SaveAs">icons/Actions-save-as-icon.png</file>
+        <file alias="TableEditor16">icons/icon-table-editor-16.png</file>
+        <file alias="TableEditor28">icons/icon-table-editor-28.png</file>
+    </qresource>
+    <!-- XML things -->
+    <qresource prefix="/xml/">
+        <file alias="shortcuts">shortcuts.xml</file>
+        <file alias="ui_settings">ui_settings.xml</file>
+    </qresource>
+    <qresource prefix="/settings/"> 
+        <file alias="ui">ui_settings.xml</file>
+    </qresource>
+    <qresource prefix="/rules/">
+       <file alias="StateUniqueOutput">rules/StateUniqueOutput.js</file>
+    </qresource>
+    <qresource prefix="/help/">
+       <file alias="StateItem">help/StateItem.html</file>
+    </qresource>  
+</RCC>

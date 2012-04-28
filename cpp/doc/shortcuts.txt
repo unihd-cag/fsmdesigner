@@ -1,0 +1,40 @@
+#### Scene #############################################
+########################################################
+
+    Hold CTRL       :   Lock placement action (Place multiple states after one another)
+
+
+    #### State
+    
+    UP/DOWN/RIGHT/LEFT  : Move up/down/right/left the item for a few pixels (typ: 5)
+    Hold CTRL           : Loopback transitions are not moved with the state
+    
+    #### Trackpoint
+   
+    UP/DOWN/RIGHT/LEFT  : Move up/down/right/left the item for a few pixels (typ: 5)
+   
+    ####Join
+    
+    UP/DOWN/RIGHT/LEFT  : Move up/down/right/left the item for a few pixels (typ: 5)
+
+#### SceneView #########################################
+########################################################
+
+    F9          : Hide/show edit boxes left side panel
+    F11         : Toggle full-screen
+
+
+#### Input Editor Widget ####
+#############################
+
+
+DELETE          :   Delete selected input
+CTRL + UP/DOWN  :   Move selected input up/down (Same as right click and Move action)
+
+
+
+#### Output Editor Widget ####
+##############################
+
+DELETE          :   Delete selected output
+CTRL + UP/DOWN  :   Move selected output up/down (Same as right click and Move action)
