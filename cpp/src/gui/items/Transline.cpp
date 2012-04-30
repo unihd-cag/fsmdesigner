@@ -33,6 +33,7 @@ using namespace std;
 #include <gui/items/LinkArrival.h>
 #include <gui/items/StateItem.h>
 #include <gui/items/JoinItem.h>
+#include <gui/items/TranslineText.h>
 
 #include <common/SGC.h>
 
@@ -390,12 +391,30 @@ void Transline::paint(QPainter *painter,
 }
 
 void Transline::modelChanged() {
+
 	// Not selectable without model
+    //-------------
 	if (this->getModel()==NULL) {
 		this->setFlag(ItemIsSelectable,false);
 	} else {
 		this->setFlag(ItemIsSelectable,true);
+
+		// Try to Update text
+        //--------------------
+        if (this->scene()!=NULL) {
+            Scene * scene = dynamic_cast<Scene*>(this->scene());
+            TranslineText * text= scene->findTranslineText(this->getModel());
+            if (text!=NULL) {
+                text->modelChanged();
+            } else {
+                qDebug() << "No Transline Text with matching transition model";
+            }
+        }
+
 	}
+
+
+
 }
 
 QVariant Transline::itemChange(GraphicsItemChange change,

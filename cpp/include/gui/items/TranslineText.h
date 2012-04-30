@@ -74,8 +74,10 @@ class TranslineText : public FSMGraphicsTextItem {
 
     bool recordPosition();
 
-
-
+    /**
+     * Updates text content on transition model change
+     */
+    void modelChanged();
 
 protected:
 

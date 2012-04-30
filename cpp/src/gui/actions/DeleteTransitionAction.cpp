@@ -84,7 +84,9 @@ void DeleteTransitionAction::redo(){
     //----------------------
 
     //-- First find the start of the transition
-    Transline * first = this->item;
+    Trans * transition = this->item->getModel();
+    Transline * first = this->getRelatedScene()->findTransline(transition).first();
+
     //qDebug() << "-- *I: first type: " << first->getStartItem();
     while (first->getStartItem()!=NULL && first->getStartItem()->type() != StateItem::Type) {
     //while (!FSMGraphicsItem<>::isStateItem(first->getStartItem())) {
@@ -162,7 +164,7 @@ void DeleteTransitionAction::redo(){
 
     // FIXME (Find out text using a search function) Remove text
     //------------------------
-    QGraphicsItem * textItem = this->getRelatedScene()->findTranslineText(this->item->getModel());
+    QGraphicsItem * textItem = this->getRelatedScene()->findTranslineText(transition);
     if (textItem!=NULL) {
         this->getRelatedScene()->removeItem(textItem);
         SGC::getInstance()->requestDelete(textItem);
@@ -172,11 +174,11 @@ void DeleteTransitionAction::redo(){
 
     // Remove Model
     //------------------------
-    this->getRelatedScene()->getFsm()->deleteTrans(item->getModel());
+    this->getRelatedScene()->getFsm()->deleteTrans(transition);
 
     //-- Store Item as a dummy Item as Transline are always reconstructed
    // SGC::getInstance()->requestDelete(this->item);
-    Transline * tempItem = new Transline(this->item->getModel());
+    Transline * tempItem = new Transline(transition);
 
 
     //-- Collect all removed items
@@ -214,7 +216,7 @@ void DeleteTransitionAction::undo(){
 
     // Start
     Trackpoint * start = new Trackpoint(currentState->getPosition().first,
-            currentState->getPosition().second, 0);
+            currentState->getPosition().second, transition);
 
     // End
     State * endState = transition->getEndState();
@@ -320,14 +322,16 @@ void DeleteTransitionAction::undo(){
 
         //-- Add transline text
         TranslineText * transitionLineText = new TranslineText(QString(
-                transition->getName().c_str()),lastTransitionLine->getModel());
+                transition->getName().c_str()),transition);
         transitionLineText->setPos(transition->getTextPosition().first,
                 transition->getTextPosition().second);
         this->getRelatedScene()->addItem(transitionLineText);
 
     }
+    //-- Store Item as a dummy Item as Transline are always reconstructed
+    Transline * tempItem = new Transline(transition);
+    this->item = tempItem;
 
-    this->item = lastTransitionLine;
 }
 
 

@@ -104,6 +104,22 @@ bool TranslineText::recordPosition() {
 	return true;
 }
 
+void TranslineText::modelChanged() {
+
+    if (this->getTransition()!=NULL) {
+
+        // Update text
+        this->setPlainText(QString::fromStdString(this->getTransition()->getName()));
+
+        // Add an underline if default
+        if (this->getTransition()->isDefault()) {
+            this->setPlainText(tr("<u>")+this->toPlainText()+tr("</u>"));
+        }
+
+    }
+
+}
+
 QRectF TranslineText::boundingRect () {
 	return QGraphicsTextItem::boundingRect();
 }

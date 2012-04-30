@@ -1121,7 +1121,7 @@ TranslineText * Scene::findTranslineText(Trans * transitionModel) {
     //-- Search for the transline text
     for (QList<QGraphicsItem*>::iterator it = allItems.begin();it!=allItems.end();it++) {
         if (FSMGraphicsItem<>::isTranslineText((*it))
-                && FSMGraphicsItem<>::toTranslineText(*it)->getModel()!= NULL
+                && FSMGraphicsItem<>::toTranslineText(*it)->getTransition()!= NULL
                 && FSMGraphicsItem<>::toTranslineText(*it)->getTransition()==transitionModel) {
             result=(FSMGraphicsItem<>::toTranslineText(*it));
             break;
