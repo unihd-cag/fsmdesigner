@@ -65,6 +65,16 @@ protected:
 	/// Adjust size in dynamic
 	virtual void keyPressEvent ( QKeyEvent * event );
 
+	/**
+	 * Edit on F2
+	 * @param event
+	 */
+	virtual void keyReleaseEvent(QKeyEvent * event);
+
+	/**
+	 *
+	 * @param event
+	 */
 	virtual void	focusOutEvent ( QFocusEvent * event );
 
 

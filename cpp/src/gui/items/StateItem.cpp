@@ -402,6 +402,12 @@ void StateItem::keyReleaseEvent(QKeyEvent * event) {
 	QGraphicsItemGroup::keyReleaseEvent(event);
 
 
+	// Start Editing on F2
+	//--------------------------
+	if (event->key() == Qt::Key_F2) {
+	    this->stateText->startEditing();
+	}
+
 	/*if (event->isAccepted())
 		return;
 

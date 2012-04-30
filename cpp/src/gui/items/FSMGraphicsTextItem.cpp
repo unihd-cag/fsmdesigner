@@ -99,7 +99,6 @@ void FSMGraphicsTextItem::stopEditing() {
 
 void FSMGraphicsTextItem::keyPressEvent(QKeyEvent * event) {
 
-	cout << "KEY Pressed IN FSMGTEXTITEM" << endl;
 
 	// On Key Enter, stop editing
 	if (((QKeyEvent*)event)->key()==Qt::Key_Enter || ((QKeyEvent*)event)->key()==Qt::Key_Return) {
@@ -114,6 +113,19 @@ void FSMGraphicsTextItem::keyPressEvent(QKeyEvent * event) {
 		this->adjustSize();
 		//this->update();
 	}
+
+}
+
+void FSMGraphicsTextItem::keyReleaseEvent(QKeyEvent * event) {
+
+   // Start Editing on F2
+   //--------------------------
+   if (event->key() == Qt::Key_F2) {
+       this->startEditing();
+   }
+
+    QGraphicsTextItem::keyPressEvent(event);
+
 
 }
 

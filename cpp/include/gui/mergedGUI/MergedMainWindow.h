@@ -167,7 +167,17 @@ class MergedMainWindow: public QMainWindow, public Ui_MergedMainWindow  {
         /** \defgroup Export Exportation Functions */
         /** @{ */
 
+        /**
+         * Calls up a print preview window
+         * Relies on #print(QPainter*) for actual painting
+         */
         void print();
+
+        /**
+         * Do the actual painting of the selected scene on a painter
+         * @param painter
+         */
+        void print(QPrinter * painter);
 
         void exportAsSVG();
 

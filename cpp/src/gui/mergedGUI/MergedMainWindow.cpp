@@ -525,24 +525,59 @@ void MergedMainWindow::print() {
     if (selectedScene == NULL)
         return;
 
+    // Space taken by the FSM on the scene
+    QGraphicsView * view = selectedScene->views().first();
     QRectF brect = selectedScene->itemsBoundingRect();
 
-    QSvgGenerator generator;
-    generator.setFileName("test.svg");
-    generator.setSize(QSize(1024, 768));
-    generator.setViewBox(QRect(0, 0, 1024, 768));
-    generator.setTitle(tr("SVG Generator Example Drawing"));
-    generator.setDescription(tr("An SVG drawing created by the SVG Generator "
-                                "Example provided with Qt."));
+    // Show Print Preview dialog
+    //---------------------
+    QPrintPreviewDialog previewDialog;
 
-    QPainter painter(&generator);
+    //-- Connect
+    this->connect(&previewDialog,SIGNAL(paintRequested(QPrinter*)),SLOT(print(QPrinter*)));
+    previewDialog.exec();
+
+    //if (previewDialog.exec() == QDialog::Accepted)
+    //    return;
+
+    //-- Disconnect
+    previewDialog.disconnect(this,SLOT(print(QPrinter)));
+
+/*
+    // Open Print Dialog
+    //------------------
+    QPrinter printer;
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    dialog->setWindowTitle(tr("Print FSM"));
+    if (dialog->exec() != QDialog::Accepted)
+     return;
+
+    // Print if Accepted
+    QPainter painter(&printer);
+    selectedScene->render(&painter,QRectF(),brect);*/
+
+
+
+}
+
+void MergedMainWindow::print(QPrinter * printer) {
+
+    // Print only If there is a selected Scene
+    //--------------------
+    Scene * selectedScene =
+            dynamic_cast<FSMTabPane *>(this->centralWidget())->getSelectedScene();
+    if (selectedScene == NULL)
+        return;
+
+    // Space taken by the FSM on the scene
+    QRectF brect = selectedScene->itemsBoundingRect();
+
+    // Do rendering
+    QPainter painter(printer);
     selectedScene->render(&painter,QRectF(),brect);
 
-//    QPrinter printer(QPrinter::HighResolution);
-//    printer.setPaperSize(QPrinter::A4);
-//
-//    QPainter painter(&printer);
-//    selectedScene->render(&painter);
+
+
 }
 
 void MergedMainWindow::exportAsSVG() {
@@ -554,17 +589,15 @@ void MergedMainWindow::exportAsSVG() {
     if (selectedScene == NULL)
         return;
 
+    QRectF brect = selectedScene->itemsBoundingRect();
 
-     QSvgGenerator generator;
-     generator.setFileName("test.svg");
-     generator.setSize(QSize(1024, 768));
-     generator.setViewBox(QRect(0, 0, 1024, 768));
-     generator.setTitle(tr("SVG Generator Example Drawing"));
-     generator.setDescription(tr("An SVG drawing created by the SVG Generator "
-                                 "Example provided with Qt."));
-
-     QPainter painter(&generator);
-     selectedScene->render(&painter);
+    QSvgGenerator generator;
+    generator.setFileName("test.svg");
+    generator.setSize(QSize(1024, 768));
+    generator.setViewBox(QRect(0, 0, 1024, 768));
+    generator.setTitle(tr("SVG Generator Example Drawing"));
+    generator.setDescription(tr("An SVG drawing created by the SVG Generator "
+                                "Example provided with Qt."));
 
 }
 
