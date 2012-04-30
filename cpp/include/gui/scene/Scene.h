@@ -14,7 +14,6 @@ class Trans;
 class State;
 class Join;
 
-
 //-- Gui
 class StateItem;
 class LinkArrival;
@@ -24,13 +23,16 @@ class LinkDeparture;
 class JoinItem;
 
 //-- Verification
+#include <verification/VerificationListener.h>
+#include <verification/RuleError.h>
 class FSMVerificator;
+class VerificatorRule;
 
 //-- Qt
 #include <QtGui>
 #include <QtCore>
 
-class Scene: public QGraphicsScene {
+class Scene: public QGraphicsScene, public VerificationListener {
 
     Q_OBJECT
 
@@ -107,6 +109,17 @@ class Scene: public QGraphicsScene {
 
         /// First draws all the components of provided FSM on the scene
         void initializeScene();
+
+        /** \defgroup Verification VerificationListener Methods */
+        /** @{ */
+
+        virtual void enteredRule(VerificatorRule * rule);
+
+        virtual void ruleSuccessful(VerificatorRule * rule);
+
+        virtual void ruleFailed(VerificatorRule * rule,QList<RuleError*>& errors);
+
+        /** @} */
 
         /** \defgroup Place mode methods */
         /**@{*/
@@ -233,25 +246,27 @@ class Scene: public QGraphicsScene {
         /** \defgroup Find Find Objects Utilities */
         /** @{ */
 
-
         /**
          * Finds the Transline matching the provided model
          * @param transitionModel
          * @return The found translines or an empty list if not found
          */
-        public: QList<Transline *> findTransline(Trans * transitionModel);
+    public:
+        QList<Transline *> findTransline(Trans * transitionModel);
 
         /**
          * Finds the text matching a Transition
          */
-        public: TranslineText * findTranslineText(Trans * transitionModel);
+    public:
+        TranslineText * findTranslineText(Trans * transitionModel);
 
         /**
          * Find the State matching the provided model
          * @param state
          * @return The found State or NULL if not found
          */
-        public: StateItem * findStateItem(State * state);
+    public:
+        StateItem * findStateItem(State * state);
 
         /**
          * Find the JoinItem item matching the provided model
@@ -265,7 +280,8 @@ class Scene: public QGraphicsScene {
          * @param link the base link model
          * @return All the LinkDepartures (State -> Link) that target this link
          */
-        public: QList<LinkDeparture*> findLinkDepartures(Link * link);
+    public:
+        QList<LinkDeparture*> findLinkDepartures(Link * link);
 
 };
 

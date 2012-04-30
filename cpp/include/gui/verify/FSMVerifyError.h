@@ -26,6 +26,7 @@ class FSMVerifyError {
 public:
 	typedef enum VerifyErrorType {
 
+	    DEFAULT,
 		STATE_UNIQUE_OUTPUT
 
 	}VerifyErrorType;

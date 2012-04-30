@@ -26,6 +26,9 @@ using namespace std;
 
 //-- Verification
 #include <gui/verify/FSMVerificator.h>
+#include <verification/Verificator.h>
+#include <verification/StateOutputsRule.h>
+#include <verification/VerificatorRule.h>
 
 // -- Qt
 #include <QtGui>
@@ -1086,13 +1089,70 @@ void Scene::startPlaceJoin() {
 void Scene::verify() {
 
 	if (this->getFSMVerificator()!=NULL) {
-		this->getFSMVerificator()->verify();
+		this->getFSMVerificator()->reset();
 	}
 
+    Verificator * verificator = new Verificator();
+    verificator->addRule(new StateOutputsRule());
+    verificator->verify(this->fsm,this);
+
+    delete verificator;
 
 
 }
 
+void Scene::enteredRule(VerificatorRule * rule) {
+
+}
+
+void Scene::ruleSuccessful(VerificatorRule * rule) {
+
+}
+
+void Scene::ruleFailed(VerificatorRule * rule,QList<RuleError*>& errors) {
+
+    qDebug() << "Rule failed: " << rule->getName();
+
+    // Map Errors to Elements
+    //--------------------------------
+    for (int i = 0 ; i<errors.size(); i++) {
+
+        // Pick Error
+        RuleError * error = errors.at(i);
+
+        // Create an FSMVerifyError
+        FSMVerifyError * guiError = new FSMVerifyError(FSMVerifyError::DEFAULT);
+        guiError->setMessage(error->getMessage());
+
+        // Map To GUI Item
+        //-----------------------
+        switch (error->getConcernedObjectType()) {
+
+            //-- State Item
+            case FSMDesigner::STATE: {
+
+                if (error->getConcernedObject<State>()==NULL)
+                    break;
+
+                // Find back and Set
+                StateItem * stateItem = this->findStateItem(dynamic_cast<State*>(error->getConcernedObject<State>()));
+                if (stateItem!=NULL) {
+                    stateItem->addVerificationError(guiError);
+                }
+
+                break;
+            }
+            default:
+
+                break;
+
+        }
+
+
+    }
+
+
+}
 
 QList<Transline *> Scene::findTransline(Trans * transitionModel) {
 

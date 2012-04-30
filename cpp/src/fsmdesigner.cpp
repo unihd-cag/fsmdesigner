@@ -34,6 +34,10 @@
 #include <core/Project.h>
 #include <core/LoadFactory.h>
 
+//-- Generate
+#include <generate/GeneratorFactory.h>
+#include <genverilog/VerilogGenerator.h>
+
 //-- Gui
 #include <gui/FSMDesignerApplication.h>
 #include <gui/mergedGUI/MergedMainWindow.h>
@@ -56,8 +60,9 @@ int main( int argc, char ** argv )
     splashScreen->show();
 
 
-
-
+    // Init Generators
+    //--------------------------
+    GeneratorFactory::getInstance()->registerGenerator("Verilog",new VerilogGenerator());
 
     // Show GUI
     //------------------

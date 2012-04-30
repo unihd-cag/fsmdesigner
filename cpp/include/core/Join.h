@@ -71,7 +71,7 @@ public:
 	 *
 	 * @return The list of trackpoints
 	 */
-	list<Trackpoint*> getTrackpoints();
+	list<Trackpoint*>& getTrackpoints();
 
 	void setId(int id);
 

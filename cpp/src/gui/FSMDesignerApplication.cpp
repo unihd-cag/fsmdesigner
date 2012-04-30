@@ -27,6 +27,7 @@ using namespace std;
 
 FSMDesignerApplication::FSMDesignerApplication ( int & argc, char ** argv ) : QApplication(argc,argv) {
 
+
 }
 
 FSMDesignerApplication::~FSMDesignerApplication() {

@@ -37,7 +37,6 @@
 #include <core/Project.h>
 
 //-- Gen Verilog
-#include <genverilog/generationofverilog.h>
 #include <genverilog/VerificationPlanGenerator.h>
 
 
@@ -143,7 +142,7 @@ int main( int argc, char ** argv ,  char** envp ) {
 	  //------------
 	  if (verilogDestination.size()>0) {
 
-		  GenerationOfVerilog genver(fsm,(QWidget *)NULL,true,true,QString(verilogDestination.c_str()));
+		 /* GenerationOfVerilog genver(fsm,(QWidget *)NULL,true,true,QString(verilogDestination.c_str()));
 		  genver.setForwardStateAsync(forwardAsync);
 		  genver.setForwardStateDelayed(forwardDelayed);
 		  genver.setForwardState(forwardState);
@@ -167,7 +166,7 @@ int main( int argc, char ** argv ,  char** envp ) {
 	  		  fFile << verilogDestination.substr(0,verilogDestination.size()-2) << ".f";
 
 	  		  genver.generateFFile(fFile.str(),true);
-	  	  }
+	  	  }*/
 
 	  }
 

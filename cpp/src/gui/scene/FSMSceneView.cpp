@@ -52,10 +52,12 @@ using namespace std;
 
 //-- Verify
 #include <verification/verify.h>
+#include <verification/Verificator.h>
+#include <verification/VerificationListener.h>
 #include <gui/verify/FSMVerificator.h>
 
 //-- Generation
-#include <genverilog/generationofverilog.h>
+#include <generate/GeneratorFactory.h>
 
 //-- Core
 #include <core/FSMDesigner.h>
@@ -112,7 +114,7 @@ FSMSceneView::FSMSceneView(Scene* scene, QWidget* parent) :
 	toolbar->addAction(verifyAction);
 	this->connect(verifyAction,SIGNAL(hovered(FAction*)),SLOT(toolbarActionHovered(FAction*)));
 	this->connect(verifyAction,SIGNAL(hoveredLeave(FAction*)),SLOT(toolbarActionHoveredLeft(FAction*)));
-	this->connect(verifyAction,SIGNAL(triggered()),this->getRelatedScene()->getFSMVerificator(),SLOT(verify()));
+	this->connect(verifyAction,SIGNAL(triggered()),this->getRelatedScene(),SLOT(verify()));
 
 	// Verify Clear
 	FAction * verifyClearAction = new FAction(QIcon(QPixmap(":/icons/Clear-brush")));
@@ -628,11 +630,11 @@ void FSMSceneView::placeSetMode(FSMDesigner::Item placeMode) {
 void FSMSceneView::generateVerilog() {
 
 	//-- Get FSM
-	Fsm * f = dynamic_cast<Scene*> (this->scene())->getFsm();
+	Fsm * fsm = dynamic_cast<Scene*> (this->scene())->getFsm();
 
 	// Verify FSM
 	//----------------
-	Verify * verifier = new Verify(f,this);
+	Verify * verifier = new Verify(fsm,this);
 	if (verifier->wanttoverify()) {
 		// Do verify
 		verifier->verifyFsm();
@@ -644,24 +646,22 @@ void FSMSceneView::generateVerilog() {
 
 	}
 
-	// Do generate
-	//------------------
 
 	//-- Default path is where the FSM file is
-	QDir location = Core::getInstance()->getProject()->getDirectory();
+    QDir location = Core::getInstance()->getProject()->getDirectory();
 
-	//-- FileName offer
-	QString defaultName = QString::fromStdString(f->getFsmName())+"_fsm.v";
+    //-- FileName offer
+    QString defaultName = QString::fromStdString(fsm->getFsmName())+"_fsm.v";
 
-	//-- Generate
-	GenerationOfVerilog* veriloggen = new GenerationOfVerilog(f, this, true,
-			true, location.exists()?defaultName:"",location.exists()?location.absolutePath().toStdString().c_str():"");
-//	veriloggen->setForwardStateDelayed(this->controlGenerateForwardDelayed->isChecked());
-//	veriloggen->setForwardStateAsync(this->controlGenerateForwardAsync->isChecked());
-//	veriloggen->setForwardState(this->controlGenerateForward->isChecked());
+    //-- Save path
+    QString path = QFileDialog::getSaveFileName(this,"Choose a Verilog File to save to",location.path(),"Verilog Files (*.v)");
+    if (path.length()==0)
+        return;
+    fsm->setLastGeneratedVerilogFile(path.toStdString());
 
-	veriloggen->createVerilog();
-	delete veriloggen;
+	// Now that we have a last generated path -> call on reload
+	//---------------
+    this->generateVerilogReload();
 
 }
 
@@ -672,45 +672,65 @@ void FSMSceneView::generateVerilogReload() {
 	// Get FSM
 	Fsm * fsm = dynamic_cast<Scene*> (this->scene())->getFsm();
 
-	//-- If no, generate Normally
-	if (fsm != NULL && fsm->getLastGeneratedVerilogFile().size() == 0) {
-		this->generateVerilog();
-	} else if (fsm != NULL) {
-
-		//-- If yes, generate Directly
-		//--------------------------------
-
-		//-- Verify
-		Verify * verifier = new Verify(fsm,this);
-
-		// Do verify
-		verifier->verifyFsm();
-		verifier->info();
-
-		// Check passed
-		if (!verifier->getVerified())
-			return;
 
 
+    // Verify FSM
+    //----------------
+    Verify * verifier = new Verify(fsm,this);
+    verifier->verifyFsm();
 
-		//-- Generate
-		GenerationOfVerilog* veriloggen = new GenerationOfVerilog(fsm, this,
-				true, true, "");
-//		veriloggen->setForwardStateDelayed(this->controlGenerateForwardDelayed->isChecked());
-//		veriloggen->setForwardStateAsync(this->controlGenerateForwardAsync->isChecked());
-//		veriloggen->setForwardState(this->controlGenerateForward->isChecked());
-		veriloggen->updateVerilog();
-		delete veriloggen;
+    // Check passed
+    if (!verifier->getVerified()) {
+        verifier->info();
+        return;
+    }
 
-		//-- Also Generate VPlan ?
-//		if (this->controlGenerateVPlan->isChecked()) {
-//
-//			//-- Prepare a Generator
-//			//VerificationPlanGenerator vplanGenerator(fsm);
-//
-//		}
 
-	}
+    //-- If there is no previous recorded path -> ask for one
+    QString path = QString::fromStdString(fsm->getLastGeneratedVerilogFile());
+    if (path.size()==0) {
+
+        //-- Default path is where the FSM file is
+        QDir location = Core::getInstance()->getProject()->getDirectory();
+
+        //-- FileName offer
+        QString defaultName = QString::fromStdString(fsm->getFsmName())+"_fsm.v";
+
+        //-- Save path
+        path = QFileDialog::getSaveFileName(this,"Choose a Verilog File to save to",location.path(),"Verilog Files (*.v)");
+        if (path.length()==0)
+            return;
+        fsm->setLastGeneratedVerilogFile(path.toStdString());
+
+    }
+
+    // Generate
+    //--------------------
+    Generator * generator = GeneratorFactory::getInstance()->newGenerator("Verilog");
+    if (generator==NULL) {
+        QMessageBox warnBox(QMessageBox::Warning,"Cannot find generator","There are no Generator registered under the 'Verilog' name. No Verilog can generated",QMessageBox::NoButton,this);
+        warnBox.exec();
+        return;
+    }
+
+    //-- Open File
+    QFile verilogFile(path);
+    if (!verilogFile.open(QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
+
+        QMessageBox warnBox(QMessageBox::Warning,"Cannot open File","The provided file to generate verilog to cannot be opened for writing",QMessageBox::NoButton,this);
+        warnBox.exec();
+        return;
+
+    }
+
+    //-- Generate
+    QDataStream outputStream(&verilogFile);
+    generator->generate(fsm,&outputStream);
+
+    //-- Close
+    delete generator;
+    verilogFile.close();
+
 
 }
 

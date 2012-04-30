@@ -52,7 +52,7 @@ Trackpoint * Join::addTrackpoint(Trackpoint * trackpoint) {
  *
  * @return The list of trackpoints
  */
-list<Trackpoint*> Join::getTrackpoints() {
+list<Trackpoint*>& Join::getTrackpoints() {
     return this->trackpoints;
 }
 

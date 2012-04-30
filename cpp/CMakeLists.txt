@@ -19,7 +19,7 @@ include(${QT_USE_FILE})
 ##########################################
 # Compilation Parameters
 ##########################################
-      
+       
       
 ## Enable CCACHE and DISTCC
 #set(CMAKE_CXX_COMPILER ccache)
@@ -91,6 +91,7 @@ include_directories(
 		"${FSMDesigner_SOURCE_DIR}/include/core/"
 		"${FSMDesigner_SOURCE_DIR}/include/core-qxml/"
 		"${FSMDesigner_SOURCE_DIR}/include/genverilog/"
+		"${FSMDesigner_SOURCE_DIR}/include/generate/"
 		"${FSMDesigner_SOURCE_DIR}/include/verification/"
 		"${GENERATED_PATH}")
 
@@ -104,9 +105,11 @@ endforeach(package)
 
 #### Manual definitions
 aux_source_directory(${FSMDesigner_SOURCE_DIR}/src/core/                core_src)
+aux_source_directory(${FSMDesigner_SOURCE_DIR}/src/generate/            core_src)
 aux_source_directory(${FSMDesigner_SOURCE_DIR}/src/core-qxml/           core-qxml_src)
 aux_source_directory(${FSMDesigner_SOURCE_DIR}/src/genverilog/          genverilog_src)
 aux_source_directory(${FSMDesigner_SOURCE_DIR}/src/verification/        verification_src)
+
 
 #### GUI packages
 foreach (package ${GUI_PACKAGES})

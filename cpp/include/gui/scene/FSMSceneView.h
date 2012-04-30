@@ -47,138 +47,143 @@ class PropertyWidget;
 class FAction;
 class RoundedPanel;
 
-class FSMSceneView : public QGraphicsView, public SceneRelatedObject {
+//-- Verification
+#include <verification/VerificationListener.h>
 
-Q_OBJECT
+class FSMSceneView: public QGraphicsView,
+        public SceneRelatedObject{
 
-public:
-    FSMSceneView(Scene* scene, QWidget* parent = NULL);
-	~FSMSceneView();
+    Q_OBJECT
 
-private:
+    private:
 
-	///\defgroup SelectionArea Selection area variables
-	/// @{
+        ///\defgroup SelectionArea Selection area variables
+        /// @{
 
-	/// ?
-	Qt::ItemSelectionMode mode;
+        /// ?
+        Qt::ItemSelectionMode mode;
 
-	/// Pen to draw selection area
-    QPen * selectionAreaPen;
+        /// Pen to draw selection area
+        QPen * selectionAreaPen;
 
-	/// Initial selected Area point. Set when selection drag started
-    QPointF * areaSelectionInitial;
+        /// Initial selected Area point. Set when selection drag started
+        QPointF * areaSelectionInitial;
 
-	/// @}
+        /// @}
 
+        ///\defgroup InfoWidgets Info Widgets
+        /// @{
 
-	///\defgroup InfoWidgets Info Widgets
-	/// @{
+        /// Lock Icon to indicate control has been pressed
+        QWidget * lockModeicon;
 
-    /// Lock Icon to indicate control has been pressed
-	QWidget * 			lockModeicon;
+        /// Embedded Toolbar
+        QWidget * controlPanel;
 
-	/// Embedded Toolbar
-	QWidget *           controlPanel;
+        /// Help Panel to show embedded help
+        QTextBrowser * helpPanel;
 
-	/// Help Panel to show embedded help
-	QTextBrowser *      helpPanel;
+        ///@}
 
-	///@}
+        //// Animator on selection
+        SelectionAnimator * selectionAnimator;
 
-	//// Animator on selection
-	SelectionAnimator * selectionAnimator;
+    public:
+        FSMSceneView(Scene* scene, QWidget* parent = NULL);
+        ~FSMSceneView();
 
+        /** \defgroup Verification VerificationListener Methods */
+        /** @{ */
 
+        /** @} */
 
-protected:
-	virtual void wheelEvent(QWheelEvent *event); //Zoom in and out with the  mouse Wheel
-	virtual void mousePressEvent(QMouseEvent* e);
-	virtual void mouseMoveEvent(QMouseEvent* e);
-	virtual void mouseReleaseEvent(QMouseEvent* e);
-	virtual void keyPressEvent(QKeyEvent* ke);
-	virtual void keyReleaseEvent(QKeyEvent* ke);
-	virtual void drawForeground(QPainter * painter, const QRectF & rect);
-	virtual void resizeEvent(QResizeEvent * event);
-	virtual void showEvent ( QShowEvent * event );
+    protected:
+        virtual void wheelEvent(QWheelEvent *event); //Zoom in and out with the  mouse Wheel
+        virtual void mousePressEvent(QMouseEvent* e);
+        virtual void mouseMoveEvent(QMouseEvent* e);
+        virtual void mouseReleaseEvent(QMouseEvent* e);
+        virtual void keyPressEvent(QKeyEvent* ke);
+        virtual void keyReleaseEvent(QKeyEvent* ke);
+        virtual void drawForeground(QPainter * painter, const QRectF & rect);
+        virtual void resizeEvent(QResizeEvent * event);
+        virtual void showEvent(QShowEvent * event);
 
-	/// Scroll Event to update control panel and other overlayed panels
-	virtual void scrollContentsBy(int dx, int dy);
+        /// Scroll Event to update control panel and other overlayed panels
+        virtual void scrollContentsBy(int dx, int dy);
 
-private:
+    private:
 
-	void initVariables();
+        void initVariables();
 
-public slots:
+    public slots:
 
-    /** \defgroup Toolbar Embedded Tool Bar Actions */
-    /** @{ */
+        /** \defgroup Toolbar Embedded Tool Bar Actions */
+        /** @{ */
 
-    /**
-     * Display toolbar hovered action in status label
-     */
-    void toolbarActionHovered(FAction *);
+        /**
+         * Display toolbar hovered action in status label
+         */
+        void toolbarActionHovered(FAction *);
 
-    /**
-     * Clear status label
-     */
-    void toolbarActionHoveredLeft(FAction *);
+        /**
+         * Clear status label
+         */
+        void toolbarActionHoveredLeft(FAction *);
 
-    /**
-     * Global Table edition action
-     */
-    void showGlobalTable();
+        /**
+         * Global Table edition action
+         */
+        void showGlobalTable();
 
-    /** @} */
+        /** @} */
 
-    /** \addtogroup InfoWidgets */
-    /** @{ */
+        /** \addtogroup InfoWidgets */
+        /** @{ */
 
-    /**
-     * Updates the help based on the selection
-     */
-    void changeHelp();
+        /**
+         * Updates the help based on the selection
+         */
+        void changeHelp();
 
-    /** @} */
+        /** @} */
 
-	/// Fit the scene
-	void fit();
+        /// Fit the scene
+        void fit();
 
-	/// Generate verilog for the currently displayed FSM
-	void generateVerilog();
+        /// Generate verilog for the currently displayed FSM
+        void generateVerilog();
 
-	/// Reload/Generate verilog for the currently displayed FSM
-	void generateVerilogReload();
+        /// Reload/Generate verilog for the currently displayed FSM
+        void generateVerilogReload();
 
-	/** \defgroup Place mode methods */
-	/**@{*/
+        /** \defgroup Place mode methods */
+        /**@{*/
 
-	void placeSetUnlocked();
-	void placeSetLocked();
+        void placeSetUnlocked();
+        void placeSetLocked();
 
-	void placeSetMode(FSMDesigner::Item w);
-	/**@}*/
+        void placeSetMode(FSMDesigner::Item w);
+        /**@}*/
 
-	/// Slot for when the selection on the scene has changed
-	void sceneSelectionChanged();
+        /// Slot for when the selection on the scene has changed
+        void sceneSelectionChanged();
 
-	/**
-	 * Perform a save
-	 * This saves the project because single FSM save is not possible
-	 */
-	void saveProject();
+        /**
+         * Perform a save
+         * This saves the project because single FSM save is not possible
+         */
+        void saveProject();
 
-	/**
-	 * Performs a save to a specified location
-	 * This saves the project because single FSM save is not possible
-	 */
-	void saveProjectAs();
+        /**
+         * Performs a save to a specified location
+         * This saves the project because single FSM save is not possible
+         */
+        void saveProjectAs();
 
-	/**
-	 * Opens A control dialog to rename the FSM
-	 */
-	void renameFsm();
-
+        /**
+         * Opens A control dialog to rename the FSM
+         */
+        void renameFsm();
 
 };
 

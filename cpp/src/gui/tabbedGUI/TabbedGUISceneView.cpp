@@ -55,7 +55,7 @@ using namespace std;
 #include <gui/verify/FSMVerificator.h>
 
 //-- Generation
-#include <genverilog/generationofverilog.h>
+//#include <genverilog/generationofverilog.h>
 
 //-- Core
 #include <core/FSMDesigner.h>
@@ -959,14 +959,14 @@ void TabbedGUISceneView::generateVerilog() {
 	QString defaultName = QString::fromStdString(f->getFsmName())+"_fsm.v";
 
 	//-- Generate
-	GenerationOfVerilog* veriloggen = new GenerationOfVerilog(f, this, true,
+	/*GenerationOfVerilog* veriloggen = new GenerationOfVerilog(f, this, true,
 			true, defaultName,location.exists()?location.absolutePath().toStdString().c_str():"");
 	veriloggen->setForwardStateDelayed(this->controlGenerateForwardDelayed->isChecked());
 	veriloggen->setForwardStateAsync(this->controlGenerateForwardAsync->isChecked());
 	veriloggen->setForwardState(this->controlGenerateForward->isChecked());
 
 	veriloggen->createVerilog();
-	delete veriloggen;
+	delete veriloggen;*/
 
 }
 
@@ -999,13 +999,13 @@ void TabbedGUISceneView::generateVerilogReload() {
 
 
 		//-- Generate
-		GenerationOfVerilog* veriloggen = new GenerationOfVerilog(fsm, this,
+		/*GenerationOfVerilog* veriloggen = new GenerationOfVerilog(fsm, this,
 				true, true, "");
 		veriloggen->setForwardStateDelayed(this->controlGenerateForwardDelayed->isChecked());
 		veriloggen->setForwardStateAsync(this->controlGenerateForwardAsync->isChecked());
 		veriloggen->setForwardState(this->controlGenerateForward->isChecked());
 		veriloggen->updateVerilog();
-		delete veriloggen;
+		delete veriloggen;*/
 
 		//-- Also Generate VPlan ?
 		if (this->controlGenerateVPlan->isChecked()) {
