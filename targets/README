@@ -1,0 +1,15 @@
+Every Target folder contains a makefile to build FSM designer for a specific purpose.
+
+
+## deb-debian
+####################
+
+Creates deb package using pbuilder for the given target distribution and uploads to sourceforge files
+
+make stable
+make testing
+
+## ubuntu-package
+###########################
+
+Creates an Ubuntu package uploadable to a ppa
