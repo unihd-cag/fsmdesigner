@@ -31,10 +31,31 @@
 FSMGraphicsTextItem::FSMGraphicsTextItem(QString &qs, QGraphicsItem* parent) :
 		QGraphicsTextItem(qs, parent) {
 
+    // Text Flags
+    this->setTextInteractionFlags(Qt::NoTextInteraction);
+
+    // Ui Item Flags
 	this->setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+	this->setFlag(QGraphicsItem::ItemIsFocusable,true);
 	this->editorStartTime = NULL;
 	this->setTextCursor(QTextCursor(this->document()));
-	this->setTextInteractionFlags(Qt::NoTextInteraction);
+
+	//this->setTextInteractionFlags(Qt::TextEditorInteraction);
+}
+
+FSMGraphicsTextItem::~FSMGraphicsTextItem() {
+
+}
+
+QRectF  FSMGraphicsTextItem::boundingRect () const {
+
+    // Get parent
+    QRectF boundingRect = QGraphicsTextItem::boundingRect();
+
+    // Adjust to text width
+    //boundingRect.setWidth(this->textWidth()+5);
+
+    return boundingRect;
 
 }
 
@@ -50,16 +71,21 @@ void FSMGraphicsTextItem::startEditing() {
 
 	qDebug() << " Start Editing " << endl;
 
-	//-- Start Editing
-	//QTextCursor cursor = this->textCursor();
-	//cursor.beginEditBlock();
-	//cursor.setPosition(1);
-	//cursor.select(QTextCursor::Start);
-	//this->setTextCursor(cursor);
 
 	//-- Allow text editing
-	this->setTextInteractionFlags(Qt::TextEditorInteraction);
-	this->grabKeyboard();
+   // this->setSelected(false);
+    this->setTextInteractionFlags(Qt::TextEditable | Qt::TextEditorInteraction);
+    this->grabKeyboard();
+    this->update();
+
+	//-- Start Editing
+	QTextCursor cursor = this->textCursor();
+	cursor.beginEditBlock();
+	cursor.setPosition(0);
+	cursor.select(QTextCursor::Document);
+	this->setTextCursor(cursor);
+
+
 
 }
 
@@ -118,13 +144,15 @@ void FSMGraphicsTextItem::keyPressEvent(QKeyEvent * event) {
 
 void FSMGraphicsTextItem::keyReleaseEvent(QKeyEvent * event) {
 
+    QGraphicsTextItem::keyPressEvent(event);
+
    // Start Editing on F2
    //--------------------------
    if (event->key() == Qt::Key_F2) {
        this->startEditing();
    }
 
-    QGraphicsTextItem::keyPressEvent(event);
+
 
 
 }

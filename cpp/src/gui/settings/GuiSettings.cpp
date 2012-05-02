@@ -48,7 +48,11 @@ QVariant GuiSettings::value( const QString & key, const QVariant & defaultValue 
 }
 
 void GuiSettings::setValue ( const QString & key, const QVariant & value ) {
+    // Set Value
 	dynamic_cast<QSettings*>(&settings)->setValue (key,value);
+
+	// Trigger
+	settings.settingsChanged();
 }
 
 /// Get Recent files

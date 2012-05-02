@@ -46,6 +46,7 @@ class PropertyWidget;
 #include <gui/scene/SceneRelatedObject.h>
 class FAction;
 class RoundedPanel;
+class StatusToolBar;
 
 //-- Verification
 #include <verification/VerificationListener.h>
@@ -76,9 +77,11 @@ class FSMSceneView: public QGraphicsView,
 
         /// Lock Icon to indicate control has been pressed
         QWidget * lockModeicon;
+        QLabel * lockIcon;
+        QCursor * lockCursor;
 
         /// Embedded Toolbar
-        QWidget * controlPanel;
+        StatusToolBar * controlToolBar;
 
         /// Help Panel to show embedded help
         QTextBrowser * helpPanel;
@@ -117,18 +120,18 @@ class FSMSceneView: public QGraphicsView,
 
     public slots:
 
+        /**
+         * If the settings changed. Recheck some values
+         */
+        void settingsChanged();
+
         /** \defgroup Toolbar Embedded Tool Bar Actions */
         /** @{ */
 
         /**
-         * Display toolbar hovered action in status label
+         * Enables/Disables Help Pane
          */
-        void toolbarActionHovered(FAction *);
-
-        /**
-         * Clear status label
-         */
-        void toolbarActionHoveredLeft(FAction *);
+        void toggleHelp();
 
         /**
          * Global Table edition action

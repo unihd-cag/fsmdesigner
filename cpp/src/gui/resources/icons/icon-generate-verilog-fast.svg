@@ -15,9 +15,21 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="icon-generate-verilog-fast.svg">
   <defs
-     id="defs4" />
+     id="defs4">
+    <filter
+       id="filter3131"
+       inkscape:label="Motion blur, horizontal"
+       inkscape:menu="Blurs"
+       inkscape:menu-tooltip="Blur as if the object flies horizontally; adjust Standard Deviation to vary force"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur3133"
+         in="SourceGraphic"
+         stdDeviation="5 0.01" />
+    </filter>
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -53,21 +65,8 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-924.36218)">
-    <text
-       xml:space="preserve"
-       style="font-size:86.91625214px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="-0.67945188"
-       y="1027.4628"
-       id="text3785"
-       sodipodi:linespacing="125%"
-       transform="matrix(0.99157045,-0.00812124,0.00798542,1.0084358,0,0)"><tspan
-         sodipodi:role="line"
-         id="tspan3787"
-         x="-0.67945188"
-         y="1027.4628"
-         style="font-size:30.42068863px;font-weight:bold;-inkscape-font-specification:Sans Bold">verilog</tspan></text>
     <image
-       y="932.94855"
+       y="945.07037"
        x="51.302071"
        id="image3024"
        xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAABHNCSVQICAgIfAhkiAAAIABJREFU
@@ -346,11 +345,11 @@ tDlwCfSswh+FdhheCmDzEK8rYOVgGsDT0At3/B8A/wg9nfc4RrTjW6wEAeBCAFgP7SychBYIWwG8
 Hs25BAEBdZgH8CiAg9Adfg46qeckPMnjXwysNAFQB4KHj0EPGAnYOH9AQEBAQEBAQEBAQEBAQEBA
 QEBAwGji/wPQDlztryDeIwAAAABJRU5ErkJggg==
 "
-       height="74.67762"
-       width="74.67762" />
+       height="78.718231"
+       width="78.718231" />
     <image
-       y="929.77332"
-       x="-5.4111762"
+       y="931.79364"
+       x="-22.078691"
        id="image3004"
        xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAABHNCSVQICAgIfAhkiAAAGVxJREFU
 eJztnVtwHNd95n+ne6ZnBsAMAOJGgleIFECRICmLpixRF5uSfEmFvqRUtbUvcVx5SGrjZB+ytVvr
@@ -469,18 +468,19 @@ PKUva8/G+o2LpW+Wms3+OuGdPEZhU9H7RErkZ82Wwmxpuya0XlDCUmo+0RO9HOs1cun/s9LU++uI
 0BHARff/TgqplFCAALX4R83AN9FEE0000UQTTTTRRBNNNNFEE0000UQTTbwz/H9tAGiT4zn3wgAA
 AABJRU5ErkJggg==
 "
-       height="85.06852"
-       width="85.06852" />
+       height="107.63536"
+       width="121.12556"
+       style="filter:url(#filter3131)" />
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="70.710678"
-       y="985.69214"
+       x="73.741142"
+       y="1007.9155"
        id="text3027"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3029"
-         x="70.710678"
-         y="985.69214">.v</tspan></text>
+         x="73.741142"
+         y="1007.9155">.v</tspan></text>
   </g>
 </svg>

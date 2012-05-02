@@ -81,10 +81,7 @@ Transline::Transline(Trans * model, QGraphicsItem * startItem,
 	QGraphicsDropShadowEffect * dse  = new QGraphicsDropShadowEffect();
 	dse->setColor(Qt::lightGray);
 	dse->setOffset(5,5);
-	//setGraphicsEffect(dse);
 
-	// Prepare path
-	//this->preparePath();
 }
 
 Transline::~Transline() {
@@ -250,7 +247,7 @@ void Transline::preparePath(bool propagate) {
 
 		// Pen size
 		this->setPen(QPen(Qt::black));
-		int width = GuiSettings::value("scene.TransLineWidth", QVariant(1)).toInt();
+		int width = GuiSettings::value("uni.hd.ziti.fsmdesigner.ui.transition.lineWidth", QVariant(1)).toInt();
 		QPen newpen(this->pen());
 		newpen.setWidth(width);
 		this->setPen(newpen);
@@ -439,13 +436,13 @@ QVariant Transline::itemChange(GraphicsItemChange change,
 		// Local painting change
 		//-------------
 		int width =
-				GuiSettings::value("ui/TransLineWidth", QVariant(4)).toInt();
+				GuiSettings::value("uni.hd.ziti.fsmdesigner.ui.transition.lineWidth", QVariant(1)).toInt();
 		if (value.toBool() == true) {
 
 			QPen newPen(this->pen());
 			//QPen newPen(Qt::red);
 			newPen.setColor(Qt::red);
-			newPen.setWidth(newPen.width()+1);
+			newPen.setWidth(width+1);
 			this->setPen(newPen);
 			this->setBrush(QBrush(Qt::red));
 		} else {
@@ -453,7 +450,7 @@ QVariant Transline::itemChange(GraphicsItemChange change,
 //			QPen newPen(Qt::black);
 			QPen newPen(this->pen());
 			newPen.setColor(Qt::black);
-			newPen.setWidth(newPen.width()-1);
+			newPen.setWidth(width);
 			this->setPen(newPen);
 			this->setBrush(QBrush(Qt::black));
 			this->setOpacity(1.0);

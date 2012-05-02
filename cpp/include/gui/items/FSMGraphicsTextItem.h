@@ -30,7 +30,7 @@ class FSMGraphicsTextItem : public QGraphicsTextItem , public FSMGraphicsItem<QS
 public:
 	/// Default constructor
 	FSMGraphicsTextItem(QString &qs, QGraphicsItem* parent=NULL);
-
+	virtual ~FSMGraphicsTextItem();
 
 	/// Does nothing per default
 	virtual bool recordPosition();
@@ -52,6 +52,9 @@ protected:
 
     /// Store start time of editing to filter unselection events based on time
     QDateTime * editorStartTime;
+
+
+    virtual QRectF  boundingRect () const;
 
 	/// Overriden to detect selection changes and thus painting parameters
 	virtual QVariant itemChange ( GraphicsItemChange change, const QVariant & value );

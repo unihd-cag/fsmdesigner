@@ -126,13 +126,13 @@ QWidget * SettingsWidget::placeSetting(QDomElement& setting,QWidget * parent) {
     QHBoxLayout * layout = new QHBoxLayout(result);
 
     //-- Determine settings path (ex: my.settings.path.for.a.setting.color)
-    QString settingPath = setting.hasAttribute("base") ? "" : setting.attribute("base");
+    QString settingPath = setting.hasAttribute("base") ? setting.attribute("base") : "" ;
     QDomElement  parentElement = setting.parentNode().toElement();
     while (!parentElement.isNull()) {
 
         //-- Prepend parent/@base attribute if present
         QString base = parentElement.attribute("base","");
-        settingPath.prepend(base.size()>0 ? base+".":"");
+        settingPath = settingPath.prepend(base.size()>0 ? base+".":"");
 
         //-- Go to parent
         parentElement = parentElement.parentNode().toElement();
@@ -163,6 +163,22 @@ QWidget * SettingsWidget::placeSetting(QDomElement& setting,QWidget * parent) {
         //-- Connect to value setter
         SettingValueTransporter * transporter = new SettingValueTransporter(settingPath);
         this->connect(line,SIGNAL(textChanged(QString)),transporter,SLOT(setData(QString)));
+
+    }
+    //---- Boolean
+    //-----------------------
+    else  if (type == "bool" ) {
+
+        //-- Add CheckBox
+        QCheckBox * checkBox = new QCheckBox(parent);
+        layout->addWidget(checkBox);
+
+        //-- Init
+        checkBox->setChecked(GuiSettings::value(settingPath,true).toBool());
+
+        //-- Connect to value setter
+        SettingValueTransporter * transporter = new SettingValueTransporter(settingPath);
+        this->connect(checkBox,SIGNAL(stateChanged(int)),transporter,SLOT(setCheckedData(int)));
 
     }
     //---- Slider Integer

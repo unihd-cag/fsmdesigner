@@ -35,8 +35,9 @@ TranslineText::TranslineText(QString qs,Trans * transition) :
 
 	this->name = qs;
 	this->transition = transition;
+
 	this->setFlag(QGraphicsItem::ItemSendsGeometryChanges,true);
-	this->setToolTip("TranslineText");
+	this->setFlag(QGraphicsItem::ItemIsFocusable,true);
 	this->setZValue(200000);
 
 }

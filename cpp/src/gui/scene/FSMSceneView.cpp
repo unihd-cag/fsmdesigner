@@ -68,6 +68,7 @@ using namespace std;
 #include <gui/common/RoundedPanel.h>
 #include <gui/common/propertywidget.h>
 #include <gui/common/FAction.h>
+#include <gui/common/StatusToolBar.h>
 
 #include <gui/scene/SceneRelatedObject.h>
 #include <gui/scene/Scene.h>
@@ -95,69 +96,54 @@ FSMSceneView::FSMSceneView(Scene* scene, QWidget* parent) :
 	this->viewport()->setContentsMargins(0, 0, 0, 0);
 	this->setResizeAnchor(QGraphicsView::AnchorUnderMouse);
 
-	//-- Create Control Panel
-	this->controlPanel = new QWidget(this);
-	this->controlPanel->move(5,5);
-	this->controlPanel->setLayout(new QVBoxLayout(this->controlPanel));
+	//-- Create Control ToolBar
+	this->controlToolBar = new StatusToolBar(this);
+	this->controlToolBar->move(5,5);
 
-	//-- Create Toolbar
-	//----------
-	QToolBar * toolbar = new QToolBar();
-	this->controlPanel->layout()->addWidget(toolbar);
+
+	//---- Help and so
+	//-----------------------
+	//QToolButton * activateHelpButton = this->controlToolBar->addActionButton(QIcon(QPixmap(":/icons/Help32")),"Fast Regenerate Verilog");
+    //this->connect(activateHelpButton->actions().first(),SIGNAL(triggered()),SLOT(toggleHelp()));
+    //activateHelpButton->setCheckable(true);
+	//this->controlToolBar->getToolBar()->addSeparator();
 
 	//---- Verification
 	//------------------------
 
 	// Verify
-    FAction * verifyAction = new FAction(QIcon(QPixmap(":/icons/verification.png")));
-    verifyAction->setWhatsThis("Quick Verify");
-	toolbar->addAction(verifyAction);
-	this->connect(verifyAction,SIGNAL(hovered(FAction*)),SLOT(toolbarActionHovered(FAction*)));
-	this->connect(verifyAction,SIGNAL(hoveredLeave(FAction*)),SLOT(toolbarActionHoveredLeft(FAction*)));
+    FAction * verifyAction = this->controlToolBar->addAction(QIcon(QPixmap(":/icons/verification.png")),"Quick Verify");
 	this->connect(verifyAction,SIGNAL(triggered()),this->getRelatedScene(),SLOT(verify()));
 
 	// Verify Clear
-	FAction * verifyClearAction = new FAction(QIcon(QPixmap(":/icons/Clear-brush")));
-	verifyClearAction->setWhatsThis("Clear Verification Display");
-    toolbar->addAction(verifyClearAction);
-    this->connect(verifyClearAction,SIGNAL(hovered(FAction*)),SLOT(toolbarActionHovered(FAction*)));
-    this->connect(verifyClearAction,SIGNAL(hoveredLeave(FAction*)),SLOT(toolbarActionHoveredLeft(FAction*)));
+	FAction * verifyClearAction = this->controlToolBar->addAction(QIcon(QPixmap(":/icons/Clear-brush")),"Clear Verification Result");
     this->connect(verifyClearAction,SIGNAL(triggered()),this->getRelatedScene()->getFSMVerificator(),SLOT(reset()));
 
-	toolbar->addSeparator();
+	this->controlToolBar->getToolBar()->addSeparator();
 
 	//---- Edition
     //------------------------
 
 	// Table
-    FAction * tableAction = new FAction(QIcon(QPixmap(":/icons/TableEditor28")));
-    tableAction->setWhatsThis("Table Editor");
-    toolbar->addAction(tableAction);
-    this->connect(tableAction,SIGNAL(hovered(FAction*)),SLOT(toolbarActionHovered(FAction*)));
-    this->connect(tableAction,SIGNAL(hoveredLeave(FAction*)),SLOT(toolbarActionHoveredLeft(FAction*)));
+	FAction * tableAction = this->controlToolBar->addAction(QIcon(QPixmap(":/icons/TableEditor28")),"Table Editor");
     this->connect(tableAction,SIGNAL(triggered()),SLOT(showGlobalTable()));
 
-    toolbar->addSeparator();
+    this->controlToolBar->getToolBar()->addSeparator();
 
     //---- Generate
     //------------------------
 
     // Fast verilog
-    FAction * reloadVerilogAction = new FAction(QIcon(QPixmap(":/icons/GenerateVerilog28")));
-    reloadVerilogAction->setWhatsThis("Fast Regenerate Verilog");
-    toolbar->addAction(reloadVerilogAction);
-    this->connect(reloadVerilogAction,SIGNAL(hovered(FAction*)),SLOT(toolbarActionHovered(FAction*)));
-    this->connect(reloadVerilogAction,SIGNAL(hoveredLeave(FAction*)),SLOT(toolbarActionHoveredLeft(FAction*)));
-    this->connect(reloadVerilogAction,SIGNAL(triggered()),SLOT(generateVerilogReload()));
+    QToolButton * reloadVerilogButton = this->controlToolBar->addActionButton(QIcon(QPixmap(":/icons/GenerateVerilog28")),"(Re)Generate Verilog");
+    this->connect(reloadVerilogButton->actions().first(),SIGNAL(triggered()),SLOT(generateVerilogReload()));
 
-    toolbar->addSeparator();
+    // Normal Generate
+    QAction * reloadVerilogAction = new QAction("Generate to...",reloadVerilogButton);
+    reloadVerilogButton->addAction(reloadVerilogAction);
+    this->connect(reloadVerilogAction,SIGNAL(triggered()),SLOT(generateVerilog()));
 
 
-	//-- Create Status Label
-	//---------
-	QLabel * label = new QLabel();
-	label->setUpdatesEnabled(true);
-	this->controlPanel->layout()->addWidget(label);
+    this->controlToolBar->getToolBar()->addSeparator();
 
 	//-- Initialise Scene per default to see
 	//------------------
@@ -171,19 +157,24 @@ FSMSceneView::FSMSceneView(Scene* scene, QWidget* parent) :
 	this->helpPanel->setText("Hello world <b>Hey</b>");
 	this->helpPanel->setTextBackgroundColor(Qt::yellow);
 
-	QPalette * p = new QPalette();
-	p->setColor(QPalette::Background,QColor(Qt::yellow));
-	this->helpPanel->setPalette(*p);
-	this->helpPanel->setAutoFillBackground(true);
-	this->helpPanel->setBackgroundRole(QPalette::Background);
-	//this->helpPanel->palette().setColor(QPalette::Background,QColor(Qt::yellow));
+
+	// Init Enable State using preferences
+	//this->helpPanel->setEnabled(GuiSettings::value("uni.hd.ziti.fsmdesigner.ui.general.help",true).toBool());
+
 
 	//---- Update Help on sceneSelection Change
-	this->connect(this->scene(),SIGNAL(selectionChanged()),SLOT(changeHelp()));
+	this->connect(this->scene(),SIGNAL(selectionChanged()),SLOT(sceneSelectionChanged()));
+
+	// Update UI when settings get changed
+	//----------------------
+	this->connect(GuiSettings::getAsQObject(), SIGNAL(settingsChanged()),
+	            SLOT(settingsChanged()));
+    this->settingsChanged();
 
 	//-- Update UI
 	//--------------------------
 	this->fit();
+
 
 
 
@@ -193,6 +184,14 @@ FSMSceneView::~FSMSceneView() {
 	//delete this->scene();
 }
 
+
+void FSMSceneView::settingsChanged() {
+
+    // Update enabled state
+    this->helpPanel->setEnabled(GuiSettings::value("uni.hd.ziti.fsmdesigner.ui.general.help",true).toBool());
+    this->changeHelp();
+
+}
 
 
 void FSMSceneView::initVariables() {
@@ -219,36 +218,24 @@ void FSMSceneView::initVariables() {
 
 	// Lock Widget
     //-------------------
-    QPixmap lockPixMap(":/icons/Lock-icon.png");
+    QPixmap lockPixMap(":/icons/Lock64");
 
-    this->lockModeicon = new QWidget(this->viewport());
+    /*this->lockModeicon = new QWidget(this->viewport());
     this->lockModeicon->setLayout(new QHBoxLayout());
     this->lockModeicon->setAutoFillBackground(true);
     this->lockModeicon->setPalette(QPalette(Qt::lightGray));
-    this->lockModeicon->setVisible(false);
+    this->lockModeicon->setVisible(false);*/
 
-    QLabel * locklabel = new QLabel();
-    locklabel->setPixmap(lockPixMap);
-    this->lockModeicon->layout()->addWidget(locklabel);
+    this->lockIcon = new QLabel(this);
+    this->lockIcon->setPixmap(lockPixMap);
+    this->lockIcon->setVisible(false);
+
+    this->lockCursor = new QCursor(lockPixMap);
+
 
 
 }
 
-void FSMSceneView::toolbarActionHovered(FAction * action) {
-
-    //qDebug() << "Action: " << action->toolTip();
-    //qDebug() << "Ctrl Panel children: " << this->controlPanel->children().size() << "//" << this->controlPanel->layout()->children().size();
-
-    dynamic_cast<QLabel*>(this->controlPanel->children().at(2))->setText(action->whatsThis());
-}
-
-void FSMSceneView::toolbarActionHoveredLeft(FAction * action) {
-
-    //qDebug() << "Action: " << action->toolTip();
-    //qDebug() << "Ctrl Panel children: " << this->controlPanel->children().size() << "//" << this->controlPanel->layout()->children().size();
-
-    dynamic_cast<QLabel*>(this->controlPanel->children().at(2))->setText("");
-}
 
 void FSMSceneView::showGlobalTable() {
 
@@ -266,38 +253,69 @@ void FSMSceneView::showGlobalTable() {
     table->show();
 }
 
+void FSMSceneView::toggleHelp() {
+
+    // Toggle Help
+    this->helpPanel->setEnabled(!this->helpPanel->isEnabled());
+    this->changeHelp();
+
+}
+
 void FSMSceneView::changeHelp() {
 
-    QString newHelpText;
+    QList<QString> newHelpTexts;
 
-    // Get Selected Item
-    //  - Multiple Selection: Don't display anything
-    //-----------------------
-    QGraphicsItem * selectedItem = this->scene()->selectedItems().size()==1 ? this->scene()->selectedItems().first() : NULL;
+    // If not enabled -> Don't update/display
+    //--------------
 
-    if (selectedItem!=NULL)
-        switch (selectedItem->type()) {
+    // Place Mode Help
+    //------------------------
+    if (this->helpPanel->isEnabled() && this->getRelatedScene()->getPlaceMode()!=FSMDesigner::CHOOSE) {
 
-            case FSMGraphicsItem<>::STATEITEM:
+        // Add Global Place help
+        newHelpTexts.append(":/help/PlaceMode");
 
-                newHelpText.append(":/help/StateItem");
-
-            break;
-
-            default:
-            break;
+        // Add Specific Helps
+        if (this->getRelatedScene()->getPlaceMode()==FSMDesigner::STATE) {
+            newHelpTexts.append(":/help/PlaceMode_State");
         }
 
+    }
+    // Selected Item Help
+    //  - Multiple Selection: Don't display anything
+    //-----------------------
+    else if (this->helpPanel->isEnabled()) {
+        QGraphicsItem * selectedItem = this->scene()->selectedItems().size()==1 ? this->scene()->selectedItems().first() : NULL;
 
-    //-- Set new Help using defined resource location
-    if (newHelpText.size()>0) {
+        if (selectedItem!=NULL)
+            switch (selectedItem->type()) {
 
-        QFile file(newHelpText);
-        file.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream in(&file);
-        this->helpPanel->setText(in.readAll());
+                case FSMGraphicsItem<>::STATEITEM:
+                    newHelpTexts.append(":/help/StateItem");
+                break;
+
+                default:
+                break;
+            }
+    }
+
+    //-- Set new Help using defined resource locations
+    //--------------------
+    if (newHelpTexts.size()>0) {
+
+        // Merge all provided resource locations into the resulting string
+        QString resultHelpText = "";
+        for (QList<QString>::iterator it = newHelpTexts.begin() ; it != newHelpTexts.end(); it++ ) {
+            QFile file(*it);
+            file.open(QIODevice::ReadOnly | QIODevice::Text);
+            QTextStream in(&file);
+            resultHelpText.append(in.readAll());
+            file.close();
+        }
+
+        // Set on panel
+        this->helpPanel->setText(resultHelpText);
         this->helpPanel->setVisible(true);
-        file.close();
 
 
     } else {
@@ -475,23 +493,12 @@ void FSMSceneView::wheelEvent(QWheelEvent *event) {
 
 void FSMSceneView::sceneSelectionChanged() {
 
-	//-- Selection list
-	QList<QGraphicsItem*> selectedItems = this->scene()->selectedItems();
+    // Update Help
+    //--------------------------
+    this->changeHelp();
 
-	//-- Do nothing if nothing selected
-	if (selectedItems.size() == 0)
-		return;
 
-	//-- Get First
-	QGraphicsItem * firstSelected = selectedItems.first();
 
-	// Update the Properties Widget
-	//-------------------------------
-	/*if (firstSelected->type()==StateItem::Type) {
-	 this->controlPropertyWidget->editState(dynamic_cast<StateItem*>(firstSelected));
-	 } else if (firstSelected->type()==Transline::Type) {
-	 this->controlPropertyWidget->editTransition(dynamic_cast<Transline*>(firstSelected));
-	 }*/
 
 }
 
@@ -504,8 +511,12 @@ void FSMSceneView::resizeEvent(QResizeEvent * event) {
 
 	//-- Replace help panel
 	//---------------------
-	this->helpPanel->move(event->size().width()-this->helpPanel->baseSize().width()-20,5);
+	this->helpPanel->move(event->size().width()-(this->helpPanel->baseSize().width()+20),5);
+	this->changeHelp();
 
+	//-- Replace Lock Icon
+	//----------
+	this->lockIcon->move(10,event->size().height()-(this->lockIcon->size().height()+35));
 
 
 
@@ -540,13 +551,17 @@ void FSMSceneView::keyPressEvent(QKeyEvent* ke) {
 
 
 	//-- Pressing Ctrl Locks placement
-	if (ke->key() ==  Qt::Key_Control && !ke->isAccepted()) {
+	if (ke->key() ==  Qt::Key_Control) {
+	    this->lockIcon->setVisible(true);
+	}
+	if (ke->key() ==  Qt::Key_Control && this->getRelatedScene()->getPlaceMode()!=FSMDesigner::CHOOSE) {
 
 		//-- Place mode
 		this->getRelatedScene()->setPlaceLocked();
 
 		//-- Show Lock
-		this->lockModeicon->setVisible(true);
+//		this->setCursor(QCursor((*lockCursor)));
+		//this->lockIcon->setVisible(true);
 	}
 
 
@@ -559,6 +574,9 @@ void FSMSceneView::keyReleaseEvent(QKeyEvent* ke) {
 	// Parent processing
 	//---------------------------
 	QGraphicsView::keyReleaseEvent(ke);
+
+	//-- Restore help
+	this->changeHelp();
 
 	//-- Filter out accepted events
 	if (ke->isAccepted())
@@ -576,12 +594,12 @@ void FSMSceneView::keyReleaseEvent(QKeyEvent* ke) {
 	else if (ke->key() == Qt::Key_F11) {
 
 
-		/*if (this->window()->windowState() == Qt::WindowFullScreen) {
+		if (this->window()->windowState() == Qt::WindowFullScreen) {
 			// Restore geometry
 			this->window()->setWindowState(Qt::WindowMaximized);
 		} else {
 			this->window()->setWindowState(Qt::WindowFullScreen);
-		}*/
+		}
 
 	}
 	// Releasing CTRL unlocks placement
@@ -592,7 +610,7 @@ void FSMSceneView::keyReleaseEvent(QKeyEvent* ke) {
 		this->getRelatedScene()->setPlaceUnlocked();
 
 		//-- Hide Lock
-		this->lockModeicon->setVisible(false);
+		this->lockIcon->setVisible(false);
 
 	}
 
@@ -623,7 +641,14 @@ void FSMSceneView::placeSetLocked() {
 }
 
 void FSMSceneView::placeSetMode(FSMDesigner::Item placeMode) {
+
+    // Setting Place mode
+    //---------------
 	((Scene*) this->scene())->setPlaceMode(placeMode);
+
+	// Update Help Panel
+	//----------------------
+	this->changeHelp();
 }
 
 

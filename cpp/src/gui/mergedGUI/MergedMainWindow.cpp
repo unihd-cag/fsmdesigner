@@ -163,10 +163,6 @@ MergedMainWindow::MergedMainWindow() :
     tabPane->connect(this->action_Redo, SIGNAL(triggered()), SLOT(redo()));
     tabPane->connect(this->action_Undo, SIGNAL(triggered()), SLOT(undo()));
 
-    //---- Normal Generate Verilog
-    tabPane->connect(this->action_GenVerilog, SIGNAL(triggered()),
-            SLOT(generateVerilog()));
-
     //---- Table
     this->connect(this->actionGlobal, SIGNAL(triggered()),
             SLOT(showGlobalTable()));

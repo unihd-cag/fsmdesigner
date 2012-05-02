@@ -80,6 +80,15 @@ class SettingValueTransporter : public QObject {
             GuiSettings::setValue(path,data);
 
         }
+
+        /**
+         * Set a boolean depending on the QCheckBox state provided
+         * @param state
+         */
+        void setCheckedData(int state) {
+
+                GuiSettings::setValue(path,state == Qt::Checked ? true : false);
+        }
 };
 
 #endif /* SETTINGVALUETRANSPORTER_H_ */

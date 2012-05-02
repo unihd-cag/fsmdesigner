@@ -103,8 +103,6 @@
      <string>&amp;Objects</string>
     </property>
     <addaction name="separator"/>
-    <addaction name="actionChoose"/>
-    <addaction name="actionRemove"/>
     <addaction name="separator"/>
     <addaction name="action_State"/>
     <addaction name="action_Transition"/>
@@ -137,10 +135,6 @@
      <addaction name="actionGenerate_SV_Project_Mnemonic_Map"/>
     </widget>
     <addaction name="separator"/>
-    <addaction name="action_Verification"/>
-    <addaction name="action_Minimize"/>
-    <addaction name="action_GenVerilog"/>
-    <addaction name="actionGenV_HDL"/>
     <addaction name="menu_Simulation"/>
     <addaction name="action_Verification_2"/>
     <addaction name="separator"/>
@@ -182,13 +176,6 @@
    <addaction name="separator"/>
    <addaction name="action_Redo"/>
    <addaction name="action_Undo"/>
-   <addaction name="separator"/>
-   <addaction name="action_Minimize"/>
-   <addaction name="action_Verification"/>
-   <addaction name="separator"/>
-   <addaction name="action_GenVerilog"/>
-   <addaction name="actionGenV_HDL"/>
-   <addaction name="separator"/>
   </widget>
   <widget class="QToolBar" name="ObjecttoolBar">
    <property name="windowTitle">
@@ -209,8 +196,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionChoose"/>
-   <addaction name="actionRemove"/>
    <addaction name="separator"/>
    <addaction name="action_State"/>
    <addaction name="action_Transition"/>
@@ -578,36 +563,6 @@
     <string>F11</string>
    </property>
   </action>
-  <action name="action_Verification">
-   <property name="icon">
-    <iconset resource="../../../src/gui/resources/resources.qrc">
-     <normaloff>:/icons/verification.png</normaloff>:/icons/verification.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Test...</string>
-   </property>
-  </action>
-  <action name="action_Minimize">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../../src/gui/resources/resources.qrc">
-     <normaloff>:/icons/minimize.png</normaloff>:/icons/minimize.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Minimize...</string>
-   </property>
-  </action>
-  <action name="action_GenVerilog">
-   <property name="icon">
-    <iconset resource="../../../src/gui/resources/resources.qrc">
-     <normaloff>:/icons/GenerateVerilog28</normaloff>:/icons/GenerateVerilog28</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;GenVerilog...</string>
-   </property>
-  </action>
   <action name="actionGlobal">
    <property name="text">
     <string>&amp;Globals...</string>
@@ -663,36 +618,6 @@
    </property>
    <property name="text">
     <string>&amp;ObjecttoolBar</string>
-   </property>
-  </action>
-  <action name="actionChoose">
-   <property name="icon">
-    <iconset resource="../../../src/gui/resources/resources.qrc">
-     <normaloff>:/icons/choose.png</normaloff>:/icons/choose.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Choose</string>
-   </property>
-   <property name="whatsThis">
-    <string>Push this button to switch to select-mode. To activate, deaktivate or move a Object on the workbench.</string>
-   </property>
-   <property name="shortcut">
-    <string>F4</string>
-   </property>
-  </action>
-  <action name="actionRemove">
-   <property name="icon">
-    <iconset resource="../../../src/gui/resources/resources.qrc">
-     <normaloff>:/icons/remove.png</normaloff>:/icons/remove.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Remove</string>
-   </property>
-   <property name="whatsThis">
-    <string>Click here to switch to delete-mode. Will delete activated object.</string>
-   </property>
-   <property name="shortcut">
-    <string>F5</string>
    </property>
   </action>
   <action name="action_Zoombar">
@@ -775,21 +700,6 @@
     <string>&amp;Export Image...</string>
    </property>
   </action>
-  <action name="actionGenV_HDL">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../../src/gui/resources/resources.qrc">
-     <normaloff>:/icons/genvhdl.png</normaloff>:/icons/genvhdl.png</iconset>
-   </property>
-   <property name="text">
-    <string>GenV&amp;HDL</string>
-   </property>
-   <property name="shortcut">
-    <string/>
-   </property>
-  </action>
   <action name="action_Generate_Testbench_VHDL">
    <property name="text">
     <string>&amp;Generate Testbench VHDL</string>
@@ -870,8 +780,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>666</x>
-     <y>64</y>
+     <x>622</x>
+     <y>67</y>
     </hint>
    </hints>
   </connection>

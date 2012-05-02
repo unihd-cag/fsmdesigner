@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Settings base="uni.hd.ziti.fsmdesigner.ui">
 
+    <Group name="General" base="general">
+    
+        <Setting name="Display Help" base="help" type="bool"></Setting>
+        
+    </Group>
+
     <Group name="Tabs" base="state">
     
         <Setting name="Position" base="tabs"></Setting>

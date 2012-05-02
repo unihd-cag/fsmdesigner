@@ -60,8 +60,8 @@ Scene::Scene(Fsm * fsm, QObject *parent) :
 	this->fsm = fsm;
 
 	//-- Place
-	this->setPlaceMode(CHOOSE);
-	this->setPlaceUnlocked();
+	this->placeMode = FSMDesigner::CHOOSE;
+	this->placeLock = FSMDesigner::UNLOCKED;
 
 	// Verification
 	//---------------

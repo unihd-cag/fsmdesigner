@@ -222,9 +222,15 @@ QRectF StateItem::boundingRect() const {
 	QRectF parent = QGraphicsItemGroup::boundingRect();
 
 	//-- Increase to match reset radius?
-	/*if (this->isVisible() && this->stateEllipse!=NULL && this->stateEllipse->resetState) {
-	 parent.adjust(-7,-7,7,7);
-	 }*/
+	if (this->isVisible() && this->stateEllipse!=NULL && model!=NULL && model->isReset()) {
+	    parent.adjust(-7,-7,7,7);
+	}
+
+	//-- If text is bigger than ourselves, adjust boundingRec
+	/*if (textrect.width() > parent.width()) {
+	    parent.setWidth(textrect.width());
+	    parent.moveLeft(textrect.width()/2);
+	}*/
 
 	return parent;
 
@@ -362,6 +368,7 @@ void StateItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event) {
 
 
 	//-- Start Editing text if we are under it
+	this->setSelected(false);
 	if (this->scene()->items(event->scenePos()).contains(this->stateText)) {
 		this->stateText->startEditing();
 	}
@@ -405,6 +412,7 @@ void StateItem::keyReleaseEvent(QKeyEvent * event) {
 	// Start Editing on F2
 	//--------------------------
 	if (event->key() == Qt::Key_F2) {
+	    this->setSelected(false);
 	    this->stateText->startEditing();
 	}
 
@@ -737,6 +745,9 @@ QList<QUndoCommand*> StateItemEllipse::remove() {
 
 StateItemText::StateItemText(QGraphicsItem* parent) : FSMGraphicsTextItem(*(new QString("String")),parent) {
 
+    this->setFlag(QGraphicsItem::ItemSendsGeometryChanges,true);
+    this->setFlag(QGraphicsItem::ItemIsFocusable,true);
+
 }
 
 StateItemText::~StateItemText() {
@@ -811,8 +822,9 @@ void StateItemText::paint(QPainter *painter,
 	QPointF correctPosition(middlex - textWidth / 2, middley - textHeight / 2);
 	if (this->pos() != correctPosition)
 		this->setPos(correctPosition);
+
 	if (this->textWidth() != textWidth)
-		this->setTextWidth(textWidth);
+		this->setTextWidth(textWidth+2);
 
 	// Delegate Text painting to parent
 	FSMGraphicsTextItem::paint(painter, option, widget);
@@ -827,6 +839,9 @@ void StateItemText::stopEditing() {
 	//-- Remove as filter
 	this->parentItem()->removeSceneEventFilter(this);
 	this->parentItem()->setFlag(ItemIsMovable,true);
+
+	//-- Do a scene repaint for Artefacts
+	this->scene()->update();
 }
 
 void StateItemText::startEditing() {

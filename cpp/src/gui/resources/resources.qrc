@@ -42,22 +42,26 @@
         <file>icons/Folder-icon.png</file>
         <file>icons/add.png</file>
         <file>icons/cancel.png</file>
-        <file>icons/Actions-arrow-left-icon.png</file>
-        <file>icons/Lock-icon.png</file>  
+        <file>icons/Actions-arrow-left-icon.png</file>      
     </qresource>
     <qresource prefix="/icons">   
         <file alias="ArrowRightGreenCircled">icons/Arrow-Right-Green-Circled.png</file>     
         <file alias="Clear-brush">icons/Actions-edit-clear-icon.png</file>
         <file alias="ExclamationMark1">icons/Exclamation-mark-icon.png</file>
         <file alias="ExclamationMark2">icons/Exclamation-mark-icon-2.png</file>
+        <file alias="Help28">icons/icon-help-28.png</file>
+        <file alias="Help32">icons/icon-help-32.png</file> 
+        <file alias="Help32Gray">icons/icon-help-32-gray.png</file>
+        <file alias="Lock64">icons/icon-lock-64.png</file>  
         <file alias="GenerateVerilog28">icons/icon-generate-verilog-28.png</file>
+        <file alias="GenerateVerilogFast28">icons/icon-generate-verilog-fast-28.png</file>
         <file alias="Rename">icons/Actions-edit-rename-icon.png</file>   
         <file alias="Save">icons/Actions-save-icon.png</file>
         <file alias="SaveAll">icons/Actions-save-all-icon.png</file>
         <file alias="SaveAs">icons/Actions-save-as-icon.png</file>
         <file alias="TableEditor16">icons/icon-table-editor-16.png</file>
         <file alias="TableEditor28">icons/icon-table-editor-28.png</file>
-    </qresource>
+    </qresource>  
     <!-- XML things -->
     <qresource prefix="/xml/">
         <file alias="shortcuts">shortcuts.xml</file>
@@ -71,5 +75,7 @@
     </qresource>
     <qresource prefix="/help/">
        <file alias="StateItem">help/StateItem.html</file>
+       <file alias="PlaceMode">help/PlaceMode.html</file>
+       <file alias="PlaceMode_State">help/PlaceMode_State.html</file>
     </qresource>  
 </RCC>
