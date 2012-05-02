@@ -60,6 +60,9 @@ class MergedMainWindow: public QMainWindow, public Ui_MergedMainWindow  {
         virtual void keyReleaseEvent ( QKeyEvent * event );
 
 
+        /// Save Geometry state
+        void closeEvent(QCloseEvent *event);
+
         /** \defgroup FileOpen Methods to open project files */
         /** @{
 

@@ -174,8 +174,8 @@
    <addaction name="action_SaveAs"/>
    <addaction name="action_Print"/>
    <addaction name="separator"/>
-   <addaction name="action_Redo"/>
    <addaction name="action_Undo"/>
+   <addaction name="action_Redo"/>
   </widget>
   <widget class="QToolBar" name="ObjecttoolBar">
    <property name="windowTitle">

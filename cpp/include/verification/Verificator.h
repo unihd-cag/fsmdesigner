@@ -51,8 +51,9 @@ class Verificator {
          * Performs Verification using all registered Rules
          * @param fsm
          * @param callbackListener
+         * @return true if no errors have been seen, false otherwise
          */
-        void verify(Fsm * fsm, VerificationListener * callbackListener);
+        bool verify(Fsm * fsm, VerificationListener * callbackListener);
 
 
 };

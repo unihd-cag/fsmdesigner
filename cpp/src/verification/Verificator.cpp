@@ -37,8 +37,9 @@ void Verificator::addRule(VerificatorRule * rule) {
         this->rules.append(rule);
 }
 
-void Verificator::verify(Fsm * fsm, VerificationListener * callbackListener) {
+bool Verificator::verify(Fsm * fsm, VerificationListener * callbackListener) {
 
+    bool result = true;
 
     // Foreach All Rules
     //--------------------------
@@ -56,6 +57,10 @@ void Verificator::verify(Fsm * fsm, VerificationListener * callbackListener) {
         // Execute
         //----------------
         QList<RuleError*> errors = rule->applyRule(fsm);
+
+        //-- if there are errors -> return false
+        if (errors.size()>0)
+            result = false;
 
         // Callback:
         //----------------
@@ -81,6 +86,8 @@ void Verificator::verify(Fsm * fsm, VerificationListener * callbackListener) {
 
     }
 
+
+    return result;
 
 }
 

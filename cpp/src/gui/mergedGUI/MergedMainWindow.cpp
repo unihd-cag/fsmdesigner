@@ -71,6 +71,11 @@ MergedMainWindow::MergedMainWindow() :
         this->restoreGeometry(savedGeometry.toByteArray());
     }
 
+    QVariant savedState = GuiSettings::value("MergedMainWindow.layout");
+    if (savedState.isValid()) {
+        this->restoreState(savedState.toByteArray());
+    }
+
     // D&D Open
     //--------------
     this->setAcceptDrops(true);
@@ -167,6 +172,7 @@ MergedMainWindow::MergedMainWindow() :
     this->connect(this->actionGlobal, SIGNAL(triggered()),
             SLOT(showGlobalTable()));
 
+
 }
 
 MergedMainWindow::~MergedMainWindow() {
@@ -178,9 +184,7 @@ void MergedMainWindow::resizeEvent(QResizeEvent * event) {
     //-- Parent handling
     QMainWindow::resizeEvent(event);
 
-    //-- Save Geometry state
-    GuiSettings::setValue("MergedMainWindow.geometry",
-            QVariant(this->saveGeometry()));
+
 
 }
 
@@ -199,6 +203,18 @@ void MergedMainWindow::keyReleaseEvent(QKeyEvent * event) {
         }
 
     }
+
+}
+
+void MergedMainWindow::closeEvent(QCloseEvent *event) {
+
+    QMainWindow::closeEvent(event);
+
+    //-- Save Geometry and state
+    GuiSettings::setValue("MergedMainWindow.geometry",
+                QVariant(this->saveGeometry()));
+    GuiSettings::setValue("MergedMainWindow.layout",
+                QVariant(this->saveState()));
 
 }
 
@@ -346,7 +362,7 @@ void MergedMainWindow::openFile(QString path) {
         // First ask the project to open
         //------------
         // (Add a .pro.xml file filter)
-        file = QFileDialog::getOpenFileName(this, "Choose a filename to load",
+        file = QFileDialog::getOpenFileName(NULL, "Choose a filename to load",
                 this->openFileLastPath, "FSMDesigner Project/FSM file (*.xml)");
 
     }

@@ -274,7 +274,7 @@ void FSMTabPane::tabSelectionChanged(int index) {
     Scene * displayedScene = NULL;
     if (index>=1) {
         displayedScene = dynamic_cast<FSMSceneView*>(this->widget(index))->getRelatedScene();
-        dynamic_cast<FSMSceneView*>(this->widget(index))->grabKeyboard();
+        dynamic_cast<FSMSceneView*>(this->widget(index))->setFocus();
     }
 
     // Maintain Pointer
