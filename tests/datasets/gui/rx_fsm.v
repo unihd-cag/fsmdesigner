@@ -13,7 +13,7 @@ wire fsm_write_data;
 wire fsm_dummy;
 wire fsm_dummy1;
 
-rx_fsm rx_fsm_I (
+rx rx_I (
 
 	//-- Inputs
 	.axi_sof(fsm_axi_sof), 
@@ -33,7 +33,7 @@ rx_fsm rx_fsm_I (
 );
 
  */
-module rx_fsm ( 
+module rx ( 
     input wire clk, 
     input wire res_n, 
 
@@ -57,7 +57,7 @@ module rx_fsm (
  );
 
 localparam Idle = 4'b0000;
-localparam Write_Header_Data = 4'b1110;
+localparam Write_Header_Data = 4'b0000;
 localparam Write_Last_data = 4'b0101;
 localparam Write_Header = 4'b1000;
 localparam Write_Data = 4'b0100;

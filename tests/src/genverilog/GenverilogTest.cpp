@@ -16,13 +16,16 @@
 //-- Boost Test
 #include <boost/test/unit_test.hpp>
 
+//-- Qt
+#include <QtCore>
+
 //-- Core
 #include <core/Project.h>
 #include <core/Core.h>
 #include <core-qxml/QXMLLoad.h>
 
 //-- Gen Verilog
-#include <genverilog/generationofverilog.h>
+#include <genverilog/VerilogGenerator.h>
 
 
 
@@ -66,13 +69,19 @@ BOOST_FIXTURE_TEST_SUITE( genverilog, PCIeXC6V)
         QXMLLoad load;
         load.load("./datasets/genverilog/pcie_bridge_xc6v_128.pro.xml");
 
+        //-- Prepare output path
+        QFile verilogFile("output/pcie_bridge_xc6v_128.rx.v");
+        verilogFile.open(QFile::Text | QFile::WriteOnly | QIODevice::Truncate);
+
+        //-- Generate
+        QDataStream outputStream(&verilogFile);
 
         //-- Generate Verilog
-        GenerationOfVerilog vlogGenerator(Core::getInstance()->getProject()->getFSMs().first(),
-                    NULL,true,true,"output/pcie_bridge_xc6v_128.rx.v","output");
+        VerilogGenerator * generator = new VerilogGenerator();
+        generator->generate(Core::getInstance()->getProject()->getFSMs().first(),&outputStream);
 
-        vlogGenerator.generateVerilog("output/pcie_bridge_xc6v_128.rx.v");
 
+        verilogFile.close();
 
     }
 

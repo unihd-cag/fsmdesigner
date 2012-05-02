@@ -76,6 +76,69 @@ void Fsm::setName(string str) {
     this->fname = str;
 }
 
+
+void Fsm::setParameter(string key,string value) {
+
+    // Get User id
+    //----------
+    string userID = User::getUserID();
+
+    // Set Parameter value
+    //----------------
+    this->setParameter(userID,key,value);
+
+
+}
+
+void Fsm::setParameter(string userID,string key,string value) {
+
+    // Get the parameters map for this user / create it
+    //------------
+    map<string,string> * parametersMap = NULL;
+    if (this->toolsParameters.count(userID) > 0) {
+        parametersMap = this->toolsParameters[userID];
+    } else {
+        this->toolsParameters[userID] =  new map<string,string>();
+        parametersMap = this->toolsParameters[userID];
+    }
+
+
+    //---- Set the parameter value
+    //---------------
+    if (value.size() == 0 && parametersMap->count(key)>0) {
+        parametersMap->erase(parametersMap->find(key));
+    } else if (value.size() > 0){
+        (*parametersMap)[key] = value;
+    }
+
+}
+
+string Fsm::getParameter(string key, string defaultValue) {
+
+    string defaultReturn = defaultValue;
+
+    // Get User id
+    //----------
+    string userID = User::getUserID();
+
+    // Get the parameters map for this user
+    //------------
+    if (this->toolsParameters.count(userID) > 0) {
+
+        map<string,string>* parametersMap = this->toolsParameters[userID];
+
+        //---- Get the parameter value
+        //---------------
+        if (parametersMap->count(key)>0) {
+            defaultReturn = (*parametersMap)[key];
+        }
+    }
+
+    return defaultReturn;
+
+}
+
+
 void Fsm::setResetState(unsigned int id) {
 
     //-- Find the actual reset state and set it to not reset
@@ -89,6 +152,10 @@ void Fsm::setResetState(unsigned int id) {
     if (this->getStatebyID(id) != NULL)
         this->getStatebyID(id)->setReset(true);
 
+}
+
+map<string , map<string,string>* >&  Fsm::getParametersMap() {
+    return this->toolsParameters;
 }
 
 void Fsm::addInput(string name,char defaultValue) {
@@ -807,7 +874,7 @@ map<unsigned int, Join*>& Fsm::getJoins() {
 Join * Fsm::getJoin(unsigned int id) {
     return this->joinsMap[id];
 }
-
+/*
 /// Path to last generated verilog source
 void Fsm::setLastGeneratedVerilogFile(string path) {
 
@@ -834,4 +901,4 @@ map<string, string> Fsm::getLastGeneratedVerilogFileMap() {
 void Fsm::addLastGeneratedVerilogFile(string user, string path) {
 
     this->lastGeneratedVerilogFile[user] = path;
-}
+}*/

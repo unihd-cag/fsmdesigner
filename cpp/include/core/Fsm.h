@@ -64,7 +64,7 @@ class Project;
 
 class Fsm {
 
-    private:
+    protected:
 
         /// The IDManager for this FSM
         IDManager idManager;
@@ -84,10 +84,10 @@ class Fsm {
         /// States Map
         map<unsigned int, State *>      statesMap;
 
-        /// FIXME Transitions Map
+        /// Transitions Map
         map<unsigned int, Trans *>      transitionsMap;
 
-        /// FIXME Links Map
+        /// Links Map
         map<unsigned int, Link *>       linksMap;
 
         /// Hypertransition Map
@@ -97,7 +97,15 @@ class Fsm {
         map<unsigned int, Join*>        joinsMap;
 
         /// Path to last generated verilog source depending on userID
-        map<string, string> lastGeneratedVerilogFile;
+        /*map<string, string> lastGeneratedVerilogFile;*/
+
+        /** A map to store parameters for tools, based on user id (to avoid conflicts)
+         *
+         * user id <-> (key >-> value )
+         *
+         * \addtogroup ToolsParameters
+         */
+        map<string, map<string,string>* > toolsParameters;
 
         /// COMMENT
         pair<string, string> globals;
@@ -116,7 +124,7 @@ class Fsm {
         Fsm(int f = 0);
         virtual ~Fsm();
 
-        /** \defgroup FSM Properties */
+        /** \defgroup FSMProperties FSM Properties */
         /** @{ */
 
         /**
@@ -265,6 +273,42 @@ class Fsm {
          \param str New name for Fsm.
          */
         void setName(string str);
+
+
+        /** @} */
+
+
+        /** \defgroup ToolsParameters Userid mapped tools parameters */
+        /** @{ */
+
+        /** Sets the value of the parameter at the given key, mapped to the user id. An empty string removes the parameter
+         *
+         * @param key
+         * @param value Removes the parameter is empty string
+         */
+        void setParameter(string key,string value);
+
+        /**  Sets the value of the parameter at the given key, mapped to the provided user id. An empty string removes the parameter
+         *
+         * @param userid
+         * @param key
+         * @param value
+         */
+        void setParameter(string userid,string key,string value);
+
+        /** Get the value of the parameter at the given key, mapped from the user id
+         *
+         * @param key
+         * @param defaultValue
+         */
+        string getParameter(string key, string defaultValue = "");
+
+        /**
+         * Returns the parameters map
+         *
+         * @return
+         */
+        map<string , map<string,string>* >& getParametersMap();
 
 
         /** @} */
@@ -665,25 +709,25 @@ class Fsm {
          * Set Path to last generated verilog source
          * @param path
          */
-        void setLastGeneratedVerilogFile(string path);
+       /* void setLastGeneratedVerilogFile(string path);*/
 
         /**
          *
          * @return The path to last generated Verilog file
          */
-        string getLastGeneratedVerilogFile();
+        /*string getLastGeneratedVerilogFile();*/
 
         /**
          * Get a copy of the complete map of last generated verilog files
          * @return map of userId <-> Path of file
          */
-        map<string, string> getLastGeneratedVerilogFileMap();
+        /*map<string, string> getLastGeneratedVerilogFileMap();*/
 
         /**
          * Add a path to the last generated files map
          *
          */
-        void addLastGeneratedVerilogFile(string user, string path);
+        /*void addLastGeneratedVerilogFile(string user, string path);*/
 
 
         /** @} */

@@ -657,7 +657,7 @@ void FSMSceneView::generateVerilog() {
     QString path = QFileDialog::getSaveFileName(this,"Choose a Verilog File to save to",location.path(),"Verilog Files (*.v)");
     if (path.length()==0)
         return;
-    fsm->setLastGeneratedVerilogFile(path.toStdString());
+    fsm->setParameter("ui.generator.verilog.lastPath",path.toStdString());
 
 	// Now that we have a last generated path -> call on reload
 	//---------------
@@ -687,7 +687,7 @@ void FSMSceneView::generateVerilogReload() {
 
 
     //-- If there is no previous recorded path -> ask for one
-    QString path = QString::fromStdString(fsm->getLastGeneratedVerilogFile());
+    QString path = QString::fromStdString(fsm->getParameter("ui.generator.verilog.lastPath",""));
     if (path.size()==0) {
 
         //-- Default path is where the FSM file is
@@ -700,7 +700,7 @@ void FSMSceneView::generateVerilogReload() {
         path = QFileDialog::getSaveFileName(this,"Choose a Verilog File to save to",location.path(),"Verilog Files (*.v)");
         if (path.length()==0)
             return;
-        fsm->setLastGeneratedVerilogFile(path.toStdString());
+        fsm->setParameter("ui.generator.verilog.lastPath",path.toStdString());
 
     }
 

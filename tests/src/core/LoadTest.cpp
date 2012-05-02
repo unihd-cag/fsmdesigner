@@ -22,8 +22,6 @@
 #include <core/Core.h>
 #include <core-qxml/QXMLLoad.h>
 
-//-- Gen Verilog
-#include <genverilog/generationofverilog.h>
 
 
 

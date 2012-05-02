@@ -367,7 +367,7 @@ void TabbedGUISceneView::updateControlPanel() {
 	//this->controlPanel->setDisabled(!Core::getInstance()->hasFsm());
 
 	//-- Update Reload tooltip
-	if (scene->getFsm() == NULL
+	/*if (scene->getFsm() == NULL
 			|| scene->getFsm()->getLastGeneratedVerilogFile().size() == 0) {
 		this->controlRegenerateVerilogButton->setToolTip(
 				"Reload the Verilog if already generated once");
@@ -376,7 +376,7 @@ void TabbedGUISceneView::updateControlPanel() {
 		str << "Reload the Verilog to: "
 				<< scene->getFsm()->getLastGeneratedVerilogFile();
 		this->controlRegenerateVerilogButton->setToolTip(str.str().c_str());
-	}
+	}*/
 
 }
 
@@ -972,50 +972,7 @@ void TabbedGUISceneView::generateVerilog() {
 
 void TabbedGUISceneView::generateVerilogReload() {
 
-	//-- Is there a previously saved path ?
-
-	// Get FSM
-	Fsm * fsm = dynamic_cast<Scene*> (this->scene())->getFsm();
-
-	//-- If no, generate Normally
-	if (fsm != NULL && fsm->getLastGeneratedVerilogFile().size() == 0) {
-		this->generateVerilog();
-	} else if (fsm != NULL) {
-
-		//-- If yes, generate Directly
-		//--------------------------------
-
-		//-- Verify
-		Verify * verifier = new Verify(fsm,this);
-
-		// Do verify
-		verifier->verifyFsm();
-		verifier->info();
-
-		// Check passed
-		if (!verifier->getVerified())
-			return;
-
-
-
-		//-- Generate
-		/*GenerationOfVerilog* veriloggen = new GenerationOfVerilog(fsm, this,
-				true, true, "");
-		veriloggen->setForwardStateDelayed(this->controlGenerateForwardDelayed->isChecked());
-		veriloggen->setForwardStateAsync(this->controlGenerateForwardAsync->isChecked());
-		veriloggen->setForwardState(this->controlGenerateForward->isChecked());
-		veriloggen->updateVerilog();
-		delete veriloggen;*/
-
-		//-- Also Generate VPlan ?
-		if (this->controlGenerateVPlan->isChecked()) {
-
-			//-- Prepare a Generator
-			//VerificationPlanGenerator vplanGenerator(fsm);
-
-		}
-
-	}
+    // FIXME
 
 }
 

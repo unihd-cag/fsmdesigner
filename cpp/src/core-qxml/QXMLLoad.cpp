@@ -202,14 +202,24 @@ void QXMLLoad::parseFSM(QDomElement fsmElement) {
 	fsm->setResetState(atoi(QXMLLoad::getAttributeValue("resetstate",fsmElement)));
 
 	//-- Generators parameters
-	QList<QDomElement> generators = QXMLLoad::getChildElements("Generators",fsmElement);
-	if (generators.size()>0) {
+	//--------------------------------------
+	QList<QDomElement> toolsParameters = QXMLLoad::getChildElements("ToolsParameters",fsmElement);
+	if (toolsParameters.size()>0) {
 
-		//-- last generated Verilog
-		QList<QDomElement> lastVerilog = QXMLLoad::getChildElements("LastGeneratedVerilogFile",generators.front());
-		for (QList<QDomElement>::iterator it=lastVerilog.begin();it!=lastVerilog.end();it++) {
-			// Add
-			fsm->addLastGeneratedVerilogFile(QXMLLoad::getAttributeValue("userid",(*it)),(*it).text().toStdString());
+		//-- Get parameters for a user
+		QList<QDomElement> userParameters = QXMLLoad::getChildElements("Parameters",toolsParameters.front());
+		for (QList<QDomElement>::iterator it=userParameters.begin();it!=userParameters.end();it++) {
+
+		    //---- Get user id
+		    string userid = QXMLLoad::getAttributeValue("userid",*it);
+
+		    //---- Get All parameters
+		    QList<QDomElement> parameters = QXMLLoad::getChildElements("Parameter",*it);
+		    for (QList<QDomElement>::iterator pit=parameters.begin();pit!=parameters.end();pit++) {
+
+		        // Record
+		        fsm->setParameter(userid,QXMLLoad::getAttributeValue("key",*pit),(*pit).text().toStdString());
+		    }
 		}
 	}
 

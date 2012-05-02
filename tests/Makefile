@@ -8,7 +8,7 @@ default_target: all
 #=============================================================================
 # Special targets provided by cmake.
 
-# Disable implicit rules so canoncical targets will work.
+# Disable implicit rules so canonical targets will work.
 .SUFFIXES:
 
 # Remove some rules from gmake that .SUFFIXES does not remove.
@@ -132,6 +132,30 @@ src/convert/convert_5.0_to_5.1Test.cpp.s:
 	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/convert/convert_5.0_to_5.1Test.cpp.s
 .PHONY : src/convert/convert_5.0_to_5.1Test.cpp.s
 
+src/core/FSMTest.o: src/core/FSMTest.cpp.o
+.PHONY : src/core/FSMTest.o
+
+# target to build an object file
+src/core/FSMTest.cpp.o:
+	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/core/FSMTest.cpp.o
+.PHONY : src/core/FSMTest.cpp.o
+
+src/core/FSMTest.i: src/core/FSMTest.cpp.i
+.PHONY : src/core/FSMTest.i
+
+# target to preprocess a source file
+src/core/FSMTest.cpp.i:
+	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/core/FSMTest.cpp.i
+.PHONY : src/core/FSMTest.cpp.i
+
+src/core/FSMTest.s: src/core/FSMTest.cpp.s
+.PHONY : src/core/FSMTest.s
+
+# target to generate assembly for a file
+src/core/FSMTest.cpp.s:
+	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/core/FSMTest.cpp.s
+.PHONY : src/core/FSMTest.cpp.s
+
 src/core/IDManagerTest.o: src/core/IDManagerTest.cpp.o
 .PHONY : src/core/IDManagerTest.o
 
@@ -240,6 +264,9 @@ help:
 	@echo "... src/convert/convert_5.0_to_5.1Test.o"
 	@echo "... src/convert/convert_5.0_to_5.1Test.i"
 	@echo "... src/convert/convert_5.0_to_5.1Test.s"
+	@echo "... src/core/FSMTest.o"
+	@echo "... src/core/FSMTest.i"
+	@echo "... src/core/FSMTest.s"
 	@echo "... src/core/IDManagerTest.o"
 	@echo "... src/core/IDManagerTest.i"
 	@echo "... src/core/IDManagerTest.s"

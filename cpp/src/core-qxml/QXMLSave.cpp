@@ -122,21 +122,32 @@ void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
 	out << f->getNumberOfOutputs();
 	out	<< "'>" << endl;
 
-	//-- Generators parameters
+	//-- Tools parameters
+	//--  * Only write out for a user if the parameters map is not empty
 	//---------------------------------
-	out << "<Generators>" << endl;
+	out << "    " << "<ToolsParameters>" << endl;
 
-		//-- Last Generated Verilog files
-		map<string,string> generatedVerilogPaths = f->getLastGeneratedVerilogFileMap();
+	    map<string , map<string,string>* >& usersParametersMap = f->getParametersMap();
+	    //map<string , map<string,string>& >::iterator parametersId = parametersMap.begin()
+	    for (map<string , map<string,string>* >::iterator it = usersParametersMap.begin() ; it != usersParametersMap.end() ; it++  ) {
 
-		for (map<string,string>::iterator it = generatedVerilogPaths.begin();it!=generatedVerilogPaths.end();it++) {
+	        string user = (*it).first;
+            map<string,string>* parametersMap = (*it).second;
+            if (parametersMap->size()>0)
+                out << "    " << "    <Parameters userid=\""<< (*it).first <<"\">" << endl;
 
-			out << "<LastGeneratedVerilogFile userid=\""<< (*it).first <<"\">"<<(*it).second << "</LastGeneratedVerilogFile>"<<endl ;
+	        // Write out Map for user
+	        //-----------------
+	        for (map<string,string>::iterator pit = parametersMap->begin() ; pit != parametersMap->end() ; pit++  ) {
+	            out << "    " << "         <Parameter key=\""<< (*pit).first <<"\">"<< (*pit).second << "</Parameter>"<<endl ;
+	        }
 
-		}
+	        if (parametersMap->size()>0)
+	            out << "    " << "    </Parameters>" << endl;
 
+	    }
 
-	out << "</Generators>"<<endl;
+	out << "    " << "</ToolsParameters>"<<endl;
 
 	// Export parameters
 	//-----------------------
