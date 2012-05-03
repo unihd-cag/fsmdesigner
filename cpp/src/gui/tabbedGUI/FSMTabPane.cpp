@@ -92,7 +92,7 @@ void FSMTabPane::settingsChanged() {
 	} else if (tabPos.toString() == "Left") {
 		this->setTabPosition(QTabWidget::West);
 	}
-	this->update();
+	//this->update();
 
 }
 

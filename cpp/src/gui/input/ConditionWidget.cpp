@@ -119,13 +119,7 @@ void ConditionWidget::sceneSelectionChanged() {
 
 void ConditionWidget::conditionSelected(int index) {
 
-	int newid = 0;
-
-	//-- If it gets empty, return to 0 for security
-	if (index!=-1)
-		newid = index;
-
 	//-- Set the right condition to edit on input widget
-	dynamic_cast<InputModel*>(this->inputwidget.model())->setConditionID(newid);
+	dynamic_cast<InputModel*>(this->inputwidget.model())->setConditionID(index);
 	this->inputwidget.doItemsLayout();
 }

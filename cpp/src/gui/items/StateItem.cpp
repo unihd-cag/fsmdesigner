@@ -58,16 +58,15 @@ StateItem::StateItem(State * model, QGraphicsItem * parent) :
 	//-------------------------------
 
 	// Create TextItem
-	this->stateText = new StateItemText(this);
+	this->stateText = new StateItemText();
 	this->stateText->setVisible(true);
 	this->stateText->setZValue(2);
+	this->addToGroup(this->stateText);
 
 	// Create Ellipse
 	this->stateEllipse = new StateItemEllipse(QRectF(0, 0, 50, 50));
 	this->stateEllipse->setVisible(true);
 	this->stateEllipse->setZValue(1);
-
-	this->addToGroup(this->stateText);
 	this->addToGroup(this->stateEllipse);
 
 	// Set movable and selectable
@@ -108,12 +107,12 @@ void StateItem::modelChanged() {
 
 		//-- Update reset states and so on
 	    this->stateText->setPlainText(QString::fromStdString(this->getModel()->getName()));
-        this->stateText->update();
+        //this->stateText->update();
 		this->setToolTip("Output: "+QString::fromStdString(this->getModel()->getOutput()));
 
 	}
 
-	this->update();
+	//this->update();
 
 }
 
@@ -168,7 +167,7 @@ void StateItem::setText(QString s) {
 	// Record text
 	this->model->setName(s.toStdString());
 	this->stateText->setPlainText(s);
-	this->stateText->update();
+	//this->stateText->update();
 
 	//-- Reevaluate and reposition the text in the middle
 
@@ -772,17 +771,19 @@ bool StateItemText::recordText() {
 void StateItemText::paint(QPainter *painter,
 		const QStyleOptionGraphicsItem *option, QWidget *widget) {
 
+    painter->save();
+
 	// Antialiasing
-	painter->setRenderHint(QPainter::Antialiasing);
+	//painter->setRenderHint(QPainter::Antialiasing);
 
 	// Apply opacity
-	painter->setOpacity(this->effectiveOpacity());
+	//painter->setOpacity(this->effectiveOpacity());
 
 	// Draw text background
 	//---------------------
 
 	// Translate to middle of bounding rect
-	painter->save();
+
 	painter->setOpacity(0.5);
 	painter->translate(this->boundingRect().width() / 2,
 			this->boundingRect().height() / 2);
@@ -812,19 +813,19 @@ void StateItemText::paint(QPainter *painter,
 	painter->drawRoundRect(QRect(-textWidth / 2, -textHeight / 2, textWidth,
 			textHeight), 10, 10);
 
+
 	painter->restore();
+
 
 	// Replace the text if necessary
 	//-----------
-
 	int middlex = 50 / 2;
 	int middley = 50 / 2;
 	QPointF correctPosition(middlex - textWidth / 2, middley - textHeight / 2);
-	if (this->pos() != correctPosition)
+	if (this->pos() != correctPosition) {
 		this->setPos(correctPosition);
+	}
 
-	if (this->textWidth() != textWidth)
-		this->setTextWidth(textWidth+2);
 
 	// Delegate Text painting to parent
 	FSMGraphicsTextItem::paint(painter, option, widget);
@@ -837,8 +838,11 @@ void StateItemText::stopEditing() {
 	FSMGraphicsTextItem::stopEditing();
 
 	//-- Remove as filter
-	this->parentItem()->removeSceneEventFilter(this);
-	this->parentItem()->setFlag(ItemIsMovable,true);
+	if (this->parentItem()!=NULL) {
+	    this->parentItem()->removeSceneEventFilter(this);
+	    this->parentItem()->setFlag(ItemIsMovable,true);
+	    this->parentItem()->setFlag(ItemIsSelectable,true);
+	}
 
 	//-- Do a scene repaint for Artefacts
 	this->scene()->update();
@@ -852,6 +856,7 @@ void StateItemText::startEditing() {
 	//-- Set ourselves as filter
 	this->parentItem()->installSceneEventFilter(this);
 	this->parentItem()->setFlag(ItemIsMovable,false);
+	this->parentItem()->setFlag(ItemIsSelectable,false);
 }
 
 bool StateItemText::sceneEventFilter ( QGraphicsItem * watched, QEvent * event ) {

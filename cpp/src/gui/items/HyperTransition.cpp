@@ -60,20 +60,19 @@ HyperTransition::~HyperTransition() {
 
 void HyperTransition::paint(QPainter *painter,
 		const QStyleOptionGraphicsItem *option, QWidget *widget) {
-	//Q3CanvasEllipse::drawShape(painter);
+
 	painter->setRenderHint(QPainter::Antialiasing);
 	QGraphicsEllipseItem::paint(painter, option, widget);
-	if (isSelected()) {
+
+	/*if (isSelected()) {
 		painter->setPen(Qt::black);
 		painter->setBrush(Qt::black);
 		painter->drawRect(-(int) (rect().width() / 2) - 1, -1, 2, 2);
 		painter->drawRect((int) (rect().width() / 2) - 1, -1, 2, 2);
 		painter->drawRect(-1, -(int) (rect().height() / 2) - 1, 2, 2);
 		painter->drawRect(-1, (int) (rect().height() / 2) - 1, 2, 2);
-	}
-#ifdef DEBUGITEMS
-	// cout << "HyperTransition at x: " << (int)x() << " y: " << (int)y() << " id " << id <<endl;
-#endif
+	}*/
+
 }
 
 void HyperTransition::mouseReleaseEvent(QGraphicsSceneMouseEvent * event) {

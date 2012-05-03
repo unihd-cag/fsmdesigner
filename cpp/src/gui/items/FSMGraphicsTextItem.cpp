@@ -40,6 +40,8 @@ FSMGraphicsTextItem::FSMGraphicsTextItem(QString &qs, QGraphicsItem* parent) :
 	this->editorStartTime = NULL;
 	this->setTextCursor(QTextCursor(this->document()));
 
+
+
 	//this->setTextInteractionFlags(Qt::TextEditorInteraction);
 }
 
@@ -67,16 +69,11 @@ void FSMGraphicsTextItem::startEditing() {
 	//-- Store time
 	this->editorStartTime = new QDateTime(QDateTime::currentDateTime());
 	this->editorStartTime->time().start();
-
-
-	qDebug() << " Start Editing " << endl;
-
+	//qDebug() << " Start Editing " << endl;
 
 	//-- Allow text editing
-   // this->setSelected(false);
+    this->setSelected(false);
     this->setTextInteractionFlags(Qt::TextEditable | Qt::TextEditorInteraction);
-    this->grabKeyboard();
-    this->update();
 
 	//-- Start Editing
 	QTextCursor cursor = this->textCursor();
@@ -84,6 +81,11 @@ void FSMGraphicsTextItem::startEditing() {
 	cursor.setPosition(0);
 	cursor.select(QTextCursor::Document);
 	this->setTextCursor(cursor);
+
+	//-- No Wrapping of text to keep one line
+    QTextOption option = this->document()->defaultTextOption();
+    option.setWrapMode(QTextOption::NoWrap);
+    this->document()->setDefaultTextOption(option);
 
 
 
@@ -98,20 +100,16 @@ void FSMGraphicsTextItem::stopEditing() {
 	// Check a minimum delay between editable mode entering and deselection
 	if (this->editorStartTime !=NULL && this->editorStartTime->time().elapsed()>300) {
 
-		qDebug() << " Stop editing " << endl;
+		//qDebug() << " Stop editing " << endl;
 
 		//-- Disable edition
 		QTextCursor cursor = this->textCursor();
 		cursor.clearSelection();
-		//cursor.endEditBlock();
 		this->setTextCursor(cursor);
 
 		this->setTextInteractionFlags(Qt::NoTextInteraction);
 		delete (this->editorStartTime);
 		this->editorStartTime = NULL;
-
-		this->ungrabKeyboard();
-
 
 		//-- Record text
 		this->recordText();
@@ -137,7 +135,7 @@ void FSMGraphicsTextItem::keyPressEvent(QKeyEvent * event) {
 
 		// Adjust size
 		this->adjustSize();
-		//this->update();
+
 	}
 
 }
@@ -151,9 +149,6 @@ void FSMGraphicsTextItem::keyReleaseEvent(QKeyEvent * event) {
    if (event->key() == Qt::Key_F2) {
        this->startEditing();
    }
-
-
-
 
 }
 

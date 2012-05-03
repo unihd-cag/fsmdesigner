@@ -64,7 +64,7 @@ InputModel::InputModel(QObject* parent) :
 	QAbstractItemModel(parent), ItemsRelatedEditor() {
 
 	//-- Init
-	this->conditionID = 0;
+	this->conditionID = -1;
 
 }
 
@@ -123,7 +123,8 @@ QVariant InputModel::data(const QModelIndex& index, int role) const {
 			}
 		}
 		// SECOND COLUMN (Selected condition)
-		if ((index.column() == 1) && ((role == Qt::EditRole) || (role
+		//------------------
+		if ((index.column() == 1) && this->conditionID>=0 && ((role == Qt::EditRole) || (role
 				== Qt::DisplayRole))) {
 
 		    Condition * condition = trans->getConditionByID(this->conditionID);
@@ -181,7 +182,7 @@ bool InputModel::setData(const QModelIndex& index, const QVariant& value,
 		char cs[255];
 
 		// Second Column of Transition
-		if ((index.column() == 1) && (editingItemType == FSMDesigner::TRANS)) {
+		if ((index.column() == 1) && this->conditionID>=0 && (editingItemType == FSMDesigner::TRANS)) {
 
 			QVariant vv = value;
 

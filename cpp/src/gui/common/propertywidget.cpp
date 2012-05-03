@@ -216,6 +216,7 @@ void PropertyWidget::selectionUpdated() {
         return;
 
 
+
 	//-- Get First selected Item in list
 	QList<QGraphicsItem*> selectedItems =
 			this->getRelatedScene()->selectedItems();

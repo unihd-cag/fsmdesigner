@@ -296,6 +296,7 @@ void InputWidget::selectionUpdated() {
     if (this->getRelatedScene()==NULL)
         return;
 
+
 	//-- Get First selected Item in list
 	QList<QGraphicsItem*> selectedItems = this->getRelatedScene()->selectedItems();
 	if (selectedItems.length() == 0) {
@@ -323,6 +324,7 @@ void InputWidget::selectionUpdated() {
 				dynamic_cast<InputModel*> (this->model())->editNone();
 				dynamic_cast<InputDelegate*> (this->itemDelegate())->editNone();
 
+				break;
 			}
 		}
 

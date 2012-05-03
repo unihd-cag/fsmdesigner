@@ -362,7 +362,7 @@ void MergedMainWindow::openFile(QString path) {
         // First ask the project to open
         //------------
         // (Add a .pro.xml file filter)
-        file = QFileDialog::getOpenFileName(NULL, "Choose a filename to load",
+        file = QFileDialog::getOpenFileName(this, "Choose a filename to load",
                 this->openFileLastPath, "FSMDesigner Project/FSM file (*.xml)");
 
     }

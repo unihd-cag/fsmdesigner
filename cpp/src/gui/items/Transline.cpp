@@ -372,7 +372,7 @@ void Transline::paint(QPainter *painter,
 
     painter->save();
 	painter->setRenderHint(QPainter::Antialiasing);
-	painter->setOpacity(this->opacity());
+	painter->setOpacity(this->effectiveOpacity());
 
 	//option->levelOfDetail
 

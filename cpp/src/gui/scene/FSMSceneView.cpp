@@ -329,7 +329,8 @@ void FSMSceneView::changeHelp() {
 
 void FSMSceneView::drawForeground(QPainter * painter, const QRectF & rect) {
 
-
+    //-- Parent Job
+    QGraphicsView::drawForeground (painter, rect ) ;
 
 	if (this->areaSelectionInitial == NULL)
 			return;
@@ -352,16 +353,15 @@ void FSMSceneView::drawForeground(QPainter * painter, const QRectF & rect) {
 	// Do paint
 	QBrush brush(Qt::Dense1Pattern);
 	brush.setColor(Qt::gray);
-	//painter->save();
+	painter->save();
 	painter->setOpacity(0.15);
 	painter->setBrush(brush);
 	painter->setPen(QPen(Qt::DashLine));
 	painter->drawPath(path);
-	//painter->restore();
+	painter->restore();
 
 
-	//-- Parent Job
-	QGraphicsView::drawForeground (painter, rect ) ;
+
 
 }
 
@@ -382,20 +382,27 @@ void FSMSceneView::mouseMoveEvent(QMouseEvent* e) {
 	//----------------
 	if (this->areaSelectionInitial != NULL) {
 
+	    // hold previous area
+	    QPainterPath oldArea = this->scene()->selectionArea();
+
 		// Convert position to scene coordinates
 		QPointF initialOnScene = this->mapToScene(
 				this->areaSelectionInitial->toPoint());
 		QPointF currentOnScene = this->mapToScene(e->pos());
 
 		// Painter path to selection
-		QPainterPath* selectionPath = new QPainterPath(initialOnScene);
-		selectionPath->addRoundRect(initialOnScene.x(), initialOnScene.y(),
+		QPainterPath selectionPath = QPainterPath(initialOnScene);
+		selectionPath.addRoundRect(initialOnScene.x(), initialOnScene.y(),
 				currentOnScene.x() - initialOnScene.x(), currentOnScene.y()
 						- initialOnScene.y(), 10);
-		this->scene()->setSelectionArea(*selectionPath);
+		this->scene()->setSelectionArea(selectionPath);
 
-		this->scene()->update();
-
+		// Update on biggest area between new and old one
+		//----------------
+		if (selectionPath.boundingRect().contains(oldArea.boundingRect()))
+		    this->scene()->update(selectionPath.boundingRect());
+		else
+		    this->scene()->update(oldArea.boundingRect());
 	}
 }
 
@@ -406,8 +413,8 @@ void FSMSceneView::mouseReleaseEvent(QMouseEvent* e) {
 
 	//-- Deactivate areaSelection
 	if (this->areaSelectionInitial != NULL) {
+	    this->scene()->update(this->scene()->selectionArea().boundingRect());
 		delete this->areaSelectionInitial;
-		this->scene()->update();
 	}
 	this->areaSelectionInitial = NULL;
 

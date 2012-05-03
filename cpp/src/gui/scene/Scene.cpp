@@ -87,8 +87,7 @@ void Scene::initializeScene() {
 	//------------------
 
 	//-- Get current FSM to draw
-	Core& core = *(Core::getInstance());
-	Fsm * currentFSM = this->getFsm();
+	Fsm * currentFSM =this->fsm;
 
 	// Prepare some datas
 	//------------------------------
