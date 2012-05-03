@@ -77,7 +77,7 @@ void TrackpointBaseItem::setStartItem(QGraphicsItem * item) {
 	if (FSMGraphicsItem<>::isTrackPoint(item)) {
 
 		//-- Our start is a trackpoint, if it was not one previously, we can remove our previous
-		if (!FSMGraphicsItem<>::isTrackPoint(this->getStartItem())) {
+		if (!FSMGraphicsItem<>::isTrackPoint(this->getStartItem()) && this->getPreviousTransline()!=NULL) {
 			this->getPreviousTransline()->setVisible(false);
 			this->setPreviousTransline(NULL);
 		}
