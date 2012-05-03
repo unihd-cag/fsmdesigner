@@ -107,21 +107,23 @@ QVariant InputModel::data(const QModelIndex& index, int role) const {
 	int nInputs;
 	nInputs = relatedScene->getFsm()->getNumberOfInputs();
 
+	// First Column -> Names ( Always displayed)
+    //-------------------
+    if ((index.column() == 0) && ((role == Qt::EditRole) || (role
+                    == Qt::DisplayRole))) {
+
+          return QString::fromStdString(relatedScene->getFsm()->getInputName(index.row()));
+
+    }
+
 	// Do nothing if index is invalid or no condition has been selected
 	if (!index.isValid() || this->conditionID==-1)
 	    return QVariant();
 
-	// First Column -> Names
-	//-------------------
-	if ((index.column() == 0) && ((role == Qt::EditRole) || (role
-	                == Qt::DisplayRole))) {
 
-          return QString::fromStdString(relatedScene->getFsm()->getInputName(index.row()));
-
-	}
-	// Second Column
+	// Second Column -> Data (only if a condition is selected)
 	//--------------------
-	else if ((index.column() == 1) && ((role == Qt::EditRole) || (role
+	if ((index.column() == 1) && ((role == Qt::EditRole) || (role
             == Qt::DisplayRole))) {
 
 	    //----- Transition
