@@ -54,6 +54,7 @@ using namespace std;
 #include <gui/items/StateItem.h>
 #include <gui/items/Transline.h>
 #include <gui/items/LinkDeparture.h>
+#include <gui/items/HyperTransition.h>
 
 #include <gui/common/propertywidget.h>
 #include <gui/common/propertiesmodel.h>
@@ -87,9 +88,10 @@ void PropertyWidget::contextMenuEvent(QContextMenuEvent* e) {
 
 	QMenu * contextMenu = new QMenu(this);
 
-	//-- Transition or hypertrans
+	//-- Transition or hypertrans (conditions)
 	if (dynamic_cast<PropertiesModel*> (this->model())->getEditingItemType()
-			== FSMDesigner::TRANS) {
+			== FSMDesigner::TRANS || dynamic_cast<PropertiesModel*> (this->model())->getEditingItemType()
+            == FSMDesigner::HYPERTRANS) {
 
 		//-- Transition
 		Trans
@@ -120,19 +122,6 @@ void PropertyWidget::contextMenuEvent(QContextMenuEvent* e) {
         //-- Show Menu
 		contextMenu->exec(e->globalPos());
 
-	} else if (dynamic_cast<PropertiesModel*> (this->model())->getEditingItemType()
-			== FSMDesigner::HYPERTRANS) {
-
-		//-- Link
-		Hypertrans
-				* transition =
-						(Hypertrans*) dynamic_cast<PropertiesModel*> (this->model())->getEditingItem();
-
-		contextMenu->addAction(addCondiToHtrans);
-		contextMenu->addAction(deleteCondiOfHtrans);
-		deleteCondiOfHtrans->setEnabled(true);
-
-		contextMenu->exec(e->globalPos());
 	}
 }
 
@@ -146,7 +135,7 @@ void PropertyWidget::createActions() {
 
 
 	connect(this->addCondiToTrans, SIGNAL(triggered()), this,
-				SLOT(addConditionToTransition()));
+				SLOT(addConditionToTransitionBase()));
 
 
 	deleteCondiOfTrans = new QAction(this);
@@ -156,25 +145,8 @@ void PropertyWidget::createActions() {
 			"Delete Condition", 0, QApplication::UnicodeUTF8));
 
 	connect(this->deleteCondiOfTrans, SIGNAL(triggered()), this,
-					SLOT(deleteConditionFromTransition()));
+					SLOT(deleteConditionFromTransitionBase()));
 
-	addCondiToHtrans = new QAction(this);
-	addCondiToHtrans->setObjectName(QString::fromUtf8("CondiToHtrans"));
-	addCondiToHtrans->setEnabled(true);
-	addCondiToHtrans->setText(QApplication::translate("PropertyWidget",
-			"Add Condition", 0, QApplication::UnicodeUTF8));
-
-	connect(this->addCondiToHtrans, SIGNAL(triggered()), this,
-					SLOT(addConditionToHyperTransition()));
-
-	deleteCondiOfHtrans = new QAction(this);
-	deleteCondiOfHtrans->setObjectName(QString::fromUtf8("deleteCondiOfHtrans"));
-	deleteCondiOfHtrans->setEnabled(true);
-	deleteCondiOfHtrans->setText(QApplication::translate("PropertyWidget",
-			"Delete Condition", 0, QApplication::UnicodeUTF8));
-
-	connect(this->deleteCondiOfHtrans, SIGNAL(triggered()), this,
-					SLOT(deleteConditionFromHyperTransition()));
 
 }
 
@@ -268,6 +240,17 @@ void PropertyWidget::selectionUpdated() {
                 this->doItemsLayout();
 
                 break;
+
+            } else if (firstSelected->type() == HyperTransition::Type && FSMGraphicsItem<>::toHyperTransition(firstSelected)->getModel()!=NULL) {
+
+                dynamic_cast<PropertiesModel*> (this->model())->editHypertrans(
+                        dynamic_cast<HyperTransition*> (firstSelected));
+                dynamic_cast<PropertiesDelegate*> (this->itemDelegate())->editHypertrans(
+                        dynamic_cast<HyperTransition*> (firstSelected));
+
+                this->doItemsLayout();
+
+                break;
             } else {
 
 				//-- Nothing Special, edit none
@@ -288,25 +271,40 @@ void PropertyWidget::selectionUpdated() {
 
 }
 
-void PropertyWidget::addConditionToTransition() {
+void PropertyWidget::addConditionToTransitionBase() {
 
-	//-- Transition
-	Transline
-			* transition =
-					(Transline*) dynamic_cast<PropertiesModel*> (this->model())->getEditingItem();
-	transition->getModel()->addCondition(this->getRelatedScene()->getFsm()->getNumberOfInputs());
+    //-- Get model
+    TransitionBase * transitionBase = NULL;
+    if (dynamic_cast<PropertiesModel*> (this->model())->getEditingItemType()
+            == FSMDesigner::TRANS) {
+        transitionBase = ((Transline*)(dynamic_cast<PropertiesModel*> (this->model())->getEditingItem()))->getModel();
+    } else {
+        transitionBase = ((HyperTransition*)(dynamic_cast<PropertiesModel*> (this->model())->getEditingItem()))->getModel();
+    }
+
+	//-- Add
+    transitionBase->addCondition(this->getRelatedScene()->getFsm()->getNumberOfInputs());
 
 	//-- Update
 	this->doItemsLayout();
 
 }
-void PropertyWidget::deleteConditionFromTransition() {
+void PropertyWidget::deleteConditionFromTransitionBase() {
 
+    //-- the number of rows depends on item
+    int numberofBaserows = 0;
 
-	//-- Transition
-	Transline
-			* transition =
-					(Transline*) dynamic_cast<PropertiesModel*> (this->model())->getEditingItem();
+    //-- Get model
+    TransitionBase * transitionBase = NULL;
+    if (dynamic_cast<PropertiesModel*> (this->model())->getEditingItemType()
+            == FSMDesigner::TRANS) {
+        transitionBase = ((Transline*)(dynamic_cast<PropertiesModel*> (this->model())->getEditingItem()))->getModel();
+        numberofBaserows = 5;
+    } else {
+        transitionBase = ((HyperTransition*)(dynamic_cast<PropertiesModel*> (this->model())->getEditingItem()))->getModel();
+        numberofBaserows = 4;
+    }
+
 
 	//-- Get ID of condition to be deleted
 	QModelIndexList selected = this->selectedIndexes();
@@ -316,10 +314,12 @@ void PropertyWidget::deleteConditionFromTransition() {
 	//-- Get Row
 	int row = selected.first().row();
 
+
+
 	//-- There are 5 rows + 2 per condition
 	int conditionposition = -1;
-	if (row>4) {
-		conditionposition = ((row-4)-1)/2;
+	if (row>(numberofBaserows-1)) {
+		conditionposition = ((row-(numberofBaserows-1))-1)/2;
 	}
 
 	if (conditionposition==-1)
@@ -327,7 +327,7 @@ void PropertyWidget::deleteConditionFromTransition() {
 
 
 	//-- Delete
-	DeleteConditionAction * deleteCondition = new DeleteConditionAction(transition->getModel(),transition->getModel()->getConditionByID(conditionposition));
+	DeleteConditionAction * deleteCondition = new DeleteConditionAction(transitionBase,transitionBase->getConditionByID(conditionposition));
 	getRelatedScene()->getUndoStack()->push(deleteCondition);
 
 	//-- Update
@@ -336,9 +336,3 @@ void PropertyWidget::deleteConditionFromTransition() {
 
 }
 
-void PropertyWidget::addConditionToHyperTransition() {
-
-}
-void PropertyWidget::deleteConditionFromHyperTransition() {
-
-}

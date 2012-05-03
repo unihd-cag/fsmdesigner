@@ -276,7 +276,7 @@ QVariant StateItem::itemChange(GraphicsItemChange change,
 
 				//-- Look if model loops
 				//-- Transition might not have a model if we are adding it
-				if (tr->getModel()==NULL || (tr->getModel()->getStartState() != tr->getModel()->getEndState()))
+				if (tr->getModel()==NULL || (((Trans*)tr->getModel()))->getStartState() !=  (((Trans*)tr->getModel()))->getEndState())
 					continue;
 
 				//-- Calculate Dx/Dy
@@ -306,8 +306,8 @@ QVariant StateItem::itemChange(GraphicsItemChange change,
 
 				//-- Move text with it
 				QGraphicsItem* textItem = this->scene()->itemAt(
-						tr->getModel()->getTextPosition().first,
-						tr->getModel()->getTextPosition().second);
+				        (((Trans*)tr->getModel()))->getTextPosition().first,
+				        (((Trans*)tr->getModel()))->getTextPosition().second);
 				if (textItem != NULL) {
 					textItem->moveBy(dx, dy);
 				}
@@ -603,9 +603,9 @@ QRectF StateItemEllipse::boundingRect() const {
 	QRectF parent = QGraphicsEllipseItem::boundingRect();
 
 	//-- Increase to match reset radius?
-	if (model!=NULL && model->isReset()) {
+	/*if (model!=NULL && model->isReset()) {
 		parent.adjust(-7, -7, 7, 7);
-	}
+	}*/
 
 	return parent;
 
@@ -774,10 +774,10 @@ void StateItemText::paint(QPainter *painter,
     painter->save();
 
 	// Antialiasing
-	//painter->setRenderHint(QPainter::Antialiasing);
+	painter->setRenderHint(QPainter::Antialiasing);
 
 	// Apply opacity
-	//painter->setOpacity(this->effectiveOpacity());
+	painter->setOpacity(this->effectiveOpacity());
 
 	// Draw text background
 	//---------------------

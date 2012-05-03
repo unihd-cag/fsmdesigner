@@ -31,6 +31,10 @@ using namespace std;
 #include <gui/scene/Scene.h>
 #include <gui/settings/GuiSettings.h>
 #include <gui/items/FSMGraphicsItem.h>
+#include <gui/items/Transline.h>
+
+//-- Actions
+#include <gui/actions/DeleteHyperTransitionAction.h>
 
 #include "HyperTransition.h"
 
@@ -39,14 +43,12 @@ HyperTransition::HyperTransition(Hypertrans * model) :
 
 	// Item Flags
     //--------------------
-	setFlags(ItemIsMovable | ItemIsSelectable);
+	setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsScenePositionChanges | ItemSendsGeometryChanges);
 	setToolTip("HyperTransition");
 
 	// Set Model
 	//--------------
-	if (model==NULL) {
-	    model = new Hypertrans();
-	}
+	this->outgoingTransition = NULL;
 	this->setModel(model);
 
 	// Default Rectangle view
@@ -82,15 +84,6 @@ void HyperTransition::mouseReleaseEvent(QGraphicsSceneMouseEvent * event) {
 	QGraphicsEllipseItem::mouseReleaseEvent(event);
 
 
-	// Record position modification
-	if (this->recordPosition()==true) {
-
-		// Rebuild
-		//scene()->update();
-		//((View*) this->scene()->views()[0])->redraw();
-
-	}
-
 }
 
 QVariant HyperTransition::itemChange(GraphicsItemChange change,
@@ -108,6 +101,24 @@ QVariant HyperTransition::itemChange(GraphicsItemChange change,
 			this->setOpacity(1.0);
 		}
 	}
+	else if (change ==QGraphicsItem::ItemPositionHasChanged) {
+
+	    //-- Update transition line
+	    if (this->outgoingTransition!=NULL) {
+	        this->outgoingTransition->preparePath();
+	    }
+
+	    //-- Record position
+	    this->recordPosition();
+
+	} else if (change ==QGraphicsItem::ItemSceneHasChanged && this->scene()==NULL) {
+
+	    //-- Removed from scene, remove transline too
+	    if (this->outgoingTransition != NULL) {
+	        delete this->outgoingTransition;
+	    }
+
+	}
 
 	return QGraphicsItem::itemChange(change, value);
 
@@ -116,7 +127,35 @@ QVariant HyperTransition::itemChange(GraphicsItemChange change,
 bool HyperTransition::recordPosition() {
 
 	// Test if we have to record
-	this->getModel()->setPosition(make_pair(this->pos().x(), this->pos().y()));
+    if (this->getModel()!=NULL)
+        this->getModel()->setPosition(make_pair(this->pos().x(), this->pos().y()));
 
 	return true;
 }
+
+void HyperTransition::modelChanged() {
+
+    if (this->getModel()!=NULL) {
+
+        //-- Update position
+        this->setPos(this->getModel()->getPosition().first,this->getModel()->getPosition().second);
+
+    }
+
+}
+
+void HyperTransition::setOutgoingTransition(Transline *transition) {
+    this->outgoingTransition = transition;
+}
+
+QList<QUndoCommand*> HyperTransition::remove(QUndoCommand * parentCommand) {
+
+    QList<QUndoCommand*> res;
+
+
+    //-- Use delete action
+    DeleteHyperTransitionAction * deleteAction = new DeleteHyperTransitionAction(this,parentCommand);
+    res.append(deleteAction);
+
+    return res;
+ }

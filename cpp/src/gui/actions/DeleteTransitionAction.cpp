@@ -84,7 +84,7 @@ void DeleteTransitionAction::redo(){
     //----------------------
 
     //-- First find the start of the transition
-    Trans * transition = this->item->getModel();
+    Trans * transition = (Trans*)this->item->getModel();
     Transline * first = this->getRelatedScene()->findTransline(transition).first();
 
     //qDebug() << "-- *I: first type: " << first->getStartItem();
@@ -197,17 +197,17 @@ void DeleteTransitionAction::undo(){
 
     // Model
     //----------------------
-    this->getRelatedScene()->getFsm()->addTrans(this->item->getModel());
+    this->getRelatedScene()->getFsm()->addTrans((Trans*)this->item->getModel());
 
     // Gui
     // Rebuild the complete transition
     //------------
 
     // Get Trans & start state
-    Trans * transition = this->item->getModel();
+    Trans * transition = (Trans*)this->item->getModel();
     Transline * lastTransitionLine = NULL;
 
-    State * currentState = this->item->getModel()->getStartState();
+    State * currentState  =transition->getStartState();
     StateItem * stateItem = this->getRelatedScene()->findStateItem(currentState);
 
     Fsm * currentFSM = this->getRelatedScene()->getFsm();

@@ -34,6 +34,7 @@ using namespace std;
 #include <gui/items/StateItem.h>
 #include <gui/items/JoinItem.h>
 #include <gui/items/TranslineText.h>
+#include <gui/items/HyperTransition.h>
 
 #include <common/SGC.h>
 
@@ -42,7 +43,7 @@ using namespace std;
 
 #include "Transline.h"
 
-Transline::Transline(Trans * model, QGraphicsItem * startItem,
+Transline::Transline(TransitionBase * model, QGraphicsItem * startItem,
 		QGraphicsItem * endItem) :
 	QGraphicsPathItem() {
 
@@ -104,7 +105,7 @@ void Transline::preparePath(bool propagate) {
 		 )
 		)
 		this->drawArrow = false;
-	else if (this->getEndItem() != NULL && (this->getEndItem()->type() == StateItem::Type || this->getEndItem()->type() == JoinItem::Type )) {
+	else if (this->getEndItem() != NULL) {
 		this->drawArrow = true;
 	}
 
@@ -136,7 +137,8 @@ void Transline::preparePath(bool propagate) {
 	//-- Check start item
 	if (this->startItem->type() == StateItem::Type  ||
 		this->startItem->type() == TrackpointItem::Type ||
-		this->startItem->type() == LinkArrival::Type) {
+		this->startItem->type() == LinkArrival::Type ||
+		this->startItem->type() == HyperTransition::Type) {
 
 		int reduce = this->startItem->boundingRect().width() / 2;
 		reduce += 3;
@@ -252,7 +254,7 @@ void Transline::preparePath(bool propagate) {
 		newpen.setWidth(width);
 		this->setPen(newpen);
 
-		if (this->getModel() != NULL && this->getModel()->isDefault() == true) {
+		if (this->getModel() != NULL && ((Trans*)this->getModel())->isDefault() == true) {
 			QPen np = QPen(this->pen());
 			np.setStyle(Qt::DashDotDotLine);
 			np.setWidth(this->pen().width() + 1);
@@ -304,14 +306,18 @@ void Transline::setStartItem(QGraphicsItem * item) {
 	// Record
 	this->startItem = item;
 
-	//-- If start was an item, add to list of outgoing Transitions
+	//-- If start is a  State item, add to list of outgoing Transitions
 	if (startItem != NULL && startItem->type() == StateItem::Type) {
 		qgraphicsitem_cast<StateItem*> (startItem)->addOutgoingTransition(this);
 	}
-	//-- If start was a Join Point, set as Outgoing transition
+	//-- If start is a Join Point, set as Outgoing transition
 	else if (startItem != NULL && startItem->type() == JoinItem::Type) {
 			qgraphicsitem_cast<JoinItem*> (startItem)->setOutgoingTransition(this);
 	}
+	//-- If start is a Join Point, set as Outgoing transition
+    else if (startItem != NULL && startItem->type() == HyperTransition::Type) {
+            qgraphicsitem_cast<HyperTransition*> (startItem)->setOutgoingTransition(this);
+    }
 
 	// If no Start and no end, we have to delete ourselves
 	// Otherwise draw
@@ -374,7 +380,6 @@ void Transline::paint(QPainter *painter,
 	painter->setRenderHint(QPainter::Antialiasing);
 	painter->setOpacity(this->effectiveOpacity());
 
-	//option->levelOfDetail
 
 	painter->setPen(this->pen());
 	painter->setBrush(this->brush());
@@ -384,7 +389,6 @@ void Transline::paint(QPainter *painter,
 
 	painter->restore();
 	return;
-	//return QGraphicsPathItem::paint(painter,option,widget);
 }
 
 void Transline::modelChanged() {
@@ -398,9 +402,9 @@ void Transline::modelChanged() {
 
 		// Try to Update text
         //--------------------
-        if (this->scene()!=NULL) {
+        if (this->scene()!=NULL && this->getModel()!=NULL) {
             Scene * scene = dynamic_cast<Scene*>(this->scene());
-            TranslineText * text= scene->findTranslineText(this->getModel());
+            TranslineText * text= scene->findTranslineText(((Trans*)this->getModel()));
             if (text!=NULL) {
                 text->modelChanged();
             } else {

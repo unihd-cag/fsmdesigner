@@ -49,6 +49,7 @@ using namespace std;
 //--Core
 #include <core/UniqueIDObject.h>
 #include <core/Condition.h>
+#include <core/TransitionBase.h>
 class Trackpoint;
 class State;
 
@@ -58,7 +59,7 @@ class State;
  Object to store Transitions with all needed parameters.
  */
 
-class Trans : public UniqueIDObject {
+class Trans :  public TransitionBase {
 
 protected:
 
@@ -83,12 +84,6 @@ protected:
     pair<double, double>    textpos;
 
 
-	/// The conditions vector
-	vector<Condition*>       cv;
-
-	/// The list of trackpoints
-	vector<Trackpoint*>      tl;
-
 
 public:
 	Trans(State * start, State * end);
@@ -109,9 +104,6 @@ public:
 	int getColor() ;
 	void setColor(int color);
 
-    string getName() ;
-    void setName(string name);
-
     bool isDefault() ;
     void setDefault(bool d);
 
@@ -131,7 +123,8 @@ public:
 
     /** @} */
 
-
+    /** \defgroup Conditions Conditions management */
+    /** @{ */
 
 #define FOREACH_TRANSITION_CONDITIONS(transition) \
      for (vector<Condition*>::iterator it = transition->getConditions().begin();it!=transition->getConditions().end();it++) { \
@@ -139,54 +132,8 @@ public:
 
 #define END_FOREACH_TRANSITION_CONDITIONS }
 
-    /**
-     * Returns all the conditions that are set on this transition
-     * @return A reference to the internal vector, to allow modification
-     */
-    vector<Condition*>& getConditions();
 
-    /**
-     * Get the Condition at the id position
-     * @param id
-     * @return
-     */
-    Condition * getConditionByID(unsigned int id);
-
-    /*!
-	 \brief addCondition
-
-	 Function to add Condition to Trans.
-	 \param numberOfInputBits Number of inputbits.
-
-	 @return The added condition
-	 */
-    Condition * addCondition(int numberOfInputBits);
-
-    /**
-     * Add an existing condition object at the specified position
-     * @param condition
-     * @param position
-     * @return The pointer provided as input
-     * @throw invalid_argument if the condition pointer was NULL
-     */
-    Condition* addCondition(Condition * condition,unsigned int position);
-
-    /*!
-	 \brief deleteCondition
-
-	 Delete Condition by ID.
-	 \param id ID to delete associated %Condition.
-	 */
-    void deleteCondition(unsigned int id);
-
-    /**
-     * Delete provided condition at pointer
-     * @param condition
-     * @return The index of the deleted condition
-     * @throw invalid_argument if the condition pointer was not found in conditions list
-     */
-    unsigned int deleteCondition(Condition * condition);
-
+    /** @} */
 
     /** \defgroup Trackpoints Trackpoints Utilities */
     /** @{ */
@@ -197,67 +144,6 @@ public:
 
 #define END_FOREACH_TRANSITION_TRACKPOINTS }
 
-    /**
-     * Returns trackpoints list
-     * @return A reference to the list of trackpoint, to be able to modify
-     */
-    vector<Trackpoint*>& getTrackpoints();
-
-
-    /**
-	 * Add a trackpoint at the given position, first in the list
-	 * @param posx
-	 * @param posy
-	 */
-    Trackpoint *addFirstTrackpoint(double posx, double posy);
-
-    /**
-	 * Add a trackpoint as last in the list
-	 * @param trackpoint
-	 * @return the newly added trackpoint
-	 */
-    Trackpoint *appendTrackpoint(double posx, double posy);
-
-    /**
-	 * Add an existing trackpoint as last in the list
-	 * @param The trackpoint
-	 * @return the newly added trackpoint
-	 */
-    Trackpoint *appendTrackpoint(Trackpoint*);
-
-    /**
-	 * Add a trackpoint in the list after the specified
-	 * @param posx
-	 * @param posy
-	 * @param
-	 * @return the newly added trackpoint
-	 */
-    Trackpoint *addTrackpointBefore(Trackpoint*, double posx, double posy);
-
-    /**
-	 * Add a trackpoint in the list after the specified
-	 *
-	 * @param baseTrackpoint The Trackpoint to insert before
-	 * @param newTrackpoint The new Trackpoint
-	 * @return
-	 */
-    Trackpoint *addTrackpointBefore(Trackpoint *baseTrackpoint, Trackpoint *newTrackpoint);
-
-    /*!
-	 \brief deleteTrackpoint
-
-	 Delete Trackpoint by ID.
-	 \param id ID to delete associated %Trackpoint.
-	 @return The Trackpoint right after the deleted one, or NULL if none
-	 */
-    Trackpoint *deleteTrackpoint(unsigned int id);
-    /**
-	 * Removes the provided Trackpoint from this Trans.
-	 * @warning Does not delete the object!!
-	 * @param trackpoint
-	 * @return The Trackpoint right after the deleted one, or NULL if none
-	 */
-    Trackpoint *deleteTrackpoint(Trackpoint *trackpoint);
 
     /** @} */
 

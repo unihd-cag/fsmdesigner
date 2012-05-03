@@ -149,24 +149,6 @@ void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
 
 	out << "    " << "</ToolsParameters>"<<endl;
 
-	// Export parameters
-	//-----------------------
-	/*
-	 *
-	 * <ExportParameters>
-	 * 	<User uid="">
-	 * 		<Engine type="PNG">
-	 * 			<OutputFile></OutputFile>
-	 * 			<Resolution width="" height""/>
-	 * 		</Engine type="PNG">
-	 * 	</User>
-	 *
-	 * </ExportParameters>
-	 *
-	 *
-	 */
-
-
 	//---------------------------------//
 
 	out << "    <globals>" << endl;
@@ -267,6 +249,10 @@ void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
 			out << "        <type>" << hypertransition->getType() << "</type>"
 					<< endl;
 
+			//-- Write name
+			out << "        <name><![CDATA[" << hypertransition->getName() << "]]></name>";
+
+			//-- Write Conditions
 			FOREACH_HYPERTRANSITION_CONDITIONS(hypertransition)
                 out << "        <condition>" << endl;
                 out << "            <cname><![CDATA["

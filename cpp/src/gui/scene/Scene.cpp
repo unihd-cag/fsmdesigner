@@ -20,6 +20,7 @@ using namespace std;
 #include <gui/actions/DeleteJoinAction.h>
 #include <gui/actions/DeleteLinkArrivalAction.h>
 #include <gui/actions/DeleteTransitionAction.h>
+#include <gui/actions/DeleteHyperTransitionAction.h>
 
 //-- Others
 #include <gui/common/GUIUtils.h>
@@ -95,6 +96,7 @@ void Scene::initializeScene() {
 	//-- Created items map (id<->object), and Join map
 	map<int, StateItem*> itemsMap;
 	map<int,JoinItem*> joinsMap;
+
 
 
 	// Place Joins
@@ -185,7 +187,7 @@ void Scene::initializeScene() {
 			}
 
 			//-- Use Undo to place on the scene
-			Transline * lineToAdd = new Transline(transition);
+			Transline * lineToAdd = new Transline((TransitionBase*)transition);
 			DeleteTransitionAction * undoTransition = new DeleteTransitionAction(lineToAdd);
 			//undoTransition->setStartItem(stateItem);
 			//undoTransition->setEndItem(endStateItem);
@@ -210,8 +212,22 @@ void Scene::initializeScene() {
         undoLinkArrival->setRelatedScene(this);
         undoLinkArrival->undo();
 
-
 	END_FOREACH_LINKS
+
+	// Place Hypertransitions
+    //---------------------------
+    FOREACH_HYPERTRANSITIONS(this->fsm)
+
+        //-- Prepare Item
+        HyperTransition * hypertransitionItem = new HyperTransition(hypertransition);
+
+        //-- Use undo to place on the scene
+        DeleteHyperTransitionAction * undoHypertransition = new DeleteHyperTransitionAction(hypertransitionItem);
+        undoHypertransition->setRelatedScene(this);
+        undoHypertransition->undo();
+        delete undoHypertransition;
+
+    END_FOREACH_HYPERTRANSITIONS
 
 
 }
@@ -372,7 +388,8 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
 			// Place trackpoint (not for hypertransition!)
 			//---------------
-			if (itemUnder == NULL && this->placeTransitionStack.size() > 0 ) {
+			if (itemUnder == NULL && this->placeTransitionStack.size() > 0
+			                      && this->placeTransitionStack.back()->type()!=FSMGraphicsItem<>::HYPERTRANS ) {
 
 				//-- Nothing under, add a trackpoint between last item on stack, and nothing
 				TrackpointItem * item = new TrackpointItem(new Trackpoint(e->scenePos().x(), e->scenePos().y(), 0),
@@ -465,7 +482,7 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 					//-- Update eventual transition going to this join to the new target
 					QList<Transline*>  incoming = FSMGraphicsItem<>::toJoinItem(this->placeTransitionStack.back())->getIncomingTransitions();
 					for (QList<Transline*>::iterator it = incoming.begin();it != incoming.end(); it++) {
-						(*it)->getModel()->setEndState(FSMGraphicsItem<>::toStateItem(this->placeTransitionStack.front())->getModel());
+						((Trans *)(*it)->getModel())->setEndState(FSMGraphicsItem<>::toStateItem(this->placeTransitionStack.front())->getModel());
 					}
 
 				} else if (stateToJoin) {
@@ -535,7 +552,7 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 				//--------------------------
 				if (stateToState || stateToJoin) {
 					TranslineText * translineText = new TranslineText(QString(
-					        transition->getName().c_str()),lastTransline->getModel());
+					        transition->getName().c_str()),(Trans*)lastTransline->getModel());
 
 
 					//-- Place in between the two state
@@ -553,7 +570,28 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 				this->setPlaceMode(CHOOSE);
 
 			} // End State to State finish--/
+			// hypertransition to State
+			//--------------------
+			else if (hypertransitionToState) {
 
+			    //-- Update Hypertransition model to target the state
+                State * targetState = FSMGraphicsItem<>::toStateItem(this->placeTransitionStack.front())->getModel();
+                FSMGraphicsItem<>::toHyperTransition(this->placeTransitionStack.back())->getModel()->setTargetState(targetState);
+
+                //-- Add Transline
+                Transline * transline = new Transline(NULL,
+                                            this->placeTransitionStack.back(), this->placeTransitionStack.front());
+                this->addItem(transline);
+
+                //-- Clean
+                // All items to be placed have been placed
+                this->placeTransitionStack.clear();
+                this->setPlaceMode(CHOOSE);
+
+                //-- Mark end of transition
+                endOfTransition = true;
+
+			}
 
 			// End of transition or add a new Transition that follow the mouse
 			//------------------------------------------------------
@@ -720,12 +758,17 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
 
             //-- Add To FSM
+            Hypertrans * hypertransitionModel = this->getFsm()->addHypertrans();
+            hypertransition->setModel(hypertransitionModel);
             this->getFsm()->addHypertrans(hypertransition->getModel());
 
+            //-- Place centered on mouse
+            hypertransitionModel->setPosition(pair<double,double>(e->scenePos().x(),e->scenePos().y()));
+            hypertransition->setPos(e->scenePos().x(),e->scenePos().y());
 
             // Ask user to target a state
             //----------------------------------------
-            /*
+
             // Start Transline Placement
             //--------------------
 
@@ -735,9 +778,9 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
             //-- Add a transline to position, and start transition placement modus
             Transline * beginTransline = new Transline(NULL,hypertransition,NULL);
             this->addToToPlaceStack(beginTransline);
-    */
+
             //-- END
-            this->setPlaceMode(CHOOSE);
+            this->setPlaceMode(TRANS);
 
             break;
 
@@ -853,7 +896,11 @@ void Scene::keyReleaseEvent(QKeyEvent * keyEvent) {
 
 				undoCommands = dynamic_cast<LinkArrival*> (*it)->remove();
 
-			}
+			} else if ((*it)->type() == HyperTransition::Type) {
+
+                undoCommands = dynamic_cast<HyperTransition*> (*it)->remove();
+
+            }
 
 			//-- Add gathered Undo commands to stack
 			for (QList<QUndoCommand*>::iterator cit = undoCommands.begin(); cit

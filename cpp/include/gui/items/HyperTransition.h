@@ -28,31 +28,53 @@ using namespace std;
 //-- Gui
 #include <gui/items/FSMGraphicsItem.h>
 
-class HyperTransition : public QGraphicsEllipseItem, public FSMGraphicsItem<Hypertrans> {
+class HyperTransition: public QGraphicsEllipseItem, public FSMGraphicsItem<
+        Hypertrans> {
 
-public:
+    protected:
 
-    enum { Type = FSMGraphicsItem<>::HYPERTRANS };
-    int type() const { return Type;}
+    public:
 
-    HyperTransition(Hypertrans * model = NULL);
-    virtual ~HyperTransition();
+        enum {
+            Type = FSMGraphicsItem<>::HYPERTRANS
+        };
 
-    void paint(QPainter *painter,
-               const QStyleOptionGraphicsItem *option, QWidget *widget);
+    protected:
 
-    virtual bool recordPosition() ;
+        /// The transition line coming out of this join point
+        Transline* outgoingTransition;
+
+    public:
+        HyperTransition(Hypertrans * model = NULL);
+        virtual ~HyperTransition();
+
+        int type() const {
+            return Type;
+        }
+
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                QWidget *widget);
+
+        virtual bool recordPosition();
+
+        virtual void modelChanged();
 
 
-protected:
-    /// When mouse is released, activate selection, and validate new position
-	virtual void		mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+        void setOutgoingTransition(Transline *);
 
-	/**
-	 * Overriden to detect selection changes and thus painting parameters
-	 */
-	virtual QVariant 	itemChange ( GraphicsItemChange change, const QVariant & value );
+
+        virtual QList<QUndoCommand*> remove(QUndoCommand * parentComand = NULL);
+
+
+    protected:
+        /// When mouse is released, activate selection, and validate new position
+        virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * event);
+
+        /**
+         * Overriden to detect selection changes and thus painting parameters
+         */
+        virtual QVariant itemChange(GraphicsItemChange change,
+                const QVariant & value);
 };
-
 
 #endif /* HYPERTRANSITION_H_ */

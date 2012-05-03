@@ -30,7 +30,7 @@ class DeleteConditionAction : public ObjectFocusedAction<Condition> {
     protected:
 
         /// The transition we are deleting from
-        Trans * transition;
+        TransitionBase * transition;
 
         /// The position at which the condition was (to allow reinserting)
         unsigned int position;
@@ -41,7 +41,7 @@ class DeleteConditionAction : public ObjectFocusedAction<Condition> {
          * Default constructor
          * Must refer to a scene
          */
-        DeleteConditionAction(Trans * transition,Condition *,QUndoCommand * parentCommand = NULL);
+        DeleteConditionAction(TransitionBase * transition,Condition *,QUndoCommand * parentCommand = NULL);
 
         /**
          * Default Destructor

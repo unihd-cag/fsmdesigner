@@ -19,6 +19,7 @@ using namespace std;
 
 //-- Core
 class Trans;
+class TransitionBase;
 
 //-- Qt
 #include <QtCore>
@@ -28,7 +29,8 @@ class Trans;
 #include <gui/items/FSMGraphicsItem.h>
 class TrackpointItem;
 
-class Transline: public QGraphicsPathItem, public FSMGraphicsItem<Trans> {
+
+class Transline: public QGraphicsPathItem, public FSMGraphicsItem<TransitionBase> {
 
     protected:
 
@@ -49,7 +51,7 @@ class Transline: public QGraphicsPathItem, public FSMGraphicsItem<Trans> {
          * @param startItem
          * @param endItem
          */
-        Transline(Trans * model = NULL, QGraphicsItem * startItem = NULL,
+        Transline(TransitionBase * model = NULL, QGraphicsItem * startItem = NULL,
                 QGraphicsItem * endItem = NULL);
         virtual ~Transline();
 

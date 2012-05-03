@@ -18,8 +18,7 @@ include(${QT_USE_FILE})
 
 ##########################################
 # Compilation Parameters
-##########################################
-       
+########################################## 
       
 ## Enable CCACHE and DISTCC
 #set(CMAKE_CXX_COMPILER ccache)

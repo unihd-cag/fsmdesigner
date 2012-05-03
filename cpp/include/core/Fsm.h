@@ -416,6 +416,14 @@ class Fsm {
          */
         Trans * deleteTrans(Trans * trans);
 
+
+        /**
+         * Adds a new Hypertransition to the FSM.
+         * @see #addHypertrans(Hypertrans*)
+         * @return
+         */
+        Hypertrans * addHypertrans();
+
         /**
          * Adds an existing Hypertrans object to the FSM
          *
@@ -425,6 +433,16 @@ class Fsm {
          */
         Hypertrans * addHypertrans(Hypertrans * hypertrans);
 
+
+        /**
+         * Remove the provided hypertransition from this FSM
+         *
+         * @warning Does not delete memory!
+         * @param hypertransition
+         * @return
+         */
+        Hypertrans* deleteHypertrans(Hypertrans* hypertransition);
+
         /*!
          \brief deleteHypertrans
 
@@ -433,7 +451,6 @@ class Fsm {
 
          @return A pointer to the deleted Hyper transition
          */
-
         Hypertrans* deleteHypertrans(unsigned int id);
 
 

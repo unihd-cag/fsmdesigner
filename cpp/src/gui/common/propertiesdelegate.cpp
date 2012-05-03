@@ -338,7 +338,7 @@ void PropertiesDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 			const_cast<QAbstractItemModel*>(index.model())->setData(index,reset,Qt::EditRole);
 
 			//-- Update UI
-			QList<Transline *> translines = relatedScene->findTransline(static_cast<Transline*>(editingItem)->getModel());
+			QList<Transline *> translines = relatedScene->findTransline((Trans*)static_cast<Transline*>(editingItem)->getModel());
 			for (QList<Transline *>::iterator it=translines.begin();it!=translines.end();it++)
 				(*it)->preparePath();
 

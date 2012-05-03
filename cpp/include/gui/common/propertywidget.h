@@ -46,8 +46,7 @@ Q_OBJECT
 public:
 	QAction* addCondiToTrans;
 	QAction* deleteCondiOfTrans;
-	QAction* addCondiToHtrans;
-	QAction* deleteCondiOfHtrans;
+
 
 	PropertyWidget(QWidget* w);
 
@@ -69,12 +68,8 @@ public Q_SLOTS:
 	/** \defgroup Properties Actions to be executed on model */
 	/**@{ */
 
-	void addConditionToTransition();
-	void deleteConditionFromTransition();
-
-	void addConditionToHyperTransition();
-	void deleteConditionFromHyperTransition();
-
+	void addConditionToTransitionBase();
+	void deleteConditionFromTransitionBase();
 
 
 	/** @} */

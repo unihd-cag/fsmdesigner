@@ -57,10 +57,10 @@ void ChangeTransitionStartAction::redo(){
     this->item = deleteTransition->getItem();
 
     //-- Save Actual End State
-    State * actualStartState = this->item->getModel()->getStartState();
+    State * actualStartState = ((Trans*)this->item->getModel())->getStartState();
 
     //-- Set Target state on model
-    this->item->getModel()->setStartState(this->targetState);
+    ((Trans*)this->item->getModel())->setStartState(this->targetState);
 
     //-- Readd
     deleteTransition->undo();
@@ -79,10 +79,10 @@ void ChangeTransitionStartAction::undo(){
     this->item = deleteTransition->getItem();
 
     //-- Save Actual End State
-    State * actualStartState = this->item->getModel()->getStartState();
+    State * actualStartState = ((Trans*)this->item->getModel())->getStartState();
 
     //-- Set Target state on model
-    this->item->getModel()->setStartState(this->targetState);
+    ((Trans*)this->item->getModel())->setStartState(this->targetState);
 
     //-- Readd
     deleteTransition->undo();

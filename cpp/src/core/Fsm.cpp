@@ -671,6 +671,16 @@ Trans * Fsm::deleteTrans(Trans * trans) {
 }
 
 
+Hypertrans * Fsm::addHypertrans() {
+
+    //-- Create a new hypertrans
+    Hypertrans * hypertransition = new Hypertrans();
+
+    //-- Add and return
+    return this->addHypertrans(hypertransition);
+
+}
+
 Hypertrans * Fsm::addHypertrans(Hypertrans * hypertrans) {
 
     //-- If already in the FSM, don't add
@@ -686,12 +696,11 @@ Hypertrans * Fsm::addHypertrans(Hypertrans * hypertrans) {
     return hypertrans;
 }
 
-Hypertrans* Fsm::deleteHypertrans(unsigned int id) {
+Hypertrans* Fsm::deleteHypertrans(Hypertrans* hypertransition) {
 
     //-- Check exists
-    Hypertrans* hypertransition = this->getHypertransbyID(id);
-    if (hypertransition==NULL) {
-        throw invalid_argument("Cannot delete hypertransition with id "+Utils::itos(id)+" because it is not registered in the FSM");
+    if (hypertransition==NULL || !hypertransition->isIdSet()) {
+        throw invalid_argument("Cannot delete non existing hypertransition (NULL or not registered in FSM)");
     }
 
     //-- Remove from Map
@@ -701,6 +710,13 @@ Hypertrans* Fsm::deleteHypertrans(unsigned int id) {
     this->idManager.derefenceObject(hypertransition);
 
     return hypertransition;
+
+}
+Hypertrans* Fsm::deleteHypertrans(unsigned int id) {
+
+    //-- Call Pointer version of function
+    return this->deleteHypertrans(this->getHypertransbyID(id));
+
 
 }
 

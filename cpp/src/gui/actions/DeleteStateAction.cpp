@@ -65,7 +65,7 @@ void DeleteStateAction::redo(){
 
         //-- If Incoming if also outgoing (loopback), then do not double remove
         Transline * t = this->item->getIncomingTransitions().takeFirst();
-        if (t->getModel()!=NULL && t->getModel()->getStartState() != t->getModel()->getEndState())
+        if (t->getModel()!=NULL && ((Trans*)t->getModel())->getStartState() != ((Trans*)t->getModel())->getEndState())
             t->remove(this);
 
     }

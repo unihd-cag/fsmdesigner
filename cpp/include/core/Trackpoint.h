@@ -45,7 +45,7 @@
 using namespace std;
 
 //-- Core
-class Trans;
+class TransitionBase;
 
 /*!
  \brief Trackpoint-object
@@ -59,7 +59,7 @@ class Trackpoint {
     protected:
 
         /// The transition this trackpoint is related to
-        Trans *         transition;
+        TransitionBase *         transition;
 
         /// Is the trackpoint a link
         bool            link;
@@ -79,16 +79,16 @@ class Trackpoint {
 
     public:
 
-        Trackpoint(double posx, double posy,Trans * transition = NULL);
+        Trackpoint(double posx, double posy,TransitionBase * transition = NULL);
         virtual ~Trackpoint();
 
 
         /** \defgroup Properties */
         /** @{ */
 
-        Trans * getTransition();
+        TransitionBase * getTransition();
 
-        void setTransition(Trans * transition);
+        void setTransition(TransitionBase * transition);
 
         /**
          * @warning Not a reference! Modifying the result will not modify the source

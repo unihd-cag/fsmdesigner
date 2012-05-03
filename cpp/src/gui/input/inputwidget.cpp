@@ -41,6 +41,7 @@
 
 #include <gui/items/StateItem.h>
 #include <gui/items/Transline.h>
+#include <gui/items/HyperTransition.h>
 
 #include <gui/input/inputmodel.h>
 #include <gui/input/inputdelegate.h>
@@ -318,7 +319,13 @@ void InputWidget::selectionUpdated() {
 				dynamic_cast<InputDelegate*> (this->itemDelegate())->editTransline(dynamic_cast<Transline*>(firstSelected));
 
 				break;
-			} else {
+			} else if (firstSelected->type()==HyperTransition::Type && FSMGraphicsItem<>::toHyperTransition(firstSelected)->getModel()!=NULL) {
+
+                dynamic_cast<InputModel*> (this->model())->editHypertrans(dynamic_cast<HyperTransition*>(firstSelected));
+                dynamic_cast<InputDelegate*> (this->itemDelegate())->editHypertrans(dynamic_cast<HyperTransition*>(firstSelected));
+
+                break;
+            } else {
 
 				//-- Nothing Special, edit none
 				dynamic_cast<InputModel*> (this->model())->editNone();

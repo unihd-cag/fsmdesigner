@@ -20,7 +20,7 @@ using namespace std;
 #include <QtCore>
 
 //-- Core
-#include <core/Trans.h>
+#include <core/TransitionBase.h>
 #include <core/Condition.h>
 
 //-- Actions
@@ -32,7 +32,7 @@ using namespace std;
 
 #include "DeleteConditionAction.h"
 
-DeleteConditionAction::DeleteConditionAction(Trans * transition,Condition * object,QUndoCommand * parentCommand) :ObjectFocusedAction(object,parentCommand) {
+DeleteConditionAction::DeleteConditionAction(TransitionBase * transition,Condition * object,QUndoCommand * parentCommand) :ObjectFocusedAction(object,parentCommand) {
     this->object = object;
     this->transition = transition;
     this->position = 0;

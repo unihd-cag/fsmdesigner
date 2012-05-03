@@ -44,6 +44,7 @@ using namespace std;
 #include <core/Hypertrans.h>
 #include <core/Trackpoint.h>
 
+#include <core/Utils.h>
 
 //-- Gui
 #include <gui/scene/Scene.h>
@@ -96,8 +97,7 @@ int PropertiesModel::rowCount(const QModelIndex& parent) const {
 		return 0;
 	}
 
-	Fsm& fsm = *(relatedScene->getFsm());
-	int rows;
+	int rows = 0;
 
 	switch (editingItemType) {
 
@@ -141,12 +141,15 @@ int PropertiesModel::rowCount(const QModelIndex& parent) const {
 
 QVariant PropertiesModel::data(const QModelIndex& index, int role) const {
 
-	Fsm& ff = *(relatedScene->getFsm());
 	string s;
 	QString qs;
 	int ia;
 	int i;
 	stringstream ss;
+
+	// Shielding a bit
+	if (relatedScene==NULL || relatedScene->getFsm()==NULL)
+	    return QVariant();
 
 
 	// Return Data Depending on the Edited Item
@@ -233,7 +236,7 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const {
 	else if (editingItemType == FSMDesigner::TRANS) {
 
 		//-- Get Model
-		Trans * trans = static_cast<Transline*>(editingItem)->getModel();
+		Trans * trans = (Trans*)static_cast<Transline*>(editingItem)->getModel();
 
 		//---- Name Columns
 		//--------------------
@@ -320,7 +323,10 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const {
 			}
 		} // EOF Data columns
 
-	} // EOF Transition
+	}
+	// EOF Transition
+	// Link departure
+    //-------------------
 	else if (editingItemType == FSMDesigner::LINKDEPARTURE) {
 
 	    //-- Get Model
@@ -359,215 +365,98 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const {
 
 
 	}
+	// Hypertransition
+    //-------------------
+	else if (editingItemType == FSMDesigner::HYPERTRANS) {
 
+	    //-- Get Model
+        Hypertrans * hypertrans = static_cast<HyperTransition*>(editingItem)->getModel();
+
+        //---- Name Columns
+        //--------------------
+        if (index.column()==0 && isEditOrDisplayRole) {
+
+            switch (index.row()) {
+                case PropertiesDelegate::ROW_HTRANS_TYPE:
+                    return QString("Item");
+                    break;
+                case PropertiesDelegate::ROW_HTRANS_NAME:
+                    return QString("Name");
+                    break;
+                case PropertiesDelegate::ROW_HTRANS_END:
+                    return QString("Target");
+                    break;
+                case PropertiesDelegate::ROW_HTRANS_HTYPE:
+                    return QString("Type");
+                    break;
+                default:
+                    if (index.row() < rowCount(QModelIndex())) {
+                        if ((index.row() % 2) == 0) {
+                            return QString("CName");
+                        } else {
+                            return QString("CValue");
+                        }
+                    }
+                break;
+            }
+
+        }
+        //---- Data Columns
+        //--------------------------
+        else if (index.column()==1) {
+
+            switch (index.row()) {
+                case PropertiesDelegate::ROW_HTRANS_TYPE: {
+                    return QString("HyperTransition");
+                    break;
+                }
+                case PropertiesDelegate::ROW_HTRANS_NAME: {
+                    return QString::fromStdString(hypertrans->getName());
+                }
+                case PropertiesDelegate::ROW_HTRANS_END: {
+                    switch (role) {
+                        case Qt::EditRole:
+                            return hypertrans->getTargetState()->getId();
+                            break;
+                        case Qt::DisplayRole:
+                            return QString::fromStdString(hypertrans->getTargetState()->getName());
+                            break;
+                    }
+                    break;
+                }
+                case PropertiesDelegate::ROW_HTRANS_HTYPE: {
+                    if (hypertrans->getType()) {
+                        qs = "all_states";
+                    } else {
+                        qs = "rest_states";
+                    }
+                    return qs;
+                    break;
+                }
+                default: {
+                    //-- Remaining are Conditions
+                    int conditionRowsCount = hypertrans->getConditions().size()*2;
+                    int remainingRows = this->rowCount()-index.row();
+                    int beginPosition = conditionRowsCount-remainingRows;
+                    int conditionId = (beginPosition - beginPosition%2) / 2;
+
+                    // Name
+                    if ((remainingRows % 2) == 0) {
+
+                        return QString::fromStdString(hypertrans->getConditionByID(conditionId)->getName());
+                    }
+                    // Value
+                    else {
+                        return QString::fromStdString(hypertrans->getConditionByID(conditionId)->getInput());
+                    }
+                }
+                break;
+            }
+        }
+
+	}
 	//-- Return result
 	return result;
-
-
-
-
-
-	switch (index.column()) {
-	// FIRST COLUMN
-	//-------------------------
-	case 0: {
-
-		//---- Output depending on Item Type
-		//----------------------------------
-		switch (role) {
-		case Qt::EditRole:
-		case Qt::DisplayRole:
-			switch (editingItemType) {
-
-			//-- Link
-			case FSMDesigner::LINKDEPARTURE: {
-				switch (index.row()) {
-				case 0:
-					return QString("Item");
-					break;
-				case 1:
-					return QString("ID");
-					break;
-				case 2:
-					return QString("Target");
-					break;
-				case 3:
-					return QString("Color");
-					break;
-				default:
-					break;
-				}
-			}
-			//-- HyperTransition
-			case FSMDesigner::HYPERTRANS: {
-
-				switch (index.row()) {
-				case 0:
-					return QString("Item");
-					break;
-				case 1:
-					return QString("ID");
-					break;
-				case 2:
-					return QString("Target");
-					break;
-				case 3:
-					return QString("Type");
-					break;
-				default:
-					if (index.row() < rowCount(QModelIndex())) {
-						if ((index.row() % 2) == 0) {
-							return QString("CName");
-						} else {
-							return QString("CValue");
-						}
-					}
-					break;
-				}
-		} // EOF HTRANS
-		default:
-			break;
-		} // EOF Item type switch
-
-		break;
-	} // EOF Role switch
-
-	break;
-	} // EOF First column
-
-
-	// Second Column
-	//------------------------
-	case 1: {
-
-		//---- Output depending on item type
-		//------------------------------------
-		switch (role) {
-
-		case Qt::EditRole:
-		case Qt::DisplayRole:
-			switch (editingItemType) {
-
-
-			//-- Link
-			case FSMDesigner::LINKDEPARTURE: {
-
-				switch (index.row()) {
-					case 0: {
-						return QString("Link");
-						break;
-					}
-					case 1: {
-						i = 0;
-						ss << i;
-						s = ss.str();
-						qs = QString::fromStdString(s);
-						return qs;
-						break;
-					}
-					case 2: {
-						switch (role) {
-							case Qt::EditRole:
-								i = static_cast<LinkDeparture*>(editingItem)->getModel()->getTargetLink();
-								return i;
-								break;
-							case Qt::DisplayRole:
-								i = static_cast<LinkDeparture*>(editingItem)->getModel()->getTargetLink();
-								qs = QString::fromStdString(relatedScene->getFsm()->getStatebyID(i)->getName());
-								return qs;
-								break;
-						}
-						break;
-					}
-					case 3: {
-						i = (int) static_cast<LinkDeparture*>(editingItem)->getModel()->getColor();
-						QColor c = QColor::fromRgb((unsigned int) i);
-						QVariant v = c;
-						return v;
-						break;
-					}
-					default: {
-						break;
-					}
-				}
-			} // EOF Link
-
-			//-- Hypertrans
-			case FSMDesigner::HYPERTRANS: {
-
-				switch (index.row()) {
-					case 0: {
-						return QString("HyperTransition");
-						break;
-					}
-					case 1: {
-						i = static_cast<HyperTransition*>(editingItem)->getModel()->getId();
-						ss << i;
-						s = ss.str();
-						qs = QString::fromStdString(s);
-						return qs;
-						break;
-					}
-					case 2: {
-						switch (role) {
-							case Qt::EditRole:
-								return static_cast<HyperTransition*>(editingItem)->getModel()->getTargetState()->getId();
-								break;
-							case Qt::DisplayRole:
-								return QString::fromStdString(static_cast<HyperTransition*>(editingItem)->getModel()->getTargetState()->getName());
-								break;
-						}
-					}
-					case 3: {
-						if (static_cast<HyperTransition*>(editingItem)->getModel()->getType()) {
-							qs = "all_states";
-						} else {
-							qs = "rest_states";
-						}
-						return qs;
-						break;
-					}
-					default: {
-						if (index.row() < rowCount(QModelIndex())) {
-						    // FIXME
-//							if (relatedScene->getFsm()->getHypertransFirstCondition()) {
-//								int c = index.row();
-//								c = c - 5;
-//								while (c > 0) {
-//									relatedScene->getFsm()->getHypertransNextCondition();
-//									c = c - 2;
-//								}
-//							}
-//							if ((index.row() % 2) == 0) {
-//								s = relatedScene->getFsm()->getHypertransConditionName();
-//								qs = QString::fromStdString(s);
-//								return qs;
-//							} else {
-//								s = relatedScene->getFsm()->getHypertransConditionValue();
-//								qs = QString::fromStdString(s);
-//								return qs;
-//							}
-						}
-						break;
-					}
-				}
-			} // EOF HTrans
-
-		}// EOF Item type switch
-		default:
-			break;
-		} // EOF Role switch
-
-		break;
-
-	}// EOF Second column
-
-	default:
-		break;
-
-	}// EOF Column switch
-
-	return QVariant();
 
 }
 
@@ -663,7 +552,7 @@ bool PropertiesModel::setData(const QModelIndex& index, const QVariant& value,
 	//---------------------------
 	case FSMDesigner::TRANS:
 	{
-		Trans * trans = static_cast<Transline*>(editingItem)->getModel();
+		Trans * trans = (Trans*)static_cast<Transline*>(editingItem)->getModel();
 
 		switch (index.row()) {
 		case PropertiesDelegate::ROW_TRANS_TYPE:
@@ -744,9 +633,11 @@ bool PropertiesModel::setData(const QModelIndex& index, const QVariant& value,
 
 			break;
 		}
-	}
 
 		break;
+	}
+	// Link Departure
+    //---------------------------
 	case FSMDesigner::LINKDEPARTURE: // Link
 
 		switch (index.row()) {
@@ -769,53 +660,66 @@ bool PropertiesModel::setData(const QModelIndex& index, const QVariant& value,
 			break;
 		}
 		break;
-	case FSMDesigner::HYPERTRANS: // HyperTransition
+
+    // Hyper Transition
+    //---------------------------
+	case FSMDesigner::HYPERTRANS:
+	{
+	    //-- Get Model
+	    Hypertrans * hypertrans = static_cast<HyperTransition*>(editingItem)->getModel();
 
 		switch (index.row()) {
-		case 0:
-			break;
-		case 1:
-			break;
-		case 2: // Target state
+            case PropertiesDelegate::ROW_HTRANS_TYPE:
+                break;
+            case PropertiesDelegate::ROW_HTRANS_NAME:
 
-			s = value.toString().trimmed().toStdString();
-			FOREACH_STATE(relatedScene->getFsm())
-					if (strcmp(s.c_str(), state->getName().c_str()) == 0) {
+                // FIXME: Use action
+                hypertrans->setName(value.toString().trimmed().toStdString());
 
-					    static_cast<HyperTransition*>(editingItem)->getModel()->setTargetState(state);
+                break;
+            case PropertiesDelegate::ROW_HTRANS_END: { // Target state
 
+                // FIXME: Use action
+                //-- Check there is really a change
+                State * targetState = relatedScene->getFsm()->getStatebyID(value.toInt());
+                if (hypertrans->getTargetState()!=targetState) {
+                    hypertrans->setTargetState(targetState);
+                }
+                break;
+            }
+            case PropertiesDelegate::ROW_HTRANS_HTYPE:
+                break;
+            default: {
+                //-- Remaining are Conditions
+                int conditionRowsCount = hypertrans->getConditions().size()*2;
+                int remainingRows = this->rowCount()-index.row();
+                int beginPosition = conditionRowsCount-remainingRows;
+                int conditionId = (beginPosition - beginPosition%2) / 2;
 
-					}
-			END_FOREACH_STATE
-			break;
-		case 3:
-			break;
-		default: // Conditions
-		    /// FIXME
-			/*relatedScene->getFsm()->getHypertransbyID(((Hypertrans*) editingItem)->hid);
-			if (index.row() < rowCount(QModelIndex())) {
-				if (relatedScene->getFsm()->getHypertransFirstCondition()) {
-					int c = index.row();
-					c = c - 5;
-					while (c > 0) {
-						relatedScene->getFsm()->getHypertransNextCondition();
-						c = c - 2;
-					}
-				}
-				int cid = relatedScene->getFsm()->getHypertransConditionID();
-				if ((index.row() % 2) == 0) {
-					relatedScene->getFsm()->modifyHypertrans(((Hypertrans*) editingItem)->hid,
-							cid, value.toString().trimmed().toStdString());
-				} else {
-					relatedScene->getFsm()->modifyHypertransConditionValue(
-							((Hypertrans*) editingItem)->hid, cid,
-							value.toString().trimmed().toStdString());
-				}
-			}*/
+                //-- Name
+                if ((remainingRows % 2) == 0) {
 
-			break;
+                    ChangeConditionNameAction * changeName = new ChangeConditionNameAction(value.toString(),hypertrans->getConditionByID(conditionId));
+                    getRelatedScene()->getUndoStack()->push(changeName);
+
+                   return true;
+
+                }
+                //-- Value
+                else {
+
+                   ChangeConditionValueAction * changeValue = new ChangeConditionValueAction(value.toString(),hypertrans->getConditionByID(conditionId));
+                   getRelatedScene()->getUndoStack()->push(changeValue);
+
+                   return true;
+                }
+
+                return false;
+                break;
+            }
 		}
-		break;
+    break;
+	}
 	default:
 		break;
 	}
@@ -835,17 +739,19 @@ Qt::ItemFlags PropertiesModel::flags(const QModelIndex& index) const {
 }
 
 bool PropertiesModel::isEditable(const QModelIndex& index) const {
-	if (editingItemType == FSMDesigner::LINKDEPARTURE || editingItemType
-			== FSMDesigner::HYPERTRANS) { // Link + HyperTransition
-		if (index.column() == 1 && index.row() == 1) {
-			return false;
-		}
-	}
-	if (editingItemType == FSMDesigner::HYPERTRANS && index.column() == 1
-			&& index.row() == 3) { // HyperTransition
-		return false;
-	}
-	return index.column() == 1 && !(index.row() == 0);
+
+    // Some Data Rows (Column 1) are not editable
+    //-------------------------
+    if (!index.isValid() || index.column()==0)
+        return false;
+
+    //-- Hypertransition type
+    if (editingItemType == FSMDesigner::HYPERTRANS && index.row()==PropertiesDelegate::ROW_HTRANS_HTYPE) {
+        return false;
+    }
+
+    return true;
+
 }
 
 QModelIndex PropertiesModel::buddy(const QModelIndex& index) const {

@@ -68,6 +68,7 @@ class PropertiesDelegate : public QStyledItemDelegate, public SceneRelatedObject
         enum ROW_HTRANS {
             ROW_HTRANS_TYPE,
             ROW_HTRANS_NAME,
+            ROW_HTRANS_HTYPE,
             ROW_HTRANS_END
         };
 

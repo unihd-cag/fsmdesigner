@@ -46,6 +46,7 @@ using namespace std;
 #include <core/Fsm.h>
 #include <core/Project.h>
 #include <core/Trans.h>
+#include <core/Hypertrans.h>
 #include <core/State.h>
 
 //-- Gui
@@ -57,6 +58,7 @@ using namespace std;
 #include <gui/input/inputwidget.h>
 
 #include <gui/items/Transline.h>
+#include <gui/items/HyperTransition.h>
 
 
 #include "inputmodel.h"
@@ -105,49 +107,42 @@ QVariant InputModel::data(const QModelIndex& index, int role) const {
 	int nInputs;
 	nInputs = relatedScene->getFsm()->getNumberOfInputs();
 
-	if (editingItemType == FSMDesigner::TRANS) {
-		Trans * trans = static_cast<Transline*>(editingItem)->getModel();
-		ifsmid = relatedScene->getFsm()->getFsmID();
-		nInputs = relatedScene->getFsm()->getNumberOfInputs();
+	// Do nothing if index is invalid or no condition has been selected
+	if (!index.isValid() || this->conditionID==-1)
+	    return QVariant();
 
-		// FIRST COLUMN (Input Name)
-		if ((index.column() == 0) && ((role == Qt::EditRole) || (role
-				== Qt::DisplayRole))) {
+	// First Column -> Names
+	//-------------------
+	if ((index.column() == 0) && ((role == Qt::EditRole) || (role
+	                == Qt::DisplayRole))) {
 
-			if ((index.row() < nInputs)) {
-				QString qs;
-				qs = QString::fromStdString(relatedScene->getFsm()->getInputName(index.row()));
-				return qs;
-			} else {
-				return QString("");
-			}
-		}
-		// SECOND COLUMN (Selected condition)
-		//------------------
-		if ((index.column() == 1) && this->conditionID>=0 && ((role == Qt::EditRole) || (role
-				== Qt::DisplayRole))) {
+          return QString::fromStdString(relatedScene->getFsm()->getInputName(index.row()));
 
-		    Condition * condition = trans->getConditionByID(this->conditionID);
-		    if (condition!=NULL && index.row() < nInputs) {
-                return QString(QChar(condition->getInputBit(index.row())));
-		    } else {
-				return QString("");
-			}
-		}
+	}
+	// Second Column
+	//--------------------
+	else if ((index.column() == 1) && ((role == Qt::EditRole) || (role
+            == Qt::DisplayRole))) {
 
-	} else {
+	    //----- Transition
+        //-------------------------
+	    if (editingItemType == FSMDesigner::TRANS) {
 
-		//dynamic_cast<MainguiWindow*> (wid)->cNameComboBox->clear();
-		nInputs = relatedScene->getFsm()->getNumberOfInputs();
-		// FIRST COLUMN
-		if ((index.column() == 0) && ((role == Qt::EditRole) || (role
-				== Qt::DisplayRole))) {
-			if ((index.row() < nInputs)) {
-				QString qs;
-				qs = QString::fromStdString(relatedScene->getFsm()->getInputName(index.row()));
-				return qs;
-			}
-		}
+	        Trans * trans = (Trans*)static_cast<Transline*>(editingItem)->getModel();
+            Condition * condition = trans->getConditionByID(this->conditionID);
+            return QString(QChar(condition->getInputBit(index.row())));
+
+
+	    }
+        //----- Hyper Transition
+        //-------------------------
+	    else if (editingItemType == FSMDesigner::HYPERTRANS) {
+
+	        Hypertrans * htrans = static_cast<HyperTransition*>(editingItem)->getModel();
+	        Condition * condition = htrans->getConditionByID(this->conditionID);
+            return QString(QChar(condition->getInputBit(index.row())));
+
+	    }
 
 	}
 

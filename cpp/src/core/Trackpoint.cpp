@@ -36,7 +36,7 @@ using namespace std;
 
 #include "Trackpoint.h"
 
-Trackpoint::Trackpoint(double posx, double posy, Trans * transition) {
+Trackpoint::Trackpoint(double posx, double posy, TransitionBase * transition) {
 
     this->setPosition(make_pair(posx, posy));
     this->setTargetLink(0);
@@ -50,11 +50,11 @@ Trackpoint::~Trackpoint() {
 
 }
 
-Trans * Trackpoint::getTransition() {
+TransitionBase * Trackpoint::getTransition() {
     return this->transition;
 }
 
-void Trackpoint::setTransition(Trans * transition) {
+void Trackpoint::setTransition(TransitionBase * transition) {
     this->transition = transition;
 }
 

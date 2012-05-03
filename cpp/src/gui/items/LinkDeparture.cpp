@@ -129,7 +129,7 @@ void LinkDeparture::preparePath() {
 	//-----------------
 
 	// Text
-	QString txt(this->getModel()->getTransition()->getEndState()->getName().c_str());
+	QString txt(((Trans*)this->getModel()->getTransition())->getEndState()->getName().c_str());
 	QSize textSize = QApplication::fontMetrics().size(Qt::TextSingleLine,txt);
 
 
@@ -221,7 +221,7 @@ QVariant LinkDeparture::itemChange(GraphicsItemChange change,
 				this->setToolTip(QString().append(
 						FSMGraphicsItem<>::toStateItem(this->startItem)->getModel()->getName().c_str())
 						.append(" -> ")
-						.append(this->getModel()->getTransition()->getEndState()->getName().c_str()));
+						.append(((Trans*)this->getModel()->getTransition())->getEndState()->getName().c_str()));
 
 			// Update Painting path
 			//-----------------------------

@@ -364,9 +364,11 @@ void QXMLLoad::parseFSM(QDomElement fsmElement) {
 	    //-- Create
 	    Hypertrans * hyperTransition = new Hypertrans();
 	    hyperTransition->setType(atoi(QXMLLoad::getChildText("type",*it).c_str()) == 0 ? Hypertrans::FromReset : Hypertrans::FromAllStates);
-	    hyperTransition->setTargetState(fsm->getStatebyID(atoi(QXMLLoad::getChildText("goal",*it).c_str())));
 	    hyperTransition->setPosition(make_pair( atof(QXMLLoad::getAttributeValue("posx",*it)),atof(QXMLLoad::getAttributeValue("posy",*it))));
 	    hyperTransition->setId(atoi(QXMLLoad::getAttributeValue("id",*it)));
+	    hyperTransition->setTargetState(fsm->getStatebyID(atoi(QXMLLoad::getAttributeValue("targetState",*it))));
+	    hyperTransition->setName(QXMLLoad::getChildText("name",*it));
+
 
 		//-- Color
 	    hyperTransition->setColor(atoi(QXMLLoad::getAttributeValue("color",*it)));

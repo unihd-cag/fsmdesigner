@@ -19,6 +19,7 @@ using namespace std;
 
 //-- Core
 #include <core/Trans.h>
+#include <core/Hypertrans.h>
 
 //-- GUI
 #include <gui/scene/SceneRelatedObject.h>
@@ -28,6 +29,7 @@ using namespace std;
 #include <gui/input/inputmodel.h>
 
 #include <gui/items/Transline.h>
+#include <gui/items/HyperTransition.h>
 
 #include "conditionwidget.h"
 
@@ -93,9 +95,6 @@ void ConditionWidget::sceneSelectionChanged() {
 		//-- Switch on type
 		if (firstSelected->type()==Transline::Type && FSMGraphicsItem<>::toTransline(firstSelected)->getModel()!=NULL) {
 
-			//-- Record transline
-			//this->currentTransition = FSMGraphicsItem<>::toTransline(firstSelected);
-
 			//-- Add All conditions to be selected
 		    unsigned int count = 0;
 		    FOREACH_TRANSITION_CONDITIONS(FSMGraphicsItem<>::toTransline(firstSelected)->getModel())
@@ -106,7 +105,19 @@ void ConditionWidget::sceneSelectionChanged() {
             END_FOREACH_TRANSITION_CONDITIONS
 
 
-		} else {
+		} else if (firstSelected->type()==HyperTransition::Type && FSMGraphicsItem<>::toHyperTransition(firstSelected)->getModel()!=NULL) {
+
+            //-- Add All conditions to be selected
+            unsigned int count = 0;
+            FOREACH_HYPERTRANSITION_CONDITIONS(FSMGraphicsItem<>::toHyperTransition(firstSelected)->getModel())
+                    stringstream name;
+                    name << "<" << count << "> " << condition->getName() ;
+                    this->comboBox.addItem(name.str().c_str(),QVariant(count));
+                    count++;
+            END_FOREACH_HYPERTRANSITION_CONDITIONS
+
+
+        } else {
 
 			//-- Nothing Special, edit none
 			this->comboBox.clear();
