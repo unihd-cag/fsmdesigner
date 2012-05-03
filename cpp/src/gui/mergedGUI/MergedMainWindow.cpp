@@ -146,6 +146,10 @@ MergedMainWindow::MergedMainWindow() :
     //-- Export/Print
     this->connect(this->action_Print,SIGNAL(triggered()),this,SLOT(print()));
 
+
+    //-- Quit
+    this->connect(this->action_Quit,SIGNAL(triggered()),this,SLOT(close()));
+
     //-- Project
     this->connect(welcomeTab, SIGNAL(projectClosed()), this,
             SLOT(closeProject()));

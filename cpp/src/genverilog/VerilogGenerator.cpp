@@ -217,13 +217,12 @@ void VerilogGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
         //FOREACH_TRANSITIONS(fsm)
 
         // Determine Inputs for the transitions starting from this state, and non default
-        //  - The condition vector is then minimized to determine all the cases matching default transition
+        //  - The conditions' inputs are then inverted, then minimized to determine all the cases matching the default transition
         //---------------------
         State * targetDefaultState = NULL;
         FOREACH_STATE_STARTING_TRANSITIONS(state)
 
-            //-- Recpord default transition target
-            int transid = transition->getId();
+            //-- Record default transition target
             targetDefaultState = transition->isDefault() ? transition->getEndState() : targetDefaultState;
 
             //-- Non default transition input is stacked for minimization
@@ -247,7 +246,7 @@ void VerilogGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
                             result = result + X;
                         }
                     }
-                   // input.push_back(result);
+                    input.push_back(result);
 
                 END_FOREACH_TRANSITION_CONDITIONS
 
@@ -274,7 +273,7 @@ void VerilogGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
                         result = result + X;
                     }
                 }
-                //input.push_back(result);
+                input.push_back(result);
 
             END_FOREACH_HYPERTRANSITION_CONDITIONS
         END_FOREACH_HYPERTRANSITIONS
