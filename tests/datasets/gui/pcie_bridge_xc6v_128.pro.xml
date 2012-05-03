@@ -630,4 +630,267 @@
 	<Join id="8" posx="23" posy="47" targetState="5">
 	</Join>
   </fsm>
+  <fsm fname='tx_bug' resetstate='0' numberofinputs='13' numberofoutputs='7'>
+    <ToolsParameters>
+    </ToolsParameters>
+    <globals>
+        <name>clk</name>
+        <name>res_n</name>
+    </globals>
+    <inputnames>
+        <name><![CDATA[p_cmd_valid]]></name>
+        <name><![CDATA[np_cmd_valid]]></name>
+        <name><![CDATA[r_cmd_valid]]></name>
+        <name><![CDATA[backdoor_cmd_valid]]></name>
+        <name><![CDATA[p_data_empty]]></name>
+        <name><![CDATA[r_data_empty]]></name>
+        <name><![CDATA[backdoor_data_empty]]></name>
+        <name><![CDATA[p_interrupt]]></name>
+        <name><![CDATA[backdoor_interrupt]]></name>
+        <name><![CDATA[cfg_interrupt_ready]]></name>
+        <name><![CDATA[axi_data_finished]]></name>
+        <name><![CDATA[axi_ready]]></name>
+        <name><![CDATA[onedw]]></name>
+    </inputnames>
+    <outputnames>
+        <name><![CDATA[write_header_p]]></name>
+        <name><![CDATA[write_header_np]]></name>
+        <name><![CDATA[write_header_r]]></name>
+        <name><![CDATA[write_header_backdoor]]></name>
+        <name><![CDATA[write_data]]></name>
+        <name><![CDATA[write_interrupt]]></name>
+        <name><![CDATA[arbiter_stop]]></name>
+    </outputnames>
+    <state id='1' posx='21' posy='-210' color='4294901760' >
+        <sname><![CDATA[Idle]]></sname>
+        <output>0000000</output>
+    </state>
+    <state id='2' posx='-197' posy='30' color='4294901760' >
+        <sname><![CDATA[P_Write_Header]]></sname>
+        <output>1000001</output>
+    </state>
+    <state id='3' posx='21' posy='-74' color='4294901760' >
+        <sname><![CDATA[NP_Write_Header]]></sname>
+        <output>0100001</output>
+    </state>
+    <state id='4' posx='268' posy='-12' color='4294901760' >
+        <sname><![CDATA[R_Write_Header]]></sname>
+        <output>0010001</output>
+    </state>
+    <state id='5' posx='22' posy='156' color='4294901760' >
+        <sname><![CDATA[Write_Data]]></sname>
+        <output>0000101</output>
+    </state>
+    <state id='6' posx='-350' posy='-86' color='4294901760' >
+        <sname><![CDATA[Write_Interrupt]]></sname>
+        <output>0000011</output>
+    </state>
+    <state id='25' posx='505' posy='-12' color='4294901760' >
+        <sname><![CDATA[Backdoor_Write_Header]]></sname>
+        <output>0001001</output>
+    </state>
+    <trans id='9' color='0' textposx='-119' textposy='-57'>
+        <name><![CDATA[select p]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>2</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1------00--1-</input>
+        </condition>
+    </trans>
+    <trans id='10' color='0' textposx='26' textposy='-142'>
+        <name><![CDATA[select np]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>3</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>01-----0---1-</input>
+        </condition>
+    </trans>
+    <trans id='11' color='0' textposx='4' textposy='-297'>
+        <name><![CDATA[trans_3]]></name>
+        <default>1</default>
+        <start>1</start>
+        <end>1</end>
+        <trackpoint posx='-29' posy='-274' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='91' posy='-271' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='12' color='0' textposx='-196' textposy='-213'>
+        <name><![CDATA[trans_18]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>6</end>
+        <condition>
+            <cname><![CDATA[P Interrupt]]></cname>
+            <input>-------101---</input>
+        </condition>
+        <condition>
+            <cname><![CDATA[Backdoor Interrupt]]></cname>
+            <input>-------011---</input>
+        </condition>
+        <trackpoint posx='-276' posy='-175' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='13' color='0' textposx='148' textposy='-74'>
+        <name><![CDATA[select r]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>4</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>--1----00--1-</input>
+        </condition>
+    </trans>
+    <trans id='14' color='0' textposx='-139' textposy='29'>
+        <name><![CDATA[Data]]></name>
+        <default>0</default>
+        <start>2</start>
+        <end>5</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>----0------10</input>
+        </condition>
+        <trackpoint posx='0' posy='0' link='0' linkid='0' join='8' color='0' />
+    </trans>
+    <trans id='15' color='0' textposx='-270' textposy='-55'>
+        <name><![CDATA[wait data]]></name>
+        <default>1</default>
+        <start>2</start>
+        <end>2</end>
+    </trans>
+    <trans id='16' color='0' textposx='-197' textposy='-136'>
+        <name><![CDATA[1 data word]]></name>
+        <default>0</default>
+        <start>2</start>
+        <end>1</end>
+        <condition>
+            <cname><![CDATA[One DW]]></cname>
+            <input>-----------11</input>
+        </condition>
+        <trackpoint posx='-146' posy='-90' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='17' color='0' textposx='10' textposy='10'>
+        <name><![CDATA[trans_15]]></name>
+        <default>1</default>
+        <start>3</start>
+        <end>1</end>
+        <trackpoint posx='20' posy='1' link='1' linkid='7' join='0' color='0' />
+    </trans>
+    <trans id='18' color='0' textposx='98' textposy='-1'>
+        <name><![CDATA[Data]]></name>
+        <default>0</default>
+        <start>4</start>
+        <end>5</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>-----0--0--10</input>
+        </condition>
+        <trackpoint posx='0' posy='0' link='0' linkid='0' join='8' color='0' />
+    </trans>
+    <trans id='19' color='0' textposx='316' textposy='-74'>
+        <name><![CDATA[wait_axi_ready]]></name>
+        <default>1</default>
+        <start>4</start>
+        <end>4</end>
+        <trackpoint posx='319' posy='-49' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='307' posy='-68' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='20' color='0' textposx='212' textposy='-175'>
+        <name><![CDATA[1_Dataword_or_no_data]]></name>
+        <default>0</default>
+        <start>4</start>
+        <end>1</end>
+        <condition>
+            <cname><![CDATA[1 Dataword]]></cname>
+            <input>-----------11</input>
+        </condition>
+        <trackpoint posx='231' posy='-146' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='21' color='0' textposx='3' textposy='221'>
+        <name><![CDATA[trans_4]]></name>
+        <default>1</default>
+        <start>5</start>
+        <end>5</end>
+        <trackpoint posx='5' posy='219' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='53' posy='219' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='22' color='0' textposx='10' textposy='10'>
+        <name><![CDATA[trans_14]]></name>
+        <default>0</default>
+        <start>5</start>
+        <end>1</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>---0----0-11-</input>
+        </condition>
+        <trackpoint posx='105' posy='156' link='1' linkid='7' join='0' color='0' />
+    </trans>
+    <trans id='23' color='0' textposx='10' textposy='10'>
+        <name><![CDATA[trans_21]]></name>
+        <default>0</default>
+        <start>6</start>
+        <end>1</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>---0----01-0-</input>
+        </condition>
+        <trackpoint posx='-352' posy='-10' link='1' linkid='7' join='0' color='0' />
+    </trans>
+    <trans id='24' color='0' textposx='-472' textposy='-94'>
+        <name><![CDATA[trans_22]]></name>
+        <default>1</default>
+        <start>6</start>
+        <end>6</end>
+        <trackpoint posx='-411' posy='-106' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='-411' posy='-52' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='26' color='0' textposx='270' textposy='-231'>
+        <name><![CDATA[Start Backdoor]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>25</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>---1---00----</input>
+        </condition>
+        <trackpoint posx='500' posy='-204' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='27' color='0' textposx='262' textposy='-275'>
+        <name><![CDATA[1DW or No Data]]></name>
+        <default>0</default>
+        <start>25</start>
+        <end>1</end>
+        <condition>
+            <cname><![CDATA[1DW]]></cname>
+            <input>-----------11</input>
+        </condition>
+        <trackpoint posx='570' posy='-136' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='524' posy='-249' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='162' posy='-248' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='28' color='0' textposx='586.114' textposy='-45'>
+        <name><![CDATA[wait_axi_ready]]></name>
+        <default>1</default>
+        <start>25</start>
+        <end>25</end>
+        <trackpoint posx='598.114' posy='-13' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='593.114' posy='-60' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='29' color='0' textposx='365' textposy='54'>
+        <name><![CDATA[Data]]></name>
+        <default>0</default>
+        <start>25</start>
+        <end>5</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>------0----10</input>
+        </condition>
+        <trackpoint posx='334' posy='74' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='0' posy='0' link='0' linkid='0' join='8' color='0' />
+    </trans>
+    <link id='7' posx='-87' posy='-275' color='0' goal='1' />
+    <Join id="8" posx="23" posy="47" targetState="5">
+    </Join>
+  </fsm>
 </project>
