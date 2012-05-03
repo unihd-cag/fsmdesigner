@@ -263,6 +263,7 @@ void DeleteTransitionAction::undo(){
 
     //-- Trace translines from start to end with trackpoints intermediaries
     Trackpoint * previous = start;
+    //Trackpoint * previous = NULL;
     QGraphicsItem * previousItem = stateItem;
     FOREACH_TRANSITION_TRACKPOINTS(transition)
 
@@ -341,6 +342,7 @@ void DeleteTransitionAction::undo(){
         if (FSMGraphicsItem<>::isStateItem(previousItem)) {
             lastTransitionLine = new Transline(transition, previousItem,
                     endItem);
+            lastTransitionLine->setEndItem(endItem);
             this->getRelatedScene()->addItem(lastTransitionLine);
 
         }

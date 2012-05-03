@@ -33,6 +33,14 @@ template<class T> class ItemFocusedAction : public QUndoCommand, public SceneRel
         /// Reference to the concerned FSM Graphic Item
         T * item;
 
+        /**
+         * Reverses the logic of the action.
+         * Undo becomes redo.
+         *
+         * This is useful for Add/Del action that are triggered to add or remove first depending on the situation
+         */
+        bool reversed;
+
     public:
 
         /**
@@ -77,6 +85,15 @@ template<class T> class ItemFocusedAction : public QUndoCommand, public SceneRel
         }
 
         /** @} */
+
+
+        void setReversed(bool reversed) {
+            this->reversed = reversed;
+        }
+
+        bool isReversed() {
+            return this->reversed;
+        }
 
 };
 

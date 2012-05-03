@@ -40,6 +40,7 @@ using namespace std;
 
 //-- Actions
 #include <gui/actions/DeleteTransitionAction.h>
+#include <gui/actions/DeleteTrackpointAction.h>
 
 #include "Transline.h"
 
@@ -69,8 +70,10 @@ Transline::Transline(TransitionBase * model, QGraphicsItem * startItem,
 		this->setStartItem(startItem);
 		this->endPoint = startItem->pos();
 	}
+
 	if (startItem!=endItem)
 		this->setEndItem(endItem);
+
 	//this->endPoint.setX(startItem!=NULL?startItem->x():0);
 	//this->endPoint.setY(startItem!=NULL?startItem->y():0);
 
@@ -111,6 +114,7 @@ void Transline::preparePath(bool propagate) {
 
 	// Build Line
 	//------------------
+
 
 	QPainterPath linePath;
 
@@ -231,11 +235,61 @@ void Transline::preparePath(bool propagate) {
 	}
 
 
+	// Define line path to the line created or a special path for looping states
+	//----------------
 	//-- Looping on the same spot
 	if (this->startItem==this->endItem) {
 
-		linePath.moveTo(this->startItem->pos());
-		linePath.quadTo(this->startItem->pos().x()+20,this->startItem->pos().y()+20,this->startItem->pos().x(),this->startItem->pos().y());
+	   /* qDebug() << "Looping";
+
+	    QPainterPath loop;
+	    //linePath = *loop;
+	    //loop.moveTo(this->startItem->pos());
+
+
+	    loop.arcTo(QRectF(this->startItem->pos().x(),this->startItem->pos().y(),100,100),
+	            45,360-45);*/
+
+//	    loop.quadTo(QPointF(this->startItem->pos().x()+100,this->startItem->pos().y()),
+//	            QPointF(this->startItem->pos().x(),this->startItem->pos().y()+20));
+
+	    //loop.closeSubpath();
+
+	   // loop.translate(this->startItem->pos());
+
+	    //loop.addEllipse(QRectF(0,0,100,100));
+
+	    //loop.moveTo(this->startItem->pos().x()+100,this->startItem->pos().y());
+	    //loop.moveTo(this->startItem->pos().x()+100,this->startItem->pos().y()+100);
+	    //loop.quadTo(this->startItem->pos().x()+20,this->startItem->pos().y()+20,this->startItem->pos().x(),this->startItem->pos().y());
+
+	    // Add Line to path
+	            linePath.moveTo(lineToPaint.p1());
+	            linePath.lineTo(lineToPaint.p2());
+
+	    //-- Default style
+
+        // Pen size
+        this->setPen(QPen(Qt::black));
+        int width = GuiSettings::value("uni.hd.ziti.fsmdesigner.ui.transition.lineWidth", QVariant(1)).toInt();
+        QPen newpen(this->pen());
+        newpen.setWidth(width);
+        this->setPen(newpen);
+
+        if (this->getModel() != NULL && ((Trans*)this->getModel())->isDefault() == true) {
+            QPen np = QPen(this->pen());
+            np.setStyle(Qt::DashDotDotLine);
+            np.setWidth(this->pen().width() + 1);
+            this->setPen(np);
+        } else {
+            QPen np = QPen(this->pen());
+            np.setStyle(Qt::SolidLine);
+            this->setPen(np);
+        }
+        this->setBrush(QBrush(Qt::black));
+
+		//this->setPath(loop);
+		//return;
 	}
 	else {
 
@@ -244,58 +298,62 @@ void Transline::preparePath(bool propagate) {
 		// Add Line to path
 		linePath.moveTo(lineToPaint.p1());
 		linePath.lineTo(lineToPaint.p2());
-
-		//-- Default style
-
-		// Pen size
-		this->setPen(QPen(Qt::black));
-		int width = GuiSettings::value("uni.hd.ziti.fsmdesigner.ui.transition.lineWidth", QVariant(1)).toInt();
-		QPen newpen(this->pen());
-		newpen.setWidth(width);
-		this->setPen(newpen);
-
-		if (this->getModel() != NULL && ((Trans*)this->getModel())->isDefault() == true) {
-			QPen np = QPen(this->pen());
-			np.setStyle(Qt::DashDotDotLine);
-			np.setWidth(this->pen().width() + 1);
-			this->setPen(np);
-		} else {
-			QPen np = QPen(this->pen());
-			np.setStyle(Qt::SolidLine);
-			this->setPen(np);
-		}
-		this->setBrush(QBrush(Qt::black));
-
-		//-- Arrow if necessary
-		if (this->drawArrow) {
-
-			QPolygonF arrowHead;
-			qreal arrowSize = 15;
-			qreal arrowAngle = 20;
-
-			// Duplicate line,shorten it, and invert p1 and 2
-			QLineF traceLine(lineToPaint);
-			traceLine.setLength(traceLine.length() + arrowSize);// restore length up to object to have arrow touch it
-			QPointF p1 = traceLine.p1();
-			traceLine.setP1(traceLine.p2());
-			traceLine.setP2(p1);
-			traceLine.setLength(arrowSize);
-
-			// Start point is always the same and is top of arrow polygon
-			arrowHead << traceLine.p1();
-
-			// Deviate of 10° on both directions and  register ending point as new basis of polygon
-			traceLine.setAngle(traceLine.angle() + arrowAngle); // |"\"
-			arrowHead << traceLine.p2();
-			traceLine.setAngle(traceLine.angle() - arrowAngle); // back to normal: |
-			traceLine.setAngle(traceLine.angle() - arrowAngle);// "/"|
-			arrowHead << traceLine.p2();
-			arrowHead<<traceLine.p1();
-
-			// And paint :)
-			linePath.addPolygon(arrowHead);
-		}
 	}
+
+	// Set Style of the transline
+	//--------------------
+
+    //-- Default style
+
+    // Pen size
+    this->setPen(QPen(Qt::black));
+    int width = GuiSettings::value("uni.hd.ziti.fsmdesigner.ui.transition.lineWidth", QVariant(1)).toInt();
+    QPen newpen(this->pen());
+    newpen.setWidth(width);
+    this->setPen(newpen);
+
+    if (this->getModel() != NULL && ((Trans*)this->getModel())->isDefault() == true) {
+        QPen np = QPen(this->pen());
+        np.setStyle(Qt::DashDotDotLine);
+        np.setWidth(this->pen().width() + 1);
+        this->setPen(np);
+    } else {
+        QPen np = QPen(this->pen());
+        np.setStyle(Qt::SolidLine);
+        this->setPen(np);
+    }
+    this->setBrush(QBrush(Qt::black));
+
+    //-- Arrow if necessary
+    if (this->drawArrow) {
+
+        QPolygonF arrowHead;
+        qreal arrowSize = 15;
+        qreal arrowAngle = 20;
+
+        // Duplicate line,shorten it, and invert p1 and 2
+        QLineF traceLine(lineToPaint);
+        traceLine.setLength(traceLine.length() + arrowSize);// restore length up to object to have arrow touch it
+        QPointF p1 = traceLine.p1();
+        traceLine.setP1(traceLine.p2());
+        traceLine.setP2(p1);
+        traceLine.setLength(arrowSize);
+
+        // Start point is always the same and is top of arrow polygon
+        arrowHead << traceLine.p1();
+
+        // Deviate of 10° on both directions and  register ending point as new basis of polygon
+        traceLine.setAngle(traceLine.angle() + arrowAngle); // |"\"
+        arrowHead << traceLine.p2();
+        traceLine.setAngle(traceLine.angle() - arrowAngle); // back to normal: |
+        traceLine.setAngle(traceLine.angle() - arrowAngle);// "/"|
+        arrowHead << traceLine.p2();
+        arrowHead<<traceLine.p1();
+
+        // And paint :)
+        linePath.addPolygon(arrowHead);
+    }
+
 	// Set Line path to path to be painted
 	this->setPath(linePath);
 
@@ -385,7 +443,9 @@ void Transline::paint(QPainter *painter,
 	painter->setBrush(this->brush());
 
 	painter->drawPath(this->path());
-	painter->fillPath(this->path(),this->brush());
+
+	if (this->startItem!=this->endItem)
+	    painter->fillPath(this->path(),this->brush());
 
 	painter->restore();
 	return;
@@ -519,7 +579,18 @@ void Transline::mouseReleaseEvent(QGraphicsSceneMouseEvent * event) {
 	//---------
 	if (this->addedTrackpoint != NULL) {
 		this->scene()->sendEvent(this->addedTrackpoint, event);
+
+
 	}
+
+	//-- Delete to fake Add action on command stack
+    qDebug() << "Deleting for reverse";
+    DeleteTrackpointAction * delAction = new DeleteTrackpointAction(this->addedTrackpoint);
+    delAction->setReversed(true);
+    dynamic_cast<Scene *>(this->scene())->getUndoStack()->push(delAction);
+
+
+
 	this->addedTrackpoint = NULL;
 
 
@@ -571,6 +642,8 @@ void Transline::mouseMoveEvent(QGraphicsSceneMouseEvent * event) {
 	Trackpoint * newTrackpointModel = NULL;
 
 
+
+
 	//-- Trackpoint position
 	bool after = true;
 	if (this->getStartItem()->type() == StateItem::Type) {
@@ -597,8 +670,9 @@ void Transline::mouseMoveEvent(QGraphicsSceneMouseEvent * event) {
 	TrackpointItem * addedTrackpoint = new TrackpointItem(newTrackpointModel,this->getStartItem(),this->getEndItem());
 	this->scene()->addItem(addedTrackpoint);
 	addedTrackpoint->setPos(event->scenePos());
+	this->addedTrackpoint = addedTrackpoint;
 
-	addedTrackpoint->grabMouse();
+	//addedTrackpoint->grabMouse();
 
 	//-- At that point, the transline might not be visible anymore
 	// If not visible anymore, then delete ourselves

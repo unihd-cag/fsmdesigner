@@ -48,6 +48,14 @@ bool DeleteTrackpointAction::mergeWith(const QUndoCommand * command) {
 }
 void DeleteTrackpointAction::redo(){
 
+    //-- Reversing?
+    if (this->isReversed()) {
+        this->setReversed(false);
+        this->undo();
+        this->setReversed(true);
+        return;
+    }
+
     //-- Do try to delete
     //cout << "Redoing delete trackpoint with id: " << this->id() << endl;
 
@@ -65,7 +73,23 @@ void DeleteTrackpointAction::redo(){
     //-- Remove function says who's next now. If no one, we can restore with append
     this->nextModel = this->item->getModel()->remove();
 }
+
 void DeleteTrackpointAction::undo(){
+
+    //-- Reversing?
+    if (this->isReversed()) {
+        this->setReversed(false);
+        this->redo();
+        this->setReversed(true);
+        return;
+    }
+
+    qDebug() << "undoing delete tp";
+
+    // If Re-Adding, but already on the scene -> don't proceed
+    //----------------
+    if (this->item->scene()!=NULL)
+        return;
 
     // Re-add Trackpoint to scene
     //-------------------------
