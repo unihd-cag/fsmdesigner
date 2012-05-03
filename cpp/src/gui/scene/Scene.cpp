@@ -61,7 +61,7 @@ Scene::Scene(Fsm * fsm, QObject *parent) :
 	this->fsm = fsm;
 
 	//-- Place
-	this->placeMode = FSMDesigner::CHOOSE;
+	this->placeMode = FSMDesigner::NONE;
 	this->placeLock = FSMDesigner::UNLOCKED;
 
 	// Verification
@@ -229,11 +229,30 @@ void Scene::initializeScene() {
 
     END_FOREACH_HYPERTRANSITIONS
 
+    this->placeMode = FSMDesigner::CHOOSE;
 
 }
 
 QUndoStack * Scene::getUndoStack() {
 	return &(this->undoStack);
+}
+
+/**
+ * Propagate Undo Redo
+ */
+void Scene::undo() {
+    this->setPlaceMode(FSMDesigner::NONE);
+    this->undoStack.undo();
+    this->setPlaceMode(FSMDesigner::CHOOSE);
+}
+
+/**
+ * Propagate Undo Redo
+ */
+void Scene::redo() {
+    this->setPlaceMode(FSMDesigner::NONE);
+    this->undoStack.redo();
+    this->setPlaceMode(FSMDesigner::CHOOSE);
 }
 
 void Scene::addToToPlaceStack(QGraphicsItem * item) {
@@ -917,10 +936,17 @@ void Scene::keyReleaseEvent(QKeyEvent * keyEvent) {
 			== Qt::CTRL) {
 
 		//-- Do undo
-		cout << "*I Undoing" << endl;
-		this->undoStack.undo();
+		//cout << "*I Undoing" << endl;
+		//this->undo();
 
-	}
+	}  else if (keyEvent->key() == Qt::Key_Y && keyEvent->modifiers()
+            == Qt::CTRL) {
+
+        //-- Do Redo
+       // cout << "*I Redoing" << endl;
+        //this->redo();
+
+    }
 
 }
 

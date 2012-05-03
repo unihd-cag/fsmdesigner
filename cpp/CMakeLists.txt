@@ -26,7 +26,7 @@ include(${QT_USE_FILE})
 #set(CMAKE_CXX_COMPILER_ARG1 g++)
 #set(CMAKE_CXX_COMPILER_ARG2 -j8)
 #set(CMAKE_CXX_FLAGS_DEBUG -j8)
-
+ 
 ## Debug
 set(CMAKE_BUILD_TYPE Debug)
 

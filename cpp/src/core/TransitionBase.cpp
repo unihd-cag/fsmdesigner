@@ -16,7 +16,7 @@
 using namespace std;
 
 //-- Qt
-
+#include <QtCore>
 
 //-- Core
 #include <core/UniqueIDObject.h>
@@ -122,7 +122,7 @@ vector<Trackpoint*>& TransitionBase::getTrackpoints() {
 Trackpoint * TransitionBase::appendTrackpoint(double posx, double posy) {
 
     // Add at the end
-    Trackpoint * tp = new Trackpoint(posx, posy, 0);
+    Trackpoint * tp = new Trackpoint(posx, posy, this);
     tp->setTransition(this);
     this->trackpoints.push_back(tp);
     return tp;
@@ -180,9 +180,9 @@ Trackpoint * TransitionBase::addTrackpointBefore(Trackpoint * baseTrackpoint,
 Trackpoint * TransitionBase::addFirstTrackpoint(double posx, double posy) {
 
     // Add front
-    Trackpoint * tp = new Trackpoint(posx, posy, 0);
+    Trackpoint * tp = new Trackpoint(posx, posy, this);
     tp->setTransition(this);
-    this->trackpoints.insert(this->trackpoints.begin(),new Trackpoint(posx, posy, 0));
+    this->trackpoints.insert(this->trackpoints.begin(),tp);
     return tp;
 }
 
@@ -203,8 +203,13 @@ Trackpoint * TransitionBase::deleteTrackpoint(Trackpoint * trackpoint) {
     vector<Trackpoint*>::iterator ti;
     unsigned count = 0;
     for (ti = trackpoints.begin(); ti != trackpoints.end(); ti++) {
-        if ((*ti) == trackpoint)
-            return this->deleteTrackpoint(count);
+
+        Trackpoint * tp = *(ti.base());
+        if (tp == trackpoint) {
+            trackpoints.erase(ti);
+            return trackpoint;
+
+        }
         count++;
     }
 

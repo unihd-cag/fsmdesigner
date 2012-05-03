@@ -28,6 +28,7 @@ using namespace std;
 
 //-- Gui Items
 #include <gui/items/TrackpointItem.h>
+#include <gui/items/Transline.h>
 
 #include "DeleteTrackpointAction.h"
 
@@ -40,7 +41,7 @@ DeleteTrackpointAction::~DeleteTrackpointAction() {
 }
 
 int DeleteTrackpointAction::id() {
-    return this->item->getModel()->getTransition()->getId();
+    return ItemFocusedAction<TrackpointItem>::id();
 }
 bool DeleteTrackpointAction::mergeWith(const QUndoCommand * command) {
     // Call parent
@@ -57,7 +58,6 @@ void DeleteTrackpointAction::redo(){
     }
 
     //-- Do try to delete
-    //cout << "Redoing delete trackpoint with id: " << this->id() << endl;
 
     // Gui
     //--------------------
@@ -69,9 +69,20 @@ void DeleteTrackpointAction::redo(){
     //-- Call remove out of scene (Gui is ok after that)
     this->getRelatedScene()->removeItem(this->item);
 
+    TransitionBase * transition =  this->item->getModel()->getTransition();
+
     //-- FIXME Remove trackpoint from model
     //-- Remove function says who's next now. If no one, we can restore with append
     this->nextModel = this->item->getModel()->remove();
+
+    // IF there are no trackpoints anymore, re add a transition line
+   //---------------
+   if (transition->getTrackpoints().size()==0) {
+
+       this->getRelatedScene()->addItem(new Transline(transition,this->previousItem,this->nextItem));
+
+   }
+
 }
 
 void DeleteTrackpointAction::undo(){
@@ -84,16 +95,10 @@ void DeleteTrackpointAction::undo(){
         return;
     }
 
-    qDebug() << "undoing delete tp";
-
     // If Re-Adding, but already on the scene -> don't proceed
     //----------------
     if (this->item->scene()!=NULL)
         return;
-
-    // Re-add Trackpoint to scene
-    //-------------------------
-    this->getRelatedScene()->addItem(this->item);
 
     // Re-add to model
     //----------------------
@@ -102,6 +107,14 @@ void DeleteTrackpointAction::undo(){
     } else {
         this->item->getModel()->getTransition()->addTrackpointBefore(this->nextModel,this->item->getModel());
     }
+
+    // If we have trackpoint here, there was probably a transline before -> remove it
+
+    // Re-add Trackpoint to scene
+    //-------------------------
+    this->getRelatedScene()->addItem(this->item);
+
+
 
     //cout << "Undoing deleted state" << endl;
 }

@@ -738,6 +738,9 @@ void FSMSceneView::generateVerilogReload() {
 
     // Generate
     //--------------------
+
+    //---- Verilog
+    //----------------------
     Generator * generator = GeneratorFactory::getInstance()->newGenerator("Verilog");
     if (generator==NULL) {
         QMessageBox warnBox(QMessageBox::Warning,"Cannot find generator","There are no Generator registered under the 'Verilog' name. No Verilog can generated",QMessageBox::NoButton,this);
@@ -763,6 +766,32 @@ void FSMSceneView::generateVerilogReload() {
     delete generator;
     verilogFile.close();
 
+    //---- Simvision mmap
+    //---------------------
+    generator = GeneratorFactory::getInstance()->newGenerator("Simvision_Mmap");
+    if (generator==NULL) {
+        QMessageBox warnBox(QMessageBox::Warning,"Cannot find generator","There are no Generator registered under the 'Simvision_Mmap' name. No Simvision Mmap can generated",QMessageBox::NoButton,this);
+        warnBox.exec();
+        return;
+    }
+
+    //-- Open File
+    QFile simvisionFile(path.replace(".v",".svcf"));
+    if (!simvisionFile.open(QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
+
+        QMessageBox warnBox(QMessageBox::Warning,"Cannot open File","The provided file to generate Simvision Mmap to cannot be opened for writing",QMessageBox::NoButton,this);
+        warnBox.exec();
+        return;
+
+    }
+
+    //-- Generate
+    QDataStream simvisionOutputStream(&simvisionFile);
+    generator->generate(fsm,&simvisionOutputStream);
+
+    //-- Close
+    delete generator;
+    simvisionFile.close();
 
 }
 

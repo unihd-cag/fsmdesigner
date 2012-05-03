@@ -151,7 +151,7 @@ void FSMTabPane::generateVerilog() {
 void FSMTabPane::undo() {
 
     if (this->currentIndex()>0) {
-        dynamic_cast<FSMSceneView*>(this->currentWidget())->getRelatedScene()->getUndoStack()->undo();
+        dynamic_cast<FSMSceneView*>(this->currentWidget())->getRelatedScene()->undo();
     }
 }
 
@@ -159,7 +159,7 @@ void FSMTabPane::undo() {
 void FSMTabPane::redo() {
 
     if (this->currentIndex()>0) {
-        dynamic_cast<FSMSceneView*>(this->currentWidget())->getRelatedScene()->getUndoStack()->redo();
+        dynamic_cast<FSMSceneView*>(this->currentWidget())->getRelatedScene()->redo();
     }
 }
 

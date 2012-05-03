@@ -186,6 +186,29 @@ QVariant TrackpointItem::itemChange(GraphicsItemChange change,
 				FSMGraphicsItem<>::toTrackPoint(this->getEndItem())->setStartItem(this);
 			}
 
+			//-- If previous is a state Item, remove an eventual existing transline
+			//-----------
+			if (this->getStartItem() != NULL && FSMGraphicsItem<>::isStateItem(this->getStartItem()) ) {
+
+			    //FSMGraphicsItem<>::toStateItem(this->getStartItem())->getOutgoingTransitions()
+
+			}
+
+			// Add A reversed delete (i.e add) action to allow to undo the add
+			// !! only if not placing elements on scene! So when added to an existing transition
+			//-------------------
+			if (dynamic_cast<Scene*>(this->scene())->getPlaceMode()==FSMDesigner::CHOOSE) {
+			    //-- Delete to fake Add action on command stack
+                qDebug() << "Deleting for reverse";
+                DeleteTrackpointAction * delAction = new DeleteTrackpointAction(this);
+                delAction->setReversed(true);
+                dynamic_cast<Scene *>(this->scene())->getUndoStack()->push(delAction);
+			}
+
+
+
+
+
 
 		}
 

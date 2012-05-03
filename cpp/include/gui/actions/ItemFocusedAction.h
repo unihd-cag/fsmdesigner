@@ -70,10 +70,10 @@ template<class T> class ItemFocusedAction : public QUndoCommand, public SceneRel
         /** @{ */
 
         virtual int     id() {
-            return 0;
+            return -1;
         }
         virtual bool    mergeWith(const QUndoCommand * command){
-            return false;
+            return QUndoCommand::mergeWith(command);
         }
         virtual void    redo(){
             //-- Call Parent

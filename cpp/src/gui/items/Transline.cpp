@@ -366,6 +366,8 @@ void Transline::setStartItem(QGraphicsItem * item) {
 
 	//-- If start is a  State item, add to list of outgoing Transitions
 	if (startItem != NULL && startItem->type() == StateItem::Type) {
+
+	    //-- Add to outgoing
 		qgraphicsitem_cast<StateItem*> (startItem)->addOutgoingTransition(this);
 	}
 	//-- If start is a Join Point, set as Outgoing transition
@@ -583,13 +585,6 @@ void Transline::mouseReleaseEvent(QGraphicsSceneMouseEvent * event) {
 
 	}
 
-	//-- Delete to fake Add action on command stack
-    qDebug() << "Deleting for reverse";
-    DeleteTrackpointAction * delAction = new DeleteTrackpointAction(this->addedTrackpoint);
-    delAction->setReversed(true);
-    dynamic_cast<Scene *>(this->scene())->getUndoStack()->push(delAction);
-
-
 
 	this->addedTrackpoint = NULL;
 
@@ -670,9 +665,10 @@ void Transline::mouseMoveEvent(QGraphicsSceneMouseEvent * event) {
 	TrackpointItem * addedTrackpoint = new TrackpointItem(newTrackpointModel,this->getStartItem(),this->getEndItem());
 	this->scene()->addItem(addedTrackpoint);
 	addedTrackpoint->setPos(event->scenePos());
-	this->addedTrackpoint = addedTrackpoint;
+	//this->addedTrackpoint = addedTrackpoint;
 
-	//addedTrackpoint->grabMouse();
+
+	addedTrackpoint->grabMouse();
 
 	//-- At that point, the transline might not be visible anymore
 	// If not visible anymore, then delete ourselves

@@ -207,6 +207,17 @@ class Scene: public QGraphicsScene, public VerificationListener {
     public slots:
 
         /**
+         * Propagate Undo Redo
+         */
+        void undo();
+
+        /**
+         * Propagate Undo Redo
+         */
+        void redo();
+
+
+        /**
          *  Triggers a selection empty signal if nothing is selected
          */
         void selectionMonitor() {

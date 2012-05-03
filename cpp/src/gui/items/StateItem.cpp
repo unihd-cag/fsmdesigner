@@ -528,6 +528,22 @@ QList<Transline*>& StateItem::getIncomingTransitions() {
 }
 
 void StateItem::addOutgoingTransition(Transline * transition) {
+
+    // If another transline in outgoing if for the same transitin model -> remove it
+    for (int i=0;i<this->outgoingTransitions.size();i++) {
+
+        Transline * otransition = this->outgoingTransitions[i];
+        if (otransition->getEndItem()->type()==StateItem::Type && otransition->getModel()!=NULL && transition->getModel()!=NULL && otransition->getModel()==transition->getModel()) {
+            this->outgoingTransitions.removeAll(otransition);
+            //otransition->setVisible(false);
+            this->scene()->removeItem(otransition);
+            //delete otransition;
+
+        }
+
+    }
+
+    // Add to outgoing
 	this->outgoingTransitions.append(transition);
 }
 
