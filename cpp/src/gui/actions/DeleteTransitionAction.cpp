@@ -42,10 +42,36 @@ using namespace std;
 //-- Common
 #include <gui/common/SGC.h>
 
+//-- Actions
+#include <gui/actions/DeleteTrackpointAction.h>
 
 #include "DeleteTransitionAction.h"
 
 DeleteTransitionAction::DeleteTransitionAction(Transline * item,QUndoCommand * parentCommand) :ItemFocusedAction(item,parentCommand) {
+
+
+    //-- Delete Trackpoints Using Children actions
+    //-----------------
+    /*QList<TrackpointItem *> trackpoints = this->getRelatedScene()->findTransitionBaseTrackpoint(this->item->getModel());
+
+    //-- If none, already, we are adding
+    if (trackpoints.size()==0) {
+        FOREACH_TRANSITION_TRACKPOINTS(item->getModel())
+
+        DeleteTrackpointAction * deleteTrackpoint = new DeleteTrackpointAction(new TrackpointItem(trackpoint,),this);
+
+        END_FOREACH_TRANSITION_TRACKPOINTS
+    } else {
+
+        QList<TrackpointItem *> trackpoints = this->getRelatedScene()->findTransitionBaseTrackpoint(this->item->getModel());
+        while (!trackpoints.isEmpty()) {
+
+
+
+        }
+    }*/
+
+
 
 }
 
@@ -70,6 +96,14 @@ bool DeleteTransitionAction::mergeWith(const QUndoCommand * command) {
     return ItemFocusedAction<Transline>::mergeWith(command);
 }
 void DeleteTransitionAction::redo(){
+
+
+    //-- Delete Trackpoints Using action
+    //-----------------
+    //ItemFocusedAction<Transline>::redo();
+
+    //ItemFocusedAction<Transline>::redo();
+
 
     //-- FIXME If the far end is a LinkDeparture, uses a delete Link Item object not delete Transition
     //---------------------------
@@ -120,7 +154,8 @@ void DeleteTransitionAction::redo(){
             TrackpointItem * trackPoint = FSMGraphicsItem<>::toTrackPoint(
                     nextTransline->getEndItem());
             this->getRelatedScene()->removeItem(trackPoint);
-            SGC::getInstance()->requestDelete(trackPoint);
+
+            //SGC::getInstance()->requestDelete(trackPoint);
 
             //-- Next transline to consider is the prev of the next trackpoint, or none if no next trackpoint
             if (FSMGraphicsItem<>::isTrackPoint(trackPoint->getEndItem())) {
@@ -185,7 +220,7 @@ void DeleteTransitionAction::redo(){
     SGC::getInstance()->collect();
 
     //-- Reset item with a dummy one because the one from action might have been deleted
-    this->item = tempItem;
+    this->item = new Transline(transition);
 
     qDebug() << "Saved model: " << QString::fromStdString(this->item->getModel()->getName());
 
@@ -198,13 +233,15 @@ void DeleteTransitionAction::undo(){
     // Model
     //----------------------
     this->getRelatedScene()->getFsm()->addTrans((Trans*)this->item->getModel());
+    Trans * transition = (Trans*)this->item->getModel();
+
+    ItemFocusedAction<Transline>::undo();
 
     // Gui
     // Rebuild the complete transition
     //------------
 
     // Get Trans & start state
-    Trans * transition = (Trans*)this->item->getModel();
     Transline * lastTransitionLine = NULL;
 
     State * currentState  =transition->getStartState();
@@ -328,6 +365,8 @@ void DeleteTransitionAction::undo(){
         this->getRelatedScene()->addItem(transitionLineText);
 
     }
+
+
     //-- Store Item as a dummy Item as Transline are always reconstructed
     Transline * tempItem = new Transline(transition);
     this->item = tempItem;

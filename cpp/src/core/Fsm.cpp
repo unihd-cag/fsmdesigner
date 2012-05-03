@@ -545,14 +545,18 @@ State * Fsm::addState(State * state) {
     if (state->isIdSet() && this->statesMap.count(state->getId())>0)
         return state;
 
+
+    //-- Register to ID manager
+   this->idManager.assignID(state);
+
+
     //-- Should be reset state ?
     bool isReset = false;
     if (this->statesMap.size() == 0)
         isReset = true;
     state->setReset(isReset);
-
-    //-- Register to ID manager
-    this->idManager.assignID(state);
+    if (isReset)
+        this->setResetState(state->getId());
 
     //-- Add
     this->statesMap[state->getId()] = state;

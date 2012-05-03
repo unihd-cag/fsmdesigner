@@ -145,7 +145,7 @@ void StateItem::verificationErrorRemoved(FSMVerifyError * error)  {
 	if (this->verificationMark!=NULL && this->verificationErrors.size()==0) {
 
 		//this->scene()->removeItem(this->verificationMark);
-//		this->removeFromGroup(this->verificationMark);
+		//this->removeFromGroup(this->verificationMark);
 		SGC::getInstance()->requestDelete(this->verificationMark);
 		this->verificationMark = NULL;
 	}

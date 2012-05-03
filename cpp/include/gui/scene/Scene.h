@@ -13,6 +13,7 @@ class Link;
 class Trans;
 class State;
 class Join;
+class TransitionBase;
 
 //-- Gui
 class StateItem;
@@ -21,6 +22,7 @@ class Transline;
 class TranslineText;
 class LinkDeparture;
 class JoinItem;
+class TrackpointItem;
 
 //-- Verification
 #include <verification/VerificationListener.h>
@@ -254,10 +256,17 @@ class Scene: public QGraphicsScene, public VerificationListener {
     public:
         QList<Transline *> findTransline(Trans * transitionModel);
 
+
+        /**
+         *
+         * @param transitionBaseModel
+         * @return
+         */
+        QList<TrackpointItem *> findTransitionBaseTrackpoint(TransitionBase * transitionBaseModel);
+
         /**
          * Finds the text matching a Transition
          */
-    public:
         TranslineText * findTranslineText(Trans * transitionModel);
 
         /**
@@ -265,7 +274,6 @@ class Scene: public QGraphicsScene, public VerificationListener {
          * @param state
          * @return The found State or NULL if not found
          */
-    public:
         StateItem * findStateItem(State * state);
 
         /**
@@ -280,7 +288,6 @@ class Scene: public QGraphicsScene, public VerificationListener {
          * @param link the base link model
          * @return All the LinkDepartures (State -> Link) that target this link
          */
-    public:
         QList<LinkDeparture*> findLinkDepartures(Link * link);
 
 };

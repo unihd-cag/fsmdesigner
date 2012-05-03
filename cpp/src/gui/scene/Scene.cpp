@@ -1183,6 +1183,7 @@ void Scene::ruleFailed(VerificatorRule * rule,QList<RuleError*>& errors) {
                 // Find back and Set
                 StateItem * stateItem = this->findStateItem(dynamic_cast<State*>(error->getConcernedObject<State>()));
                 if (stateItem!=NULL) {
+                    guiError->addConcernedItem(stateItem);
                     stateItem->addVerificationError(guiError);
                 }
 
@@ -1216,6 +1217,26 @@ QList<Transline *> Scene::findTransline(Trans * transitionModel) {
 	}
 
 	return result;
+
+}
+
+QList<TrackpointItem *> Scene::findTransitionBaseTrackpoint(TransitionBase * transitionBaseModel) {
+
+    QList<QGraphicsItem*> allItems = this->items();
+    QList<TrackpointItem *> result;
+
+    //-- Search for the transline
+    for (QList<QGraphicsItem*>::iterator it = allItems.begin();it!=allItems.end();it++) {
+
+        TransitionBase * itemTransitionModel = NULL;
+        if (FSMGraphicsItem<>::isTrackPoint((*it))
+                && FSMGraphicsItem<>::toTrackPoint(*it)->getModel()!= NULL
+                && FSMGraphicsItem<>::toTrackPoint(*it)->getModel()->getTransition()==transitionBaseModel) {
+            result+=FSMGraphicsItem<>::toTrackPoint(*it);
+        }
+    }
+
+    return result;
 
 }
 
