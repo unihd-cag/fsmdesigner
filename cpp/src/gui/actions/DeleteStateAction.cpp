@@ -33,6 +33,7 @@ using namespace std;
 #include <gui/items/Transline.h>
 #include <gui/items/JoinItem.h>
 #include <gui/items/HyperTransition.h>
+#include <gui/items/LinkArrival.h>
 
 #include "DeleteStateAction.h"
 
@@ -42,6 +43,7 @@ DeleteStateAction::DeleteStateAction(StateItem * item,QUndoCommand * parentComma
     // Pre-delete :
     //  - all Transitions
     //  - all incoming hypertransitions
+    //  - all incoming links
     //-------------------------------------
 
     //-- Outgoing
@@ -56,8 +58,13 @@ DeleteStateAction::DeleteStateAction(StateItem * item,QUndoCommand * parentComma
 
         Transline * t = this->item->getIncomingTransitions().takeFirst();
 
+
+        //-- If coming from Link Arrival -> delete hypertransition
+        if (t->getStartItem()->type()==LinkArrival::Type) {
+            dynamic_cast<LinkArrival*>(t->getStartItem())->remove(this);
+        }
         //-- If coming from Hypertransition -> delete hypertransition
-        if (t->getStartItem()->type()==HyperTransition::Type) {
+        else if (t->getStartItem()->type()==HyperTransition::Type) {
             FSMGraphicsItem<>::toHyperTransition(t->getStartItem())->remove(this);
 
         }

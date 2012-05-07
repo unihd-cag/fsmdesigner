@@ -99,6 +99,7 @@ void DeleteLinkArrivalAction::undo(){
     //--------------------------
 
     //-- Readd model
+    this->getRelatedScene()->getFsm()->addLink(this->item->getModel());
 
     //-- Readd Gui
     this->getRelatedScene()->addItem(this->item);
