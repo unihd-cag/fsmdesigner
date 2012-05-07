@@ -27,6 +27,7 @@ using namespace std;
 #include <gui/items/Transline.h>
 #include <gui/items/TrackpointItem.h>
 #include <gui/items/LinkArrival.h>
+#include <gui/items/JoinItem.h>
 
 #include <gui/settings/GuiSettings.h>
 
@@ -332,11 +333,13 @@ QVariant StateItem::itemChange(GraphicsItemChange change,
 		for (QList<Transline*>::iterator it = this->incomingTransitions.begin(); it
 				< this->incomingTransitions.end(); it++)
 			(*it)->setEndItem(NULL);
+		this->incomingTransitions.clear();
 
 		//-- Ensure the outgoing transitions forget about us
 		for (QList<Transline*>::iterator it = this->outgoingTransitions.begin(); it
 				< this->outgoingTransitions.end(); it++)
 			(*it)->setStartItem(NULL);
+		this->outgoingTransitions.clear();
 
 	} else if (change==QGraphicsItem::ItemScaleHasChanged && this->scene()!=NULL) {
 
@@ -533,7 +536,11 @@ void StateItem::addOutgoingTransition(Transline * transition) {
     for (int i=0;i<this->outgoingTransitions.size();i++) {
 
         Transline * otransition = this->outgoingTransitions[i];
-        if (otransition->getEndItem()->type()==StateItem::Type && otransition->getModel()!=NULL && transition->getModel()!=NULL && otransition->getModel()==transition->getModel()) {
+        if (
+                (otransition->getEndItem()->type()==StateItem::Type || otransition->getEndItem()->type()==JoinItem::Type)
+                && otransition->getModel()!=NULL
+                && transition->getModel()!=NULL
+                && otransition->getModel()==transition->getModel()) {
             this->outgoingTransitions.removeAll(otransition);
             //otransition->setVisible(false);
             this->scene()->removeItem(otransition);

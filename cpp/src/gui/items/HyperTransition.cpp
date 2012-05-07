@@ -118,7 +118,11 @@ QVariant HyperTransition::itemChange(GraphicsItemChange change,
 	        delete this->outgoingTransition;
 	    }
 
-	}
+	} else if (change ==QGraphicsItem::ItemSceneHasChanged && this->scene()!=NULL) {
+
+
+
+    }
 
 	return QGraphicsItem::itemChange(change, value);
 
@@ -146,6 +150,10 @@ void HyperTransition::modelChanged() {
 
 void HyperTransition::setOutgoingTransition(Transline *transition) {
     this->outgoingTransition = transition;
+}
+
+Transline * HyperTransition::getOutgoingTransition() {
+    return this->outgoingTransition;
 }
 
 QList<QUndoCommand*> HyperTransition::remove(QUndoCommand * parentCommand) {

@@ -695,11 +695,19 @@ class Fsm {
          */
         Join * addJoin(Join *);
 
+        /**
+         * Delete a join
+         * @param join
+         * @return
+         */
+        Join * deleteJoin(Join * join);
+
         /// Joins FOREACH Macro:
         ///    - Map<unsigned long int,Join*> iterator is accessible under the it variable
         ///    - Join is accessible under the join variable
         /// Don't forget to #include <map> !!
 #define FOREACH_JOIN(fsm) \
+       qDebug() << "Foreaching joins: " << fsm->getJoins().size(); \
        for (map<unsigned int,::Join*>::iterator it = fsm->getJoins().begin();it!=fsm->getJoins().end();it++) { \
            ::Join * join = it->second;
 

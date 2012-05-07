@@ -42,7 +42,14 @@ public:
 
 
     JoinItem(Join * model = NULL);
-    ~JoinItem();
+    virtual ~JoinItem();
+
+    /**
+     * Remove
+     * @param parentComand
+     * @return
+     */
+    virtual QList<QUndoCommand*> remove(QUndoCommand * parentComand = NULL);
 
     void addIncomingTransition(Transline *);
 
@@ -52,9 +59,11 @@ public:
      * Return a copy of the incoming transitions internal list
      * @return
      */
-    QList<Transline*> getIncomingTransitions();
+    QList<Transline*>& getIncomingTransitions();
 
     void setOutgoingTransition(Transline *);
+
+    Transline * getOutgoingTransition();
 
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);

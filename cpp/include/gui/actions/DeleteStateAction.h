@@ -32,7 +32,7 @@ class DeleteStateAction : public ItemFocusedAction<StateItem> {
          * Default constructor
          * Must refer to a scene
          */
-        DeleteStateAction(StateItem *);
+        DeleteStateAction(StateItem *,QUndoCommand * parentCommand = NULL);
 
         /**
          * Default Destructor

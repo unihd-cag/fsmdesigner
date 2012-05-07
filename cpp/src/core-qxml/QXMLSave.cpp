@@ -228,7 +228,7 @@ void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
 
             //qDebug() << "Transaction trackpoint join is: " << f->getTransTrackpointJoin();
 
-            out << "' join='" << trackpoint->getJoinID()
+            out << "' join='" << (trackpoint->getJoin()!=NULL ? trackpoint->getJoin()->getId() : 0)
                     << "' color='" << trackpoint->getColor();
             out << "' />" << endl;
 
@@ -276,7 +276,7 @@ void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
 
                 //qDebug() << "Transaction trackpoint join is: " << f->getTransTrackpointJoin();
 
-                out << "' join='" << trackpoint->getJoinID()
+                out << "' join='" << trackpoint->getJoin()->getId()
                         << "' color='" << trackpoint->getColor();
                 out << "' />" << endl;
                 END_FOREACH_HYPERTRANSITION_TRACKPOINTS

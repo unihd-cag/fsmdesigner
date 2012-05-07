@@ -62,6 +62,8 @@ class HyperTransition: public QGraphicsEllipseItem, public FSMGraphicsItem<
 
         void setOutgoingTransition(Transline *);
 
+        Transline * getOutgoingTransition();
+
 
         virtual QList<QUndoCommand*> remove(QUndoCommand * parentComand = NULL);
 

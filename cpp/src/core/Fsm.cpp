@@ -61,6 +61,7 @@ Fsm::Fsm(int f) {
 
     //-- Init
     //this->statesMap.clear();
+    this->joinsMap.clear();
 
 }
 
@@ -858,20 +859,17 @@ Hypertrans * Fsm::getHypertransbyID(unsigned int id) {
 
 Join * Fsm::addJoin() {
 
-    //-- Create Join
-    Join * join = new Join();
 
-    //-- Assign an ID
-    this->idManager.assignID(join);
 
-    //-- Add to map
-    this->joinsMap[join->getId()] = join;
+    //-- Create Join (ID assigned here and all)
+    Join * join = this->addJoin(new Join());
 
     return join;
 
 }
 
 Join * Fsm::addJoin(Join * join) {
+
 
     //-- If already in the FSM, don't add
     if (join->isIdSet() && this->joinsMap.count(join->getId())>0)
@@ -887,11 +885,34 @@ Join * Fsm::addJoin(Join * join) {
 
 }
 
+Join * Fsm::deleteJoin(Join * join) {
+
+
+    //-- Verify state is present in this FSM
+    if (this->joinsMap.count(join->getId()) == 0) {
+        stringstream message;
+        message << "Trying to delete join with id " << join->getId()
+                << "not possible because join does not belong to FSM";
+        throw new invalid_argument(message.str());
+    }
+
+    //-- Remove from map
+    this->joinsMap.erase(join->getId());
+
+    //-- Deassign ID
+    this->idManager.derefenceObject(join);
+
+    return join;
+
+}
+
 map<unsigned int, Join*>& Fsm::getJoins() {
     return this->joinsMap;
 }
 
 Join * Fsm::getJoin(unsigned int id) {
+    if (this->joinsMap.count(id) == 0)
+            return NULL;
     return this->joinsMap[id];
 }
 /*

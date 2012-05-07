@@ -264,76 +264,7 @@ void QXMLLoad::parseFSM(QDomElement fsmElement) {
 
 	} // EO States --//
 
-	//---- Transitions
-	//--------------------
-	QList<QDomElement> transitions = QXMLLoad::getChildElements("trans",fsmElement);
-	loopcounter =0;
-	for (QList<QDomElement>::iterator it=transitions.begin();it!=transitions.end();it++,loopcounter++) {
 
-		//-- Create trans and set params
-		//cout << "Trans: " <<atoi(QXMLLoad::getChildText("start",*it)) <<"->" <<atoi(QXMLLoad::getChildText("end",*it)) << ", Default: "<< (atoi(QXMLLoad::getChildText("default",*it))==1?true:false)  <<endl;
-
-	    //-- Get start and end
-	    State * start = fsm->getStatebyID(atoi(QXMLLoad::getChildText("start",*it).c_str()));
-	    State * end   = fsm->getStatebyID(atoi(QXMLLoad::getChildText("end",*it).c_str()));
-
-
-	    //-- Create
-	    Trans * addedTransition = new Trans(start,end);
-	    addedTransition->setId(atoi(QXMLLoad::getAttributeValue("id",*it)));
-
-		//-- Text
-	    addedTransition->setName(string(QXMLLoad::getChildText("name",*it)));
-	    addedTransition->setTextPosition((double)atof(QXMLLoad::getAttributeValue("textposx",*it)),
-                (double)atof(QXMLLoad::getAttributeValue("textposy",*it)));
-
-        //-- Default
-        addedTransition->setDefault((atoi(QXMLLoad::getChildText("default",*it).c_str())==1?true:false));
-
-        //-- Add to FSM
-        fsm->addTrans(addedTransition);
-
-		//---- Manage trackpoints
-		//---------------------------
-		QList<QDomElement> trackpoints = QXMLLoad::getChildElements("trackpoint",*it);
-		int loopcounter2 =0;
-		for (QList<QDomElement>::iterator it2=trackpoints.begin();it2!=trackpoints.end();it2++,loopcounter2++) {
-
-			//-- Add
-			Trackpoint * addedTrackpoint = addedTransition->appendTrackpoint(
-					(double)atof(QXMLLoad::getAttributeValue("posx",*it2)),
-							(double)atof(QXMLLoad::getAttributeValue("posy",*it2)));
-
-			//-- Link ?
-			bool link = atoi(QXMLLoad::getAttributeValue("link",*it2))==1?true:false;
-			if (link) {
-			    addedTrackpoint->setTargetLink(atoi(QXMLLoad::getAttributeValue("linkid",*it2)));
-			}
-
-			//-- Join
-			int joinid = atoi(QXMLLoad::getAttributeValue("join",*it2));
-			addedTrackpoint->setJoinID(joinid);
-
-			//-- Color
-			addedTrackpoint->setColor(atoi(QXMLLoad::getAttributeValue("color",*it2)));
-
-		}
-
-
-		//-- Conditions
-		QList<QDomElement> conditions = QXMLLoad::getChildElements("condition",*it);
-		loopcounter2 =0;
-		for (QList<QDomElement>::iterator it2=conditions.begin();it2!=conditions.end();it2++,loopcounter2++) {
-
-			// add
-		    Condition * condition = addedTransition->addCondition(fsm->getNumberOfInputs());
-		    condition->setName(QXMLLoad::getChildText("cname",*it2));
-		    condition->setInput(QXMLLoad::getChildText("input",*it2));
-
-		} // EO Conditions --//
-
-
-	} // EO Transitions --//
 
 	//-- Links
 	//----------------
@@ -400,6 +331,8 @@ void QXMLLoad::parseFSM(QDomElement fsmElement) {
 	loopcounter =0;
 	for (QList<QDomElement>::iterator it=joins.begin();it!=joins.end();it++,loopcounter++) {
 
+
+
 		//-- Create
 		Join * newJoin = new Join();
 
@@ -439,10 +372,83 @@ void QXMLLoad::parseFSM(QDomElement fsmElement) {
 
 		}
 
-
-
-
 	}
+	// EOF Joins
+
+
+
+	//---- Transitions
+    //--------------------
+    QList<QDomElement> transitions = QXMLLoad::getChildElements("trans",fsmElement);
+    loopcounter =0;
+    for (QList<QDomElement>::iterator it=transitions.begin();it!=transitions.end();it++,loopcounter++) {
+
+        //-- Create trans and set params
+        //cout << "Trans: " <<atoi(QXMLLoad::getChildText("start",*it)) <<"->" <<atoi(QXMLLoad::getChildText("end",*it)) << ", Default: "<< (atoi(QXMLLoad::getChildText("default",*it))==1?true:false)  <<endl;
+
+        //-- Get start and end
+        State * start = fsm->getStatebyID(atoi(QXMLLoad::getChildText("start",*it).c_str()));
+        State * end   = fsm->getStatebyID(atoi(QXMLLoad::getChildText("end",*it).c_str()));
+
+
+        //-- Create
+        Trans * addedTransition = new Trans(start,end);
+        addedTransition->setId(atoi(QXMLLoad::getAttributeValue("id",*it)));
+
+        //-- Text
+        addedTransition->setName(string(QXMLLoad::getChildText("name",*it)));
+        addedTransition->setTextPosition((double)atof(QXMLLoad::getAttributeValue("textposx",*it)),
+                (double)atof(QXMLLoad::getAttributeValue("textposy",*it)));
+
+        //-- Default
+        addedTransition->setDefault((atoi(QXMLLoad::getChildText("default",*it).c_str())==1?true:false));
+
+        //-- Add to FSM
+        fsm->addTrans(addedTransition);
+
+        //---- Manage trackpoints
+        //---------------------------
+        QList<QDomElement> trackpoints = QXMLLoad::getChildElements("trackpoint",*it);
+        int loopcounter2 =0;
+        for (QList<QDomElement>::iterator it2=trackpoints.begin();it2!=trackpoints.end();it2++,loopcounter2++) {
+
+            //-- Add
+            Trackpoint * addedTrackpoint = addedTransition->appendTrackpoint(
+                    (double)atof(QXMLLoad::getAttributeValue("posx",*it2)),
+                            (double)atof(QXMLLoad::getAttributeValue("posy",*it2)));
+
+            //-- Link ?
+            bool link = atoi(QXMLLoad::getAttributeValue("link",*it2))==1?true:false;
+            if (link) {
+                addedTrackpoint->setTargetLink(atoi(QXMLLoad::getAttributeValue("linkid",*it2)));
+            }
+
+            //-- Join
+            int joinid = atoi(QXMLLoad::getAttributeValue("join",*it2));
+            addedTrackpoint->setJoin(fsm->getJoin(joinid));
+
+            //-- Color
+            addedTrackpoint->setColor(atoi(QXMLLoad::getAttributeValue("color",*it2)));
+
+        }
+
+
+        //-- Conditions
+        QList<QDomElement> conditions = QXMLLoad::getChildElements("condition",*it);
+        loopcounter2 =0;
+        for (QList<QDomElement>::iterator it2=conditions.begin();it2!=conditions.end();it2++,loopcounter2++) {
+
+            // add
+            Condition * condition = addedTransition->addCondition(fsm->getNumberOfInputs());
+            condition->setName(QXMLLoad::getChildText("cname",*it2));
+            condition->setInput(QXMLLoad::getChildText("input",*it2));
+
+        } // EO Conditions --//
+
+
+    } // EO Transitions --//
+
+
 
 }
 

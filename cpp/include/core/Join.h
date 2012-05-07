@@ -31,9 +31,6 @@ class Join : public UniqueIDObject {
 
 protected:
 
-	/// Id of the Join (-1 per default == undefined)
-	int id;
-
 	/// X Position
 	int posx;
 
@@ -73,9 +70,6 @@ public:
 	 */
 	list<Trackpoint*>& getTrackpoints();
 
-	void setId(int id);
-
-	int getId();
 
 	void setTargetState(State * state);
 

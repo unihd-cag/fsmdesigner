@@ -46,6 +46,7 @@ using namespace std;
 
 //-- Core
 class TransitionBase;
+class Join;
 
 /*!
  \brief Trackpoint-object
@@ -67,8 +68,8 @@ class Trackpoint {
         /// The link id that is targetting (0 means not a link)
         unsigned int    lid;
 
-        /// The Join ID that is targetted
-        unsigned int    joinid;
+        /// The Join that is targetted
+        Join *   join;
 
         /// The color of the trackpoint
         int             color;
@@ -116,13 +117,13 @@ class Trackpoint {
          *
          * @param joinId The ID of the targeted join, 0 means not targeting a join
          */
-        void setJoinID(unsigned int joinId);
+        void setJoin(Join *);
 
         /**
          *
          * @return ID of targeted Join, 0 means not targeting a join
          */
-        unsigned int getJoinID();
+        Join * getJoin();
 
         /** @} */
 

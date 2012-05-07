@@ -15,8 +15,7 @@
 
 #include "Join.h"
 
-Join::Join() {
-	this->id = -1;
+Join::Join() : UniqueIDObject() {
 	this->targetState = NULL;
 	this->posx = 0;
 	this->posy = 0;
@@ -56,13 +55,7 @@ list<Trackpoint*>& Join::getTrackpoints() {
     return this->trackpoints;
 }
 
-void Join::setId(int id) {
-    this->id = id;
-}
 
-int Join::getId() {
-    return this->id;
-}
 
 void Join::setTargetState(State * state) {
     this->targetState = state;

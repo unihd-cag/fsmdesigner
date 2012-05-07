@@ -34,6 +34,9 @@ using namespace std;
 #include <gui/items/Transline.h>
 #include <gui/items/FSMGraphicsItem.h>
 
+//-- Actions
+#include <gui/actions/DeleteJoinAction.h>
+
 #include "JoinItem.h"
 
 JoinItem::JoinItem(Join * model) : QGraphicsRectItem() {
@@ -66,6 +69,20 @@ JoinItem::JoinItem(Join * model) : QGraphicsRectItem() {
 JoinItem::~JoinItem() {
 }
 
+QList<QUndoCommand*> JoinItem::remove(QUndoCommand * parentComand) {
+
+    //-- Prepare Undo
+    QList<QUndoCommand*> undoCommands;
+
+
+    //-- Remove itself
+    DeleteJoinAction * undoDeleteThis = new DeleteJoinAction(this,parentComand);
+    undoCommands.append(undoDeleteThis);
+
+
+    return undoCommands;
+
+}
 
 
 void JoinItem::modelChanged() {
@@ -84,10 +101,11 @@ void JoinItem::modelChanged() {
 }
 
 void JoinItem::addIncomingTransition(Transline * transition) {
-	this->incomingTransitions.append(transition);
+    if (!this->incomingTransitions.contains(transition))
+        this->incomingTransitions.append(transition);
 }
 
-QList<Transline*> JoinItem::getIncomingTransitions() {
+QList<Transline*>& JoinItem::getIncomingTransitions() {
 	return this->incomingTransitions;
 }
 
@@ -97,6 +115,10 @@ void JoinItem::removeIncomingTransition(Transline * transition) {
 
 void JoinItem::setOutgoingTransition(Transline *transition) {
 	this->outgoingTransition = transition;
+}
+
+Transline * JoinItem::getOutgoingTransition() {
+    return this->outgoingTransition;
 }
 
 void JoinItem::paint(QPainter *painter,

@@ -103,6 +103,8 @@ void Scene::initializeScene() {
 	//--------------------
 	FOREACH_JOIN(this->fsm)
 
+
+
 		//-- Prepare Item
 		JoinItem * joinItem = new JoinItem((*it).second);
 		joinsMap[(*it).first] = joinItem;
@@ -515,11 +517,11 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
 					//-- Add one last trackpoint representing the join before the join graphic item
 					TrackpointItem * joinTrackpoint = new TrackpointItem(new Trackpoint(0,0,NULL));
-					joinTrackpoint->getModel()->setJoinID(joinId);
+					joinTrackpoint->getModel()->setJoin(FSMGraphicsItem<>::toJoinItem(this->placeTransitionStack.front())->getModel());
 					//this->placeTransitionStack.insert(this->placeTransitionStack.indexOf(this->placeTransitionStack.front())-1,joinTrackpoint);
 					this->placeTransitionStack.insert(1,joinTrackpoint);
 
-					qDebug() << "Join target: " << targetState->getId() << " is id: " << joinTrackpoint->getModel()->getJoinID();
+					qDebug() << "Join target: " << targetState->getId() << " is id: " << joinTrackpoint->getModel()->getJoin()->getId();
 
 				}
 
@@ -548,7 +550,7 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 						}
 
 						//-- If trackpoint points to join, it is not designed to go on the scene
-						if (trackPoint->getModel()->getJoinID()==0) {
+						if (trackPoint->getModel()->getJoin()==NULL) {
 							trackPoint->modelChanged();
 							lastTransline = trackPoint->getPreviousTransline();
 						}
@@ -931,6 +933,10 @@ void Scene::keyReleaseEvent(QKeyEvent * keyEvent) {
 			} else if ((*it)->type() == HyperTransition::Type) {
 
                 undoCommands = dynamic_cast<HyperTransition*> (*it)->remove();
+
+            } else if ((*it)->type() == JoinItem::Type) {
+
+                undoCommands = dynamic_cast<JoinItem*> (*it)->remove();
 
             }
 

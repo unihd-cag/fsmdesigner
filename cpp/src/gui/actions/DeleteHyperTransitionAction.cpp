@@ -66,6 +66,7 @@ void DeleteHyperTransitionAction::redo(){
     //--------------
     this->relatedScene->removeItem(this->item);
 
+
 }
 void DeleteHyperTransitionAction::undo(){
 

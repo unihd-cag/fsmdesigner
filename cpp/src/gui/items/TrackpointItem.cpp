@@ -145,7 +145,8 @@ QVariant TrackpointItem::itemChange(GraphicsItemChange change,
 			else {
 
 				//-- Delete Previous transline
-				delete this->getPreviousTransline();
+			    this->getPreviousTransline()->scene()->removeItem(this->getPreviousTransline());
+				//delete this->getPreviousTransline();
 				this->setPreviousTransline(NULL);
 			}
 
@@ -153,7 +154,8 @@ QVariant TrackpointItem::itemChange(GraphicsItemChange change,
 			//-----------------
 
 			//-- Next transline is anyway ours, so remove it
-			delete this->getNextTransline();
+			this->getNextTransline()->scene()->removeItem(this->getNextTransline());
+			//delete this->getNextTransline();
 			this->setNextTransline(NULL);
 
 			//-- If trackpoint, its start is our present start

@@ -80,16 +80,7 @@ DeleteTransitionAction::~DeleteTransitionAction() {
 }
 
 int DeleteTransitionAction::id() {
-
-    int id = -1;
-
-    if (this->item->getStartItem() == NULL)
-        id = this->item->getModel()->getId();
-    else
-        id = dynamic_cast<StateItem *>(this->item->getStartItem())->getModel()->getId();
-
-
-    return id;
+    return ItemFocusedAction<Transline>::id();
 }
 bool DeleteTransitionAction::mergeWith(const QUndoCommand * command) {
     // Call parent
@@ -119,20 +110,30 @@ void DeleteTransitionAction::redo(){
 
     //-- First find the start of the transition
     Trans * transition = (Trans*)this->item->getModel();
-    Transline * first = this->getRelatedScene()->findTransline(transition).first();
+    Transline * first = NULL;
 
-    //qDebug() << "-- *I: first type: " << first->getStartItem();
-    while (first->getStartItem()!=NULL && first->getStartItem()->type() != StateItem::Type) {
-    //while (!FSMGraphicsItem<>::isStateItem(first->getStartItem())) {
-
-        //-- Prev is a trackpoint, jump to trackpoint prev transition
-        if (FSMGraphicsItem<>::isTrackPoint(first->getStartItem())) {
-            first
-                    = FSMGraphicsItem<>::toTrackPoint(first->getStartItem())->getPreviousTransline();
+    QList<Transline*> translines = this->getRelatedScene()->findTransline(transition);
+    while (!translines.isEmpty()) {
+        Transline * cTransline = translines.takeFirst();
+        if (cTransline->getStartItem()->type() == StateItem::Type) {
+            first = cTransline;
+            break;
         }
-
-        //qDebug() << "*I: first type: " << first->getStartItem()->type();
     }
+
+    if (first==NULL) {
+        qDebug() << "First transline not found!" << endl;
+        SGC::getInstance()->collect();
+        return;
+    }
+
+//    while (first->getStartItem()!=NULL && first->getStartItem()->type() != StateItem::Type) {
+//        //-- Prev is a trackpoint, jump to trackpoint prev transition
+//        if (FSMGraphicsItem<>::isTrackPoint(first->getStartItem())) {
+//            first
+//                    = FSMGraphicsItem<>::toTrackPoint(first->getStartItem())->getPreviousTransline();
+//        }
+//    }
 
 
     //-- get the associated state from first transline
@@ -179,18 +180,21 @@ void DeleteTransitionAction::redo(){
         else if (nextTransline->getEndItem()->type()==LinkDeparture::Type) {
 
             //-- Remove Link Item
+            this->getRelatedScene()->removeItem(nextTransline->getEndItem());
             //SGC::getInstance()->requestDelete(nextTransline->getEndItem());
             endItem = NULL;
 
             //-- Delete transline and stop there
-            SGC::getInstance()->requestDelete(nextTransline);
+            this->getRelatedScene()->removeItem(nextTransline);
+            //SGC::getInstance()->requestDelete(nextTransline);
             nextTransline = NULL;
         }
         else {
             //-- No more next transline because no trackpoint.
             //-- Only delete transline and end there
             endItem = nextTransline->getEndItem();
-            SGC::getInstance()->requestDelete(nextTransline);
+            this->getRelatedScene()->removeItem(nextTransline);
+            //SGC::getInstance()->requestDelete(nextTransline);
             nextTransline = NULL;
 
         }
@@ -206,18 +210,17 @@ void DeleteTransitionAction::redo(){
     }
 
 
-
     // Remove Model
     //------------------------
     this->getRelatedScene()->getFsm()->deleteTrans(transition);
 
     //-- Store Item as a dummy Item as Transline are always reconstructed
-   // SGC::getInstance()->requestDelete(this->item);
-    Transline * tempItem = new Transline(transition);
-
+    //SGC::getInstance()->requestDelete(this->item);
 
     //-- Collect all removed items
     SGC::getInstance()->collect();
+
+
 
     //-- Reset item with a dummy one because the one from action might have been deleted
     this->item = new Transline(transition);
@@ -234,8 +237,6 @@ void DeleteTransitionAction::undo(){
     //----------------------
     this->getRelatedScene()->getFsm()->addTrans((Trans*)this->item->getModel());
     Trans * transition = (Trans*)this->item->getModel();
-
-    ItemFocusedAction<Transline>::undo();
 
     // Gui
     // Rebuild the complete transition
@@ -295,13 +296,13 @@ void DeleteTransitionAction::undo(){
 
         }
         //-- Trackpoint points to a join
-        else if (trackpoint->getJoinID()>0) {
+        else if (trackpoint->getJoin()!=NULL) {
 
             //---- Don't add a trackpoint, but set End Item to the join
             //---------------------
 
             //-- Get Join, position, and find the graphic Item
-            Join * join = currentFSM->getJoin(trackpoint->getJoinID());
+            Join * join = trackpoint->getJoin();
             JoinItem* JoinItem = this->getRelatedScene()->findJoinItem(join);
 
             if (JoinItem==NULL) {

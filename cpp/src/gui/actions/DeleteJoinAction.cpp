@@ -22,6 +22,7 @@ using namespace std;
 #include <core/Join.h>
 #include <core/Trackpoint.h>
 #include <core/Trans.h>
+#include <core/Fsm.h>
 
 //-- Actions
 #include <gui/actions/ItemFocusedAction.h>
@@ -36,6 +37,18 @@ using namespace std;
 
 DeleteJoinAction::DeleteJoinAction(JoinItem * item,QUndoCommand * parentCommand) :ItemFocusedAction<JoinItem>(item,parentCommand) {
 
+    // Delete All transitions that target this Join Item
+    //------------
+//    QList<Transline*> incomingTransitions = this->item->getIncomingTransitions();
+//    for (int i = 0 ; i < incomingTransitions.size();i++) {
+//        incomingTransitions.at(i)->remove(this);
+//    }
+
+    while (!this->item->getIncomingTransitions().isEmpty()) {
+        qDebug() << "Removing incoming line";
+        this->item->getIncomingTransitions().takeFirst()->remove(this);
+    }
+
 }
 
 DeleteJoinAction::~DeleteJoinAction() {
@@ -44,7 +57,7 @@ DeleteJoinAction::~DeleteJoinAction() {
 
 int DeleteJoinAction::id() {
     // Call parent
-    return this->item->getModel()->getId();
+    return ItemFocusedAction<JoinItem>::id();
 }
 bool DeleteJoinAction::mergeWith(const QUndoCommand * command) {
     // Call parent
@@ -52,19 +65,34 @@ bool DeleteJoinAction::mergeWith(const QUndoCommand * command) {
 }
 void DeleteJoinAction::redo(){
 
+
+
     // Call parent
     ItemFocusedAction<JoinItem>::redo();
 
-    //-- FIXME do
+    //-- Remove from GUI
+    this->getRelatedScene()->removeItem(this->item);
+    if (this->item->getOutgoingTransition()!=NULL) {
+        this->getRelatedScene()->removeItem(this->item->getOutgoingTransition());
+        delete this->item->getOutgoingTransition();
+    }
+
+
+    //-- Remove from Model
+    this->getRelatedScene()->getFsm()->deleteJoin(this->item->getModel());
+
 
 }
 void DeleteJoinAction::undo(){
-    // Call parent
-    ItemFocusedAction<JoinItem>::undo();
+
 
     // Readd GUI Item to the scene
     //---------------------------------
     this->getRelatedScene()->addItem(this->item);
+
+    //-- Readd the model
+    //------------------
+    this->getRelatedScene()->getFsm()->addJoin(this->item->getModel());
 
     // Rebuild the transition from Join Point to end item
     //------------
@@ -154,6 +182,9 @@ void DeleteJoinAction::undo(){
         }
 
     }
+
+    // Call parent
+    ItemFocusedAction<JoinItem>::undo();
 
 }
 

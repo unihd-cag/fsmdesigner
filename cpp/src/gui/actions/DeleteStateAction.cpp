@@ -31,28 +31,17 @@ using namespace std;
 //-- Gui Items
 #include <gui/items/StateItem.h>
 #include <gui/items/Transline.h>
+#include <gui/items/JoinItem.h>
+#include <gui/items/HyperTransition.h>
 
 #include "DeleteStateAction.h"
 
-DeleteStateAction::DeleteStateAction(StateItem * item) :ItemFocusedAction<StateItem>(item) {
-
-}
-
-DeleteStateAction::~DeleteStateAction() {
-
-}
-
-int DeleteStateAction::id() {
-    return this->item->getModel()->getId();
-}
-bool DeleteStateAction::mergeWith(const QUndoCommand * command) {
-    // Call parent
-    return ItemFocusedAction<StateItem>::mergeWith(command);
-}
-void DeleteStateAction::redo(){
+DeleteStateAction::DeleteStateAction(StateItem * item,QUndoCommand * parentCommand) :ItemFocusedAction<StateItem>(item,parentCommand) {
 
 
-    // Pre-delete all Transitions
+    // Pre-delete :
+    //  - all Transitions
+    //  - all incoming hypertransitions
     //-------------------------------------
 
     //-- Outgoing
@@ -63,12 +52,52 @@ void DeleteStateAction::redo(){
     //-- Incoming
     while (!this->item->getIncomingTransitions().isEmpty()) {
 
-        //-- If Incoming if also outgoing (loopback), then do not double remove
+
+
         Transline * t = this->item->getIncomingTransitions().takeFirst();
-        if (t->getModel()!=NULL && ((Trans*)t->getModel())->getStartState() != ((Trans*)t->getModel())->getEndState())
+
+        //-- If coming from Hypertransition -> delete hypertransition
+        if (t->getStartItem()->type()==HyperTransition::Type) {
+            FSMGraphicsItem<>::toHyperTransition(t->getStartItem())->remove(this);
+
+        }
+        //-- If Incoming if also outgoing (loopback), then do not double remove
+        else if (t->getModel()!=NULL && ((Trans*)t->getModel())->getStartState() != ((Trans*)t->getModel())->getEndState())
             t->remove(this);
 
+        //-- if Coming from join, delete join
+        else if (t->getStartItem()->type()==JoinItem::Type) {
+            FSMGraphicsItem<>::toJoinItem(t->getStartItem())->remove(this);
+        }
+
+
+
     }
+
+
+
+}
+
+DeleteStateAction::~DeleteStateAction() {
+
+}
+
+int DeleteStateAction::id() {
+    return ItemFocusedAction<StateItem>::id();
+}
+bool DeleteStateAction::mergeWith(const QUndoCommand * command) {
+    // Call parent
+    return ItemFocusedAction<StateItem>::mergeWith(command);
+}
+void DeleteStateAction::redo(){
+
+
+
+
+    //-- Hypertransitions
+
+    //--
+
 
 
     // Remove Children (transitions)
@@ -99,7 +128,7 @@ void DeleteStateAction::undo(){
 
     // Restore Children (transitions)
     //-------------------
-    QUndoCommand::undo();
+    ItemFocusedAction<StateItem>::undo();
 
 }
 
