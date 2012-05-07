@@ -92,14 +92,6 @@ bool DeleteStateAction::mergeWith(const QUndoCommand * command) {
 void DeleteStateAction::redo(){
 
 
-
-
-    //-- Hypertransitions
-
-    //--
-
-
-
     // Remove Children (transitions)
     //-------------------
     ItemFocusedAction<StateItem>::redo();

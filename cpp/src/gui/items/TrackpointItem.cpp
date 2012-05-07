@@ -154,10 +154,11 @@ QVariant TrackpointItem::itemChange(GraphicsItemChange change,
 			//-----------------
 
 			//-- Next transline is anyway ours, so remove it
-			this->getNextTransline()->scene()->removeItem(this->getNextTransline());
-			//delete this->getNextTransline();
-			this->setNextTransline(NULL);
-
+			if (this->getNextTransline()!=NULL) {
+			    this->getNextTransline()->scene()->removeItem(this->getNextTransline());
+			    //delete this->getNextTransline();
+			    this->setNextTransline(NULL);
+			}
 			//-- If trackpoint, its start is our present start
 			if (this->getEndItem()!=NULL && FSMGraphicsItem<>::isTrackPoint(this->getEndItem())) {
 

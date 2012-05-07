@@ -544,7 +544,7 @@ QVariant Transline::itemChange(GraphicsItemChange change,
 		}
 		//-- If the end is a Link Item, we can delete it
 		else if (this->getEndItem()!=NULL && this->getEndItem()->type()==FSMGraphicsItem<>::LINKDEPARTURE) {
-		    this->getEndItem()->scene()->removeItem(this->getEndItem());
+		    //this->getEndItem()->scene()->removeItem(this->getEndItem());
 			//SGC::getInstance()->requestDelete(this->getEndItem());
 		}
 
