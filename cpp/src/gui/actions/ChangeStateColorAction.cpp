@@ -28,7 +28,7 @@ using namespace std;
 
 #include "ChangeStateColorAction.h"
 
-ChangeStateColorAction::ChangeStateColorAction(QColor color,StateItem * item) :ItemFocusedAction(item) {
+ChangeStateColorAction::ChangeStateColorAction(QColor color,StateItem * item) : ItemFocusedAction<StateItem>(item) {
     this->color = color;
 }
 

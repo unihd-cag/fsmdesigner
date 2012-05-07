@@ -34,7 +34,7 @@ using namespace std;
 
 #include "DeleteStateAction.h"
 
-DeleteStateAction::DeleteStateAction(StateItem * item) :ItemFocusedAction(item) {
+DeleteStateAction::DeleteStateAction(StateItem * item) :ItemFocusedAction<StateItem>(item) {
 
 }
 

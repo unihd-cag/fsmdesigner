@@ -27,7 +27,7 @@ Generator::~Generator() {
 }
 
 
-QVariant& Generator::getParameter(QString name) {
+QVariant Generator::getParameter(QString name) {
 
     QVariant res;
     if (this->parametersMap.contains(name)) {

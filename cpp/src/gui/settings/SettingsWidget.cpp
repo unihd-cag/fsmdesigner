@@ -13,7 +13,7 @@
 //-- Std
 #include <sstream>
 #include <exception>
-#include <error.h>
+//#include <error.h>
 #include <stdexcept>
 using namespace std;
 

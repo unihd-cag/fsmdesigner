@@ -32,7 +32,7 @@ using namespace std;
 
 #include "DeleteTrackpointAction.h"
 
-DeleteTrackpointAction::DeleteTrackpointAction(TrackpointItem * item,QUndoCommand * parentCommand) :ItemFocusedAction(item,parentCommand) {
+DeleteTrackpointAction::DeleteTrackpointAction(TrackpointItem * item,QUndoCommand * parentCommand) :ItemFocusedAction<TrackpointItem>(item,parentCommand) {
 
 }
 

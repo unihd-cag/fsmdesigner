@@ -65,7 +65,7 @@ class Generator {
          * @param name
          * @return An invalid variant if nothing has been recorded for the parameter
          */
-        QVariant& getParameter(QString name);
+        QVariant getParameter(QString name);
 
         /**
          * Set the value for the specified parameter.

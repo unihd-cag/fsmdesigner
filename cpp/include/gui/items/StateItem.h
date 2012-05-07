@@ -156,18 +156,18 @@ protected:
 
 public:
 
-	enum { Type = FSMGraphicsItem::STATEITEM };
+	enum { Type = FSMGraphicsItem<>::STATEITEM };
 
     /// Constructor using a State Model
     StateItem(State * model = NULL,QGraphicsItem * parent = 0);
 
-    ~StateItem();
+    virtual ~StateItem();
 
     /// overriden
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-    int type() const { return FSMGraphicsItem::STATEITEM;}
+    int type() const { return FSMGraphicsItem<>::STATEITEM;}
 
     QString text();
 

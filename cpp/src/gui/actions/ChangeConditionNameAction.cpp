@@ -28,7 +28,7 @@ using namespace std;
 
 #include "ChangeConditionNameAction.h"
 
-ChangeConditionNameAction::ChangeConditionNameAction(QString name,Condition * item,QUndoCommand * parentCommand) :ObjectFocusedAction(item,parentCommand) {
+ChangeConditionNameAction::ChangeConditionNameAction(QString name,Condition * item,QUndoCommand * parentCommand) :ObjectFocusedAction<Condition>(item,parentCommand) {
     this->name = name;
 }
 

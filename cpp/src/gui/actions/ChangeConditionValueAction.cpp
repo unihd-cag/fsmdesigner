@@ -27,7 +27,7 @@ using namespace std;
 
 ChangeConditionValueAction::ChangeConditionValueAction(QString value,
         Condition * item, QUndoCommand * parentCommand) :
-        ObjectFocusedAction(item, parentCommand) {
+        ObjectFocusedAction<Condition>(item, parentCommand) {
     this->value = value;
 }
 

@@ -18,6 +18,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <typeinfo>
+#include <time.h>
 using namespace std;
 
 //-- Qt

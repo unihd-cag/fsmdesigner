@@ -236,7 +236,7 @@ public:
 	}
 
 	static bool isStateItem(QGraphicsItem * item) {
-			return item!=NULL && (item->type()==FSMGraphicsItem::STATEITEM);
+			return item!=NULL && (item->type()==FSMGraphicsItem<>::STATEITEM);
 	}
 
 	bool isStateItem() {
@@ -252,7 +252,7 @@ public:
 	}
 
 	static bool isTrackPoint(QGraphicsItem * item) {
-		return item!=NULL && (item->type()==FSMGraphicsItem::TRACKPOINT);
+		return item!=NULL && (item->type()==FSMGraphicsItem<>::TRACKPOINT);
 	}
 
 	bool isTrackPoint() {
@@ -268,7 +268,7 @@ public:
 	}
 
 	static bool isHyperTransition(QGraphicsItem * item) {
-        return item!=NULL && (item->type()==FSMGraphicsItem::HYPERTRANS);
+        return item!=NULL && (item->type()==FSMGraphicsItem<>::HYPERTRANS);
     }
 
     bool isHyperTransition() {
@@ -284,7 +284,7 @@ public:
     }
 
 	static bool isTransline(QGraphicsItem * item) {
-		return item!=NULL && (item->type()==FSMGraphicsItem::TRANSLINE);
+		return item!=NULL && (item->type()==FSMGraphicsItem<>::TRANSLINE);
 	}
 
 	bool isTransline() {
@@ -300,7 +300,7 @@ public:
 	}
 
 	static bool isTranslineText(QGraphicsItem * item) {
-        return item!=NULL && (item->type()==FSMGraphicsItem::TRANSLINETEXT);
+        return item!=NULL && (item->type()==FSMGraphicsItem<>::TRANSLINETEXT);
     }
 
     bool isTranslineText() {
@@ -316,7 +316,7 @@ public:
     }
 
 	static bool isJoinItem(QGraphicsItem * item) {
-		return item!=NULL && (item->type()==FSMGraphicsItem::JOINITEM);
+		return item!=NULL && (item->type()==FSMGraphicsItem<>::JOINITEM);
 	}
 
 	static JoinItem * toJoinItem(QGraphicsItem * item) {
@@ -325,7 +325,7 @@ public:
 
 
 	static bool isLinkDeparture(QGraphicsItem * item) {
-		return item!=NULL && (item->type()==FSMGraphicsItem::LINKDEPARTURE);
+		return item!=NULL && (item->type()==FSMGraphicsItem<>::LINKDEPARTURE);
 	}
 
 	static LinkDeparture * toLinkDeparture(QGraphicsItem * item) {

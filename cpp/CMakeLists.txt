@@ -4,7 +4,7 @@ project (FSMDesigner)
 # Set version number
 set (FSMDesigner_VERSION_MAJOR 5)
 set (FSMDesigner_VERSION_MINOR 1)
-set (FSMDesigner_VERSION_PATCH 0)
+set (FSMDesigner_VERSION_PATCH 1)
   
 ##########################################
 # Libraries needed
@@ -33,7 +33,7 @@ set(CMAKE_BUILD_TYPE Debug)
 ## Show compiler command lines
 set(CMAKE_VERBOSE_MAKEFILE false)
  
-
+ 
 ##########################################
 ## Output directories
 ##########################################
@@ -190,9 +190,22 @@ target_link_libraries(fsmdesignerGenVerilog genverilog_lib )
 # Installs to CMAKE_INSTALL_PREFIX
 ##########################################
 SET(TARGETS_TO_INSTALL fsmdesignerGenVerilog fsmdesigner gui_lib genverilog_lib core_qxml_lib verification_lib)	
+
+
+
+
+## Install binary and libraries
 install(TARGETS ${TARGETS_TO_INSTALL} 
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib)
+        RUNTIME DESTINATION bin COMPONENT runtime
+        LIBRARY DESTINATION lib COMPONENT runtime)
+
+
+	    
+## Install includes   
+install(DIRECTORY include/ 
+		DESTINATION include/fsmdesigner
+		COMPONENT headers
+        FILES_MATCHING PATTERN "*.h")
 
 ##########################################
 ## Package installers
@@ -202,26 +215,46 @@ install(TARGETS ${TARGETS_TO_INSTALL}
 SET(CPACK_PACKAGE_VERSION_MAJOR ${FSMDesigner_VERSION_MAJOR})
 SET(CPACK_PACKAGE_VERSION_MINOR ${FSMDesigner_VERSION_MINOR})
 SET(CPACK_PACKAGE_VERSION_PATCH ${FSMDesigner_VERSION_PATCH})
+SET(CPACK_RESOURCE_FILE_LICENSE "${FSMDesigner_SOURCE_DIR}/Copyright.txt")
 
-# Define Default install dir for packages
-
-SET(CPACK_SOURCE_OUTPUT_CONFIG_FILE ${FSMDesigner_SOURCE_DIR}/build/packages/CPackSourceConfig.cmake)
-SET(CPACK_OUTPUT_CONFIG_FILE ${FSMDesigner_SOURCE_DIR}/build/packages/CPackConfig.cmake)
-SET(CPACK_PACKAGE_DEFAULT_LOCATION ${FSMDesigner_SOURCE_DIR}/build/packages/)
-SET(CPACK_INSTALL_PREFIX ${FSMDesigner_SOURCE_DIR}/build/packages/)
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${FSMDesigner_SOURCE_DIR}/build/packages/)
-SET(CPACK_SET_DESTDIR ${FSMDesigner_SOURCE_DIR}/build/packages/)
- 
 ## Create an archive
-SET(CPACK_GENERATOR TBZ2)
+#SET(CPACK_GENERATOR TBZ2 ZIP)
+
 
 ## Debian ##########################################
-IF(NOT WIN32)
-	SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "richard.leys@ziti.uni-heidelberg.de")
-	SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4")
-	SET(CPACK_GENERATOR ${CPACK_GENERATOR} DEB)
-ENDIF(NOT WIN32)
+#IF(NOT WIN32)
+#	SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "richard.leys@ziti.uni-heidelberg.de")
+#	SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4")
+#	SET(CPACK_GENERATOR ${CPACK_GENERATOR} DEB)
+#ENDIF(NOT WIN32)
 
+## Windows installer ###############################
+IF(WIN32)
+
+ ## Package QT  Libraries DLLs
+ FOREACH(qtlib ${QT_LIBRARIES})
+ 	string(REGEX REPLACE
+ 				"lib([a-zA-Z0-9]+)\\.a"
+ 				"\\1.dll"
+ 				resLib
+ 				${qtlib})
+ 	message(STATUS "Packaging ${resLib}")
+ 	INSTALL(FILES ${resLib}
+	    DESTINATION bin
+	    COMPONENT runtime)
+ ENDFOREACH(qtlib ${QT_LIBRARIES})
+
+ ## Runtime component is required
+ set(CPACK_COMPONENT_RUNTIME_REQUIRED true)
+ 
+ ## Executable
+ SET(CPACK_PACKAGE_EXECUTABLES "fsmdesigner" "FSMDesigner")
+
+ SET(CPACK_GENERATOR ${CPACK_GENERATOR} NSIS)
+ set(CPACK_COMPONENTS_ALL runtime headers)
+
+
+ENDIF(WIN32)
 
 ## Include ##########################################
 INCLUDE(CPack)

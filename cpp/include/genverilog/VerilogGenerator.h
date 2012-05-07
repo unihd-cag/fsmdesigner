@@ -21,8 +21,8 @@ using namespace std;
 #include <QtCore>
 
 //-- Generator
-#include<generate/Generator.h>
-#include<generate/GeneratorBuilder.h>
+#include <generate/Generator.h>
+#include <generate/GeneratorBuilder.h>
 
 /**
  * Generates Verilog

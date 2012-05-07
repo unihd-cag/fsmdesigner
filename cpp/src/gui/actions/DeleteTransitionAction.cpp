@@ -47,7 +47,7 @@ using namespace std;
 
 #include "DeleteTransitionAction.h"
 
-DeleteTransitionAction::DeleteTransitionAction(Transline * item,QUndoCommand * parentCommand) :ItemFocusedAction(item,parentCommand) {
+DeleteTransitionAction::DeleteTransitionAction(Transline * item,QUndoCommand * parentCommand) :ItemFocusedAction<Transline>(item,parentCommand) {
 
 
     //-- Delete Trackpoints Using Children actions

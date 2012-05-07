@@ -39,7 +39,7 @@ using namespace std;
 #include "HyperTransition.h"
 
 HyperTransition::HyperTransition(Hypertrans * model) :
-	QGraphicsEllipseItem() , FSMGraphicsItem() {
+	QGraphicsEllipseItem() , FSMGraphicsItem<Hypertrans>() {
 
 	// Item Flags
     //--------------------
