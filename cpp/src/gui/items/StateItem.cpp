@@ -529,7 +529,7 @@ QList<Transline*>& StateItem::getIncomingTransitions() {
 
 void StateItem::addOutgoingTransition(Transline * transition) {
 
-    // If another transline in outgoing if for the same transitin model -> remove it
+    // If another transline in outgoing if for the same transition model -> remove it
     for (int i=0;i<this->outgoingTransitions.size();i++) {
 
         Transline * otransition = this->outgoingTransitions[i];

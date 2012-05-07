@@ -153,7 +153,7 @@ FSMSceneView::FSMSceneView(Scene* scene, QWidget* parent) :
 	// Help Panel
 	//-----------------------
 	this->helpPanel = new QTextBrowser(this);
-	this->helpPanel->setBaseSize(250,400);
+	this->helpPanel->setBaseSize(250,600);
 	this->helpPanel->setText("Hello world <b>Hey</b>");
 	this->helpPanel->setTextBackgroundColor(Qt::yellow);
 
@@ -278,6 +278,8 @@ void FSMSceneView::changeHelp() {
         // Add Specific Helps
         if (this->getRelatedScene()->getPlaceMode()==FSMDesigner::STATE) {
             newHelpTexts.append(":/help/PlaceMode_State");
+        } else if (this->getRelatedScene()->getPlaceMode()==FSMDesigner::JOIN) {
+            newHelpTexts.append(":/help/PlaceMode_Join");
         }
 
     }

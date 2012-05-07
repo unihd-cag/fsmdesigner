@@ -76,6 +76,7 @@
     <qresource prefix="/help/">
        <file alias="StateItem">help/StateItem.html</file>
        <file alias="PlaceMode">help/PlaceMode.html</file>
+       <file alias="PlaceMode_Join">help/PlaceMode_Join.html</file>
        <file alias="PlaceMode_State">help/PlaceMode_State.html</file>
     </qresource>  
 </RCC>

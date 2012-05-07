@@ -177,7 +177,7 @@ QVariant TrackpointItem::itemChange(GraphicsItemChange change,
 			// First set ourselves in between previous and next if they are trackpoints
 			//-------------------------
 
-			//-- If previous is a trackpoint, it now end on the new one
+			//-- If previous is a trackpoint, it now ends on the new one
 			if (this->getStartItem() != NULL && FSMGraphicsItem<>::isTrackPoint(this->getStartItem())) {
 				FSMGraphicsItem<>::toTrackPoint(this->getStartItem())->setEndItem(this);
 			}
@@ -186,13 +186,6 @@ QVariant TrackpointItem::itemChange(GraphicsItemChange change,
 				FSMGraphicsItem<>::toTrackPoint(this->getEndItem())->setStartItem(this);
 			}
 
-			//-- If previous is a state Item, remove an eventual existing transline
-			//-----------
-			if (this->getStartItem() != NULL && FSMGraphicsItem<>::isStateItem(this->getStartItem()) ) {
-
-			    //FSMGraphicsItem<>::toStateItem(this->getStartItem())->getOutgoingTransitions()
-
-			}
 
 			// Add A reversed delete (i.e add) action to allow to undo the add
 			// !! only if not placing elements on scene! So when added to an existing transition

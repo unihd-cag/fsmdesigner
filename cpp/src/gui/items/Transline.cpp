@@ -374,7 +374,7 @@ void Transline::setStartItem(QGraphicsItem * item) {
 	else if (startItem != NULL && startItem->type() == JoinItem::Type) {
 			qgraphicsitem_cast<JoinItem*> (startItem)->setOutgoingTransition(this);
 	}
-	//-- If start is a Join Point, set as Outgoing transition
+	//-- If start is a Hypertransition, set as Outgoing transition
     else if (startItem != NULL && startItem->type() == HyperTransition::Type) {
             qgraphicsitem_cast<HyperTransition*> (startItem)->setOutgoingTransition(this);
     }

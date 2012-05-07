@@ -29,6 +29,7 @@ using namespace std;
 //-- Gui Items
 #include <gui/items/TrackpointItem.h>
 #include <gui/items/Transline.h>
+#include <gui/items/JoinItem.h>
 
 #include "DeleteTrackpointAction.h"
 
@@ -61,6 +62,9 @@ void DeleteTrackpointAction::redo(){
 
     // Gui
     //--------------------
+    TransitionBase * transition =  this->item->getModel()->getTransition();
+
+ //   qDebug() << "TPoints: " << transition->getTrackpoints().size();
 
     //-- Save Previous/Next information
     this->previousItem = this->item->getStartItem();
@@ -69,19 +73,25 @@ void DeleteTrackpointAction::redo(){
     //-- Call remove out of scene (Gui is ok after that)
     this->getRelatedScene()->removeItem(this->item);
 
-    TransitionBase * transition =  this->item->getModel()->getTransition();
+
 
     //-- FIXME Remove trackpoint from model
     //-- Remove function says who's next now. If no one, we can restore with append
     this->nextModel = this->item->getModel()->remove();
 
-    // IF there are no trackpoints anymore, re add a transition line
-   //---------------
-   if (transition->getTrackpoints().size()==0) {
+   // qDebug() << "TPoints after: " << transition->getTrackpoints().size();
 
+    // IF there are no trackpoints anymore, re add a transition line
+    //  - If no trackpoints
+    //  - If next item is a joint item and only one trackpoint is remaining (because the join connection is a trackpoint)
+    //---------------
+    if (transition->getTrackpoints().size()==0 ||
+            (nextItem->type()==JoinItem::Type && transition->getTrackpoints().size()==1)) {
+
+       //qDebug() << "Adding transline between: " << this->previousItem << " and " << this->nextItem;
        this->getRelatedScene()->addItem(new Transline(transition,this->previousItem,this->nextItem));
 
-   }
+    }
 
 }
 
@@ -116,7 +126,7 @@ void DeleteTrackpointAction::undo(){
 
 
 
-    //cout << "Undoing deleted state" << endl;
+    //qDebug() << "Undoing deleted state" << endl;
 }
 
 

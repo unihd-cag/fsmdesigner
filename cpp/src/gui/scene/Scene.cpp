@@ -758,9 +758,22 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 			//-- Add to FSM
 			this->getFsm()->addJoin(JoinItem->getModel());
 
+			// Ask user to target a state
+            //----------------------------------------
 
-			//-- END
-			this->setPlaceMode(CHOOSE);
+            // Start Transline Placement
+            //--------------------
+
+            //-- Stakc hypertransition on transitin placement stack
+            this->placeTransitionStack.push_front(JoinItem);
+
+            //-- Add a transline to position, and start transition placement modus
+            Transline * beginTransline = new Transline(NULL,JoinItem,NULL);
+            this->addToToPlaceStack(beginTransline);
+
+            //-- Set to transition modus
+            this->setPlaceMode(TRANS);
+
 
 
 			break;
@@ -798,7 +811,7 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
             Transline * beginTransline = new Transline(NULL,hypertransition,NULL);
             this->addToToPlaceStack(beginTransline);
 
-            //-- END
+            //-- Set to transition modus
             this->setPlaceMode(TRANS);
 
             break;
