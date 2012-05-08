@@ -249,12 +249,15 @@ class Scene: public QGraphicsScene, public VerificationListener {
         }
 
     public slots:
+
         /**
-         * Execute verification scripts
+         * Execute verification scripts with Results display on GUI scene
          */
         void verify();
 
         /**@}*/
+
+    public:
 
         /** \defgroup Find Find Objects Utilities */
         /** @{ */
@@ -264,7 +267,7 @@ class Scene: public QGraphicsScene, public VerificationListener {
          * @param transitionModel
          * @return The found translines or an empty list if not found
          */
-    public:
+
         QList<Transline *> findTransline(Trans * transitionModel);
 
 

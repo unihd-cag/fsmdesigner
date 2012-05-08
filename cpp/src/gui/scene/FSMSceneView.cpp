@@ -36,6 +36,7 @@
 using namespace std;
 
 //-- Qt
+#include <QtCore>
 #include <QtGui>
 
 //-- Core
@@ -54,6 +55,9 @@ using namespace std;
 #include <verification/verify.h>
 #include <verification/Verificator.h>
 #include <verification/VerificationListener.h>
+#include <verification/StateOutputsRule.h>
+
+#include <gui/verify/TableVerificationListener.h>
 #include <gui/verify/FSMVerificator.h>
 
 //-- Generation
@@ -73,6 +77,8 @@ using namespace std;
 #include <gui/scene/SceneRelatedObject.h>
 #include <gui/scene/Scene.h>
 #include <gui/scene/selectionanimator.h>
+
+#include <gui/tabbedGUI/FSMTabPane.h>
 
 #include <gui/output/outputwidget.h>
 #include <gui/input/conditionwidget.h>
@@ -103,17 +109,22 @@ FSMSceneView::FSMSceneView(Scene* scene, QWidget* parent) :
 
 	//---- Help and so
 	//-----------------------
-	//QToolButton * activateHelpButton = this->controlToolBar->addActionButton(QIcon(QPixmap(":/icons/Help32")),"Fast Regenerate Verilog");
-    //this->connect(activateHelpButton->actions().first(),SIGNAL(triggered()),SLOT(toggleHelp()));
-    //activateHelpButton->setCheckable(true);
-	//this->controlToolBar->getToolBar()->addSeparator();
+	FAction * renameAction = this->controlToolBar->addAction(QIcon(QPixmap(":/icons/Rename")),"Rename FSM");
+    this->connect(renameAction, SIGNAL(triggered()), SLOT(renameFsm()));
+
+    this->controlToolBar->getToolBar()->addSeparator();
 
 	//---- Verification
 	//------------------------
 
 	// Verify
-    FAction * verifyAction = this->controlToolBar->addAction(QIcon(QPixmap(":/icons/verification.png")),"Quick Verify");
-	this->connect(verifyAction,SIGNAL(triggered()),this->getRelatedScene(),SLOT(verify()));
+    QToolButton * verifyButton = this->controlToolBar->addActionButton(QIcon(QPixmap(":/icons/verification.png")),"Quick Verify");
+	this->connect(verifyButton->defaultAction(),SIGNAL(triggered()),this->getRelatedScene(),SLOT(verify()));
+
+	// Verify in details
+	QAction * verifyDetailsAction = new QAction("Verify...",verifyButton);
+	verifyButton->addAction(verifyDetailsAction);
+    this->connect(verifyDetailsAction,SIGNAL(triggered()),SLOT(verifyTable()));
 
 	// Verify Clear
 	FAction * verifyClearAction = this->controlToolBar->addAction(QIcon(QPixmap(":/icons/Clear-brush")),"Clear Verification Result");
@@ -870,12 +881,50 @@ void FSMSceneView::renameFsm() {
 
 		} else {
 
-			//-- Yeah do rename
+			//-- Do rename
 			this->getRelatedScene()->getFsm()->setName(newName.toStdString());
 
 			//-- FIXME Propagate to title
+			dynamic_cast<FSMTabPane*>(this->parentWidget()->parentWidget())->setTabText(
+			        dynamic_cast<FSMTabPane*>(this->parentWidget()->parentWidget())->indexOf(this),
+			        newName);
+
 		}
 	}
 
 }
 
+void FSMSceneView::verifyTable() {
+
+    // Reset
+    //--------------
+    if (this->getRelatedScene()->getFSMVerificator()!=NULL) {
+        this->getRelatedScene()->getFSMVerificator()->reset();
+    }
+
+    // Create Table verify listener
+    //---------------
+    QDialog dialog(this);
+    dialog.setBaseSize(600,600);
+    dialog.setFixedSize(600,600);
+    dialog.setLayout(new QVBoxLayout());
+
+    TableVerificationListener listener;
+    listener.setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
+    dialog.layout()->addWidget(&listener);
+
+    // Verify
+    //--------------
+    Verificator * verificator = new Verificator();
+    verificator->addRule(new StateOutputsRule());
+    verificator->verify(this->getRelatedScene()->getFsm(),&listener);
+
+    delete verificator;
+
+    // Show Results
+    //-----------------
+    dialog.exec();
+
+
+}

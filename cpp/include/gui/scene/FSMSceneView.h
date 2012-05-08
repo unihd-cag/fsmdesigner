@@ -159,7 +159,7 @@ class FSMSceneView: public QGraphicsView,
         /// Reload/Generate verilog for the currently displayed FSM
         void generateVerilogReload();
 
-        /** \defgroup Place mode methods */
+        /** \defgroup Place Place mode methods */
         /**@{*/
 
         void placeSetUnlocked();
@@ -187,6 +187,16 @@ class FSMSceneView: public QGraphicsView,
          * Opens A control dialog to rename the FSM
          */
         void renameFsm();
+
+        /** \defgroup Verify Verification */
+        /**@{*/
+
+        /**
+         * Execute verification scripts with Results table
+         */
+        void verifyTable();
+
+        /**@}*/
 
 };
 

@@ -5,6 +5,11 @@
 #include <iostream>
 using namespace std;
 
+// -- Qt
+#include <QtGui>
+#include <QtScript/QScriptEngine>
+#include <QtCore>
+
 //-- Items
 #include <gui/items/FSMGraphicsItem.h>
 #include <gui/items/StateItem.h>
@@ -30,11 +35,6 @@ using namespace std;
 #include <verification/Verificator.h>
 #include <verification/StateOutputsRule.h>
 #include <verification/VerificatorRule.h>
-
-// -- Qt
-#include <QtGui>
-#include <QtScript/QScriptEngine>
-#include <QtCore>
 
 //-- Core
 #include <core/FSMDesigner.h>
@@ -1191,6 +1191,7 @@ void Scene::verify() {
 
 
 }
+
 
 void Scene::enteredRule(VerificatorRule * rule) {
 

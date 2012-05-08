@@ -16,6 +16,7 @@ set(CMAKE_MODULE_PATH "./macros/")
 find_package(Qt4 COMPONENTS QtCore QtGui QtXml QtSVG QtScript REQUIRED )
 include(${QT_USE_FILE})
 
+
 ##########################################
 # Compilation Parameters
 ########################################## 
