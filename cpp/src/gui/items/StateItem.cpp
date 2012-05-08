@@ -537,7 +537,9 @@ void StateItem::addOutgoingTransition(Transline * transition) {
 
         Transline * otransition = this->outgoingTransitions[i];
         if (
-                (otransition->getEndItem()->type()==StateItem::Type || otransition->getEndItem()->type()==JoinItem::Type)
+                (otransition->getEndItem() !=NULL)
+                && (otransition->getEndItem()->type()==StateItem::Type || otransition->getEndItem()->type()==JoinItem::Type)
+                && (otransition->getStartItem()!=otransition->getEndItem())
                 && otransition->getModel()!=NULL
                 && transition->getModel()!=NULL
                 && otransition->getModel()==transition->getModel()) {

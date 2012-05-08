@@ -73,6 +73,8 @@ Transline::Transline(TransitionBase * model, QGraphicsItem * startItem,
 
 	if (startItem!=endItem)
 		this->setEndItem(endItem);
+	else
+	    this->endItem = endItem;
 
 	//this->endPoint.setX(startItem!=NULL?startItem->x():0);
 	//this->endPoint.setY(startItem!=NULL?startItem->y():0);
@@ -240,15 +242,21 @@ void Transline::preparePath(bool propagate) {
 	//-- Looping on the same spot
 	if (this->startItem==this->endItem) {
 
-	   /* qDebug() << "Looping";
+	    qDebug() << "Looping";
+
+	    qDebug() << "Looping";
 
 	    QPainterPath loop;
-	    //linePath = *loop;
+	    linePath = loop;
 	    //loop.moveTo(this->startItem->pos());
 
 
-	    loop.arcTo(QRectF(this->startItem->pos().x(),this->startItem->pos().y(),100,100),
+
+
+	    /*loop.arcTo(QRectF(this->startItem->pos().x(),this->startItem->pos().y(),100,100),
 	            45,360-45);*/
+	    /*loop.arcMoveTo(QRectF(this->startItem->pos().x(),this->startItem->pos().y(),100,100),
+	                    360-45);*/
 
 //	    loop.quadTo(QPointF(this->startItem->pos().x()+100,this->startItem->pos().y()),
 //	            QPointF(this->startItem->pos().x(),this->startItem->pos().y()+20));
@@ -257,39 +265,20 @@ void Transline::preparePath(bool propagate) {
 
 	   // loop.translate(this->startItem->pos());
 
-	    //loop.addEllipse(QRectF(0,0,100,100));
+	   // loop.addEllipse(QRectF(0,0,100,100));
 
 	    //loop.moveTo(this->startItem->pos().x()+100,this->startItem->pos().y());
 	    //loop.moveTo(this->startItem->pos().x()+100,this->startItem->pos().y()+100);
 	    //loop.quadTo(this->startItem->pos().x()+20,this->startItem->pos().y()+20,this->startItem->pos().x(),this->startItem->pos().y());
 
-	    // Add Line to path
-	            linePath.moveTo(lineToPaint.p1());
-	            linePath.lineTo(lineToPaint.p2());
+	    loop.moveTo(this->startItem->pos().x(),this->startItem->pos().y()-20);
+	    loop.cubicTo(this->startItem->pos().x(),this->startItem->pos().y(),
+	                  this->startItem->pos().x()+200,this->startItem->pos().y(),
+	                  this->startItem->pos().x(),this->startItem->pos().y()+20);
+	    loop.closeSubpath();
 
-	    //-- Default style
+	    linePath = loop;
 
-        // Pen size
-        this->setPen(QPen(Qt::black));
-        int width = GuiSettings::value("uni.hd.ziti.fsmdesigner.ui.transition.lineWidth", QVariant(1)).toInt();
-        QPen newpen(this->pen());
-        newpen.setWidth(width);
-        this->setPen(newpen);
-
-        if (this->getModel() != NULL && ((Trans*)this->getModel())->isDefault() == true) {
-            QPen np = QPen(this->pen());
-            np.setStyle(Qt::DashDotDotLine);
-            np.setWidth(this->pen().width() + 1);
-            this->setPen(np);
-        } else {
-            QPen np = QPen(this->pen());
-            np.setStyle(Qt::SolidLine);
-            this->setPen(np);
-        }
-        this->setBrush(QBrush(Qt::black));
-
-		//this->setPath(loop);
-		//return;
 	}
 	else {
 
@@ -322,10 +311,14 @@ void Transline::preparePath(bool propagate) {
         np.setStyle(Qt::SolidLine);
         this->setPen(np);
     }
-    this->setBrush(QBrush(Qt::black));
+
 
     //-- Arrow if necessary
     if (this->drawArrow) {
+
+        // Add Brush to fill arrow (have a little bit fun here)
+        //---------------
+        this->setBrush(QBrush(Qt::black,Qt::Dense4Pattern));
 
         QPolygonF arrowHead;
         qreal arrowSize = 15;
@@ -436,7 +429,7 @@ QPointF Transline::getEndPoint() {
 void Transline::paint(QPainter *painter,
 		const QStyleOptionGraphicsItem *option, QWidget *widget) {
 
-    painter->save();
+   /* painter->save();
 	painter->setRenderHint(QPainter::Antialiasing);
 	painter->setOpacity(this->effectiveOpacity());
 
@@ -449,7 +442,10 @@ void Transline::paint(QPainter *painter,
 	if (this->startItem!=this->endItem)
 	    painter->fillPath(this->path(),this->brush());
 
-	painter->restore();
+	painter->restore();*/
+
+    QGraphicsPathItem::paint(painter,option,widget);
+
 	return;
 }
 

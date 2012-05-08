@@ -164,13 +164,11 @@ FSMSceneView::FSMSceneView(Scene* scene, QWidget* parent) :
 	// Help Panel
 	//-----------------------
 	this->helpPanel = new QTextBrowser(this);
-	this->helpPanel->setBaseSize(250,600);
+	//this->helpPanel->setBaseSize(250,600);
+	//this->helpPanel->setFixedSize(250,600);
+	this->helpPanel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 	this->helpPanel->setText("Hello world <b>Hey</b>");
 	this->helpPanel->setTextBackgroundColor(Qt::yellow);
-
-
-	// Init Enable State using preferences
-	//this->helpPanel->setEnabled(GuiSettings::value("uni.hd.ziti.fsmdesigner.ui.general.help",true).toBool());
 
 
 	//---- Update Help on sceneSelection Change
@@ -231,12 +229,6 @@ void FSMSceneView::initVariables() {
     //-------------------
     QPixmap lockPixMap(":/icons/Lock64");
 
-    /*this->lockModeicon = new QWidget(this->viewport());
-    this->lockModeicon->setLayout(new QHBoxLayout());
-    this->lockModeicon->setAutoFillBackground(true);
-    this->lockModeicon->setPalette(QPalette(Qt::lightGray));
-    this->lockModeicon->setVisible(false);*/
-
     this->lockIcon = new QLabel(this);
     this->lockIcon->setPixmap(lockPixMap);
     this->lockIcon->setVisible(false);
@@ -275,6 +267,7 @@ void FSMSceneView::toggleHelp() {
 void FSMSceneView::changeHelp() {
 
     QList<QString> newHelpTexts;
+
 
     // If not enabled -> Don't update/display
     //--------------
@@ -335,6 +328,12 @@ void FSMSceneView::changeHelp() {
         this->helpPanel->setText("");
         this->helpPanel->setVisible(false);
     }
+
+    // Reset Size
+    //--------------------
+    this->helpPanel->setBaseSize(250,this->height()*80/100);
+    this->helpPanel->setFixedSize(250,this->height()*80/100);
+    this->helpPanel->setMaximumSize(250,this->height()*80/100);
 
 
 }
@@ -909,10 +908,15 @@ void FSMSceneView::verifyTable() {
     dialog.setFixedSize(600,600);
     dialog.setLayout(new QVBoxLayout());
 
+    //-- Add Table to dialog
     TableVerificationListener listener;
     listener.setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-
     dialog.layout()->addWidget(&listener);
+
+    //-- Add Ok button
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok);
+    dialog.layout()->addWidget(&buttonBox);
+    dialog.connect(&buttonBox,SIGNAL(accepted()),&dialog,SLOT(close()));
 
     // Verify
     //--------------

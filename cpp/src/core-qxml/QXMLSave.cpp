@@ -250,7 +250,7 @@ void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
 					<< endl;
 
 			//-- Write name
-			out << "        <name><![CDATA[" << hypertransition->getName() << "]]></name>";
+			out << "        <name><![CDATA[" << hypertransition->getName() << "]]></name>"<< endl;
 
 			//-- Write Conditions
 			FOREACH_HYPERTRANSITION_CONDITIONS(hypertransition)
