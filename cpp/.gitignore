@@ -5,3 +5,4 @@ build/
 cmake_install.cmake
 .csettings/
 /install_manifest.txt
+/_CPack_Packages

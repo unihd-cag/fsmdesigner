@@ -169,7 +169,6 @@ QWidget* PropertiesDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 		//-- Target
 		if (index.row()==ROW_HTRANS_END) {
 			StatesComboBox* w=new StatesComboBox(relatedScene->getFsm(),true,NULL,parent);
-			w->installEventFilter(const_cast<PropertiesDelegate*>(this));
 			return w;
 		}
 	}
@@ -349,6 +348,22 @@ void PropertiesDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 
 	}
 
+	// HTRANS
+    //------------------
+    else if (editingItemType==FSMDesigner::HYPERTRANS) {
+
+        //-- Target
+        if (index.row()==ROW_HTRANS_END) {
+
+            //-- Update Model
+            StatesComboBox *box=static_cast<StatesComboBox*>(editor);
+            if (box->getSelectedState()!=NULL)
+                bool updated = const_cast<QAbstractItemModel*>(index.model())->setData(index,box->getSelectedState()->getId(),Qt::EditRole);
+
+        } else {
+            QStyledItemDelegate::setModelData(editor, model, index);
+        }
+    }
 
 	// Link
 	//--------------
@@ -378,27 +393,7 @@ void PropertiesDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 
 	}
 
-	// HTRANS
-	//------------------
-	else if (editingItemType==FSMDesigner::HYPERTRANS) {
 
-		//-- Target
-		if (index.row()==ROW_HTRANS_END) {
-
-			StatesComboBox *box=static_cast<StatesComboBox*>(editor);
-			QString qs = box->currentText();
-			FilterKeywords* fk;
-			fk = new FilterKeywords();
-			qs = fk->RemoveBlanks(qs);
-			qs = fk->FilterSpecialChars(qs);
-			qs = fk->FilterHDLKeywords(qs);
-			qs = fk->FilterBusChars(qs);
-			const_cast<QAbstractItemModel*>(index.model())->setData(index,qs,Qt::EditRole);
-
-		} else {
-			QStyledItemDelegate::setModelData(editor, model, index);
-		}
-	}
 
 	// Other Rows, color alternate and use a normal default editor
 	//-----------------------------------

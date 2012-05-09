@@ -69,6 +69,7 @@ using namespace std;
 #include <gui/actions/ChangeTransitionEndAction.h>
 #include <gui/actions/ChangeConditionNameAction.h>
 #include <gui/actions/ChangeConditionValueAction.h>
+#include <gui/actions/ChangeHyperTransitionTargetAction.h>
 
 //-- Qt
 #include <QtGui>
@@ -661,7 +662,7 @@ bool PropertiesModel::setData(const QModelIndex& index, const QVariant& value,
 		}
 		break;
 
-    // Hyper Transition
+    // HyperTransition
     //---------------------------
 	case FSMDesigner::HYPERTRANS:
 	{
@@ -683,7 +684,9 @@ bool PropertiesModel::setData(const QModelIndex& index, const QVariant& value,
                 //-- Check there is really a change
                 State * targetState = relatedScene->getFsm()->getStatebyID(value.toInt());
                 if (hypertrans->getTargetState()!=targetState) {
-                    hypertrans->setTargetState(targetState);
+
+                    ChangeHyperTransitionTargetAction * changeAction = new ChangeHyperTransitionTargetAction(targetState,static_cast<HyperTransition*>(editingItem));
+                    getRelatedScene()->getUndoStack()->push(changeAction);
                 }
                 break;
             }
