@@ -81,13 +81,12 @@ void SimvisionMmapGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
     FOREACH_STATE(fsm)
 
     //-- Write state
-        QColor stateColor(state->getColor());
-        out << "    { 'b" << state->getOutput().c_str() << " -label \""
-                << state->getName().c_str() << "\"" << " -linecolor "
-                << ((QVariant) stateColor).toString()
-                << " -bgcolor "
-                << ((QVariant) stateColor).toString() << "}"
-                << endl;
+    QColor stateColor(state->getColor());
+    out << "    { 'b" << state->getOutput().c_str() << " -label \""
+            << state->getName().c_str() << "\"" << " -linecolor "
+            << ((QVariant) stateColor).toString()
+            <<  "}"
+            << endl;
 
     END_FOREACH_STATE
 
