@@ -223,41 +223,58 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${FSMDesigner_SOURCE_DIR}/Copyright.txt")
 
 
 ## Debian ##########################################
-#IF(NOT WIN32)
-#	SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "richard.leys@ziti.uni-heidelberg.de")
-#	SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4")
-#	SET(CPACK_GENERATOR ${CPACK_GENERATOR} DEB)
-#ENDIF(NOT WIN32)
+IF(NOT WIN32)
+
+    ## Determine revision
+    SET(revisionsCount 0)
+    execute_process(
+        COMMAND git log --all --pretty=oneline
+        COMMAND wc -l
+        OUTPUT_VARIABLE revisionsCount
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    
+    # Determine Architecture
+    execute_process(
+        COMMAND dpkg --print-architecture
+        OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+        
+    ## Append to patch version
+    SET(CPACK_PACKAGE_VERSION_PATCH ${FSMDesigner_VERSION_PATCH}~${revisionsCount})
+	SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "richard.leys@ziti.uni-heidelberg.de")
+	SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4-xml (>= 4.6)")
+	SET(CPACK_GENERATOR ${CPACK_GENERATOR} DEB)
+ENDIF(NOT WIN32)
 
 ## Windows installer ###############################
 IF(WIN32)
 
- ## Package QT  Libraries DLLs
- FOREACH(qtlib ${QT_LIBRARIES})
- 	string(REGEX REPLACE
- 				"lib([a-zA-Z0-9]+)\\.a"
- 				"\\1.dll"
- 				resLib
- 				${qtlib})
- 	message(STATUS "Packaging ${resLib}")
- 	INSTALL(FILES ${resLib}
-	    DESTINATION bin
-	    COMPONENT runtime)
- ENDFOREACH(qtlib ${QT_LIBRARIES})
-
- ## Runtime component is required
- set(CPACK_COMPONENT_RUNTIME_REQUIRED true)
+     ## Package QT  Libraries DLLs
+     FOREACH(qtlib ${QT_LIBRARIES})
+     	string(REGEX REPLACE
+     				"lib([a-zA-Z0-9]+)\\.a"
+     				"\\1.dll"
+     				resLib
+     				${qtlib})
+     	message(STATUS "Packaging ${resLib}")
+     	INSTALL(FILES ${resLib}
+    	    DESTINATION bin
+    	    COMPONENT runtime)
+     ENDFOREACH(qtlib ${QT_LIBRARIES})
+    
+     ## Runtime component is required
+     set(CPACK_COMPONENT_RUNTIME_REQUIRED true)
  
- ## Executable
- SET(CPACK_PACKAGE_EXECUTABLES "fsmdesigner" "FSMDesigner")
+    ## Executable
+    SET(CPACK_PACKAGE_EXECUTABLES "fsmdesigner" "FSMDesigner")
 
- SET(CPACK_GENERATOR ${CPACK_GENERATOR} NSIS)
- set(CPACK_COMPONENTS_ALL runtime headers)
-
+    ## Set Components
+    SET(CPACK_COMPONENTS_ALL runtime headers)
+    SET(CPACK_GENERATOR ${CPACK_GENERATOR} NSIS)
 
 ENDIF(WIN32)
 
-## Include ##########################################
+## Include CPAck ##########################################
 INCLUDE(CPack)
 
 ##########################################

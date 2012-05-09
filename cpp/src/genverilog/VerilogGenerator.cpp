@@ -687,6 +687,18 @@ QString VerilogGenerator::createInstance(Fsm * fsm) {
     //-- Instance declaration
     ss << fsm->getFsmName() << " " << fsm->getFsmName() << "_I (" << endl << endl;
 
+    //-- Clocks and Resets
+    ss << "    ." << fsm->getClockName().c_str() << "(), "
+                << endl;
+    ss << "    ." << fsm->getResetName().c_str() << "(), "
+                   << endl;
+
+    for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
+        ss << "    ." << fsm->getInputName(i) << "(" << "fsm_"
+                << fsm->getInputName(i) << "), " << endl;
+    }
+    ss << endl;
+
     //-- Inputs
     ss << "\t//-- Inputs" << endl;
     for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
