@@ -64,6 +64,11 @@ Scene::Scene(Fsm * fsm, QObject *parent) :
 	this->placeMode = FSMDesigner::NONE;
 	this->placeLock = FSMDesigner::UNLOCKED;
 
+	// Variables
+	//------------------
+	this->placeLinkEndState = NULL;
+	this->placeLinkStartState = NULL;
+
 	// Verification
 	//---------------
 	this->setFSMVerificator(new FSMVerificator(this));
