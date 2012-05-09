@@ -194,6 +194,8 @@ void PropertyWidget::selectionUpdated() {
 			this->getRelatedScene()->selectedItems();
 
 
+	//-- Focus
+	this->setFocus();
 
 	if (selectedItems.length() == 0) {
 
