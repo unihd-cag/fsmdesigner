@@ -193,10 +193,6 @@ void PropertyWidget::selectionUpdated() {
 	QList<QGraphicsItem*> selectedItems =
 			this->getRelatedScene()->selectedItems();
 
-
-	//-- Focus
-	this->setFocus();
-
 	if (selectedItems.length() == 0) {
 
 		//-- No Selection, edit none
