@@ -693,12 +693,6 @@ QString VerilogGenerator::createInstance(Fsm * fsm) {
     ss << "    ." << fsm->getResetName().c_str() << "(), "
                    << endl;
 
-    for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
-        ss << "    ." << fsm->getInputName(i) << "(" << "fsm_"
-                << fsm->getInputName(i) << "), " << endl;
-    }
-    ss << endl;
-
     //-- Inputs
     ss << "\t//-- Inputs" << endl;
     for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
