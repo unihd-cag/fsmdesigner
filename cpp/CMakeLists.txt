@@ -212,7 +212,7 @@ SET(CPACK_PACKAGE_VERSION_PATCH ${FSMDesigner_VERSION_PATCH})
 SET(CPACK_RESOURCE_FILE_LICENSE "${FSMDesigner_SOURCE_DIR}/Copyright.txt")
 
 ## Create an archive
-#SET(CPACK_GENERATOR TBZ2 ZIP)
+SET(CPACK_GENERATOR TBZ2)
 
 
 ## Debian ##########################################
@@ -229,14 +229,18 @@ IF(NOT WIN32)
     # Determine Architecture
     execute_process(
         COMMAND dpkg --print-architecture
-        OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
+        OUTPUT_VARIABLE arch
         OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    set (CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${arch})
         
     ## Append to patch version
-    SET(CPACK_PACKAGE_VERSION_PATCH ${FSMDesigner_VERSION_PATCH}~${revisionsCount})
-	SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "richard.leys@ziti.uni-heidelberg.de")
-	SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4-xml (>= 4.6)")
-	SET(CPACK_GENERATOR ${CPACK_GENERATOR} DEB)
+    SET(CPACK_PACKAGE_VERSION_PATCH ${FSMDesigner_VERSION_PATCH}~${revisionsCount}-${arch})
+    SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "richard.leys@ziti.uni-heidelberg.de")
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4-xml (>= 4.6)")
+    SET(CPACK_GENERATOR ${CPACK_GENERATOR} DEB)
+
+
 ENDIF(NOT WIN32)
 
 ## Windows installer ###############################
