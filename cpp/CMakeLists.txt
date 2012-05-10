@@ -3,8 +3,8 @@ project (FSMDesigner)
 
 # Set version number
 set (FSMDesigner_VERSION_MAJOR 5)
-set (FSMDesigner_VERSION_MINOR 1)
-set (FSMDesigner_VERSION_PATCH 1)
+set (FSMDesigner_VERSION_MINOR 2)
+set (FSMDesigner_VERSION_PATCH 0)
   
 ##########################################
 # Libraries needed
@@ -21,13 +21,6 @@ include(${QT_USE_FILE})
 # Compilation Parameters
 ########################################## 
       
-## Enable CCACHE and DISTCC
-#set(CMAKE_CXX_COMPILER ccache)
-#set(CMAKE_CXX_COMPILER distcc)
-#set(CMAKE_CXX_COMPILER_ARG1 g++)
-#set(CMAKE_CXX_COMPILER_ARG2 -j8)
-#set(CMAKE_CXX_FLAGS_DEBUG -j8)
- 
 ## Debug
 set(CMAKE_BUILD_TYPE Debug)
 
