@@ -57,11 +57,34 @@ QList<RuleError*> StateTransitions::applyRule(Fsm * fsm) {
                 if (hasDefaultTransition)
                     hasMultipleDefaultTransition = true;
                 hasDefaultTransition = true;
+
+                //-- If transition is default and has condition -> fail
+                if (transition->getConditions().size()>0) {
+                    RuleError * error = new RuleError();
+                    error->setConcernedObject(state);
+                    error->setConcernedObjectType(FSMDesigner::STATE);
+                    error->setMessage(QString("State ")+state->getName().c_str()+" default transition's has conditions");
+                    result.append(error);
+                }
+
+            } else {
+
+                //-- If transition is not default and has no conditions -> fails
+                if (transition->getConditions().size()==0) {
+                    RuleError * error = new RuleError();
+                    error->setConcernedObject(state);
+                    error->setConcernedObjectType(FSMDesigner::STATE);
+                    error->setMessage(QString("State ")+state->getName().c_str()+" transition "+transition->getName().c_str()+" is not default and has no conditions");
+                    result.append(error);
+                }
+
+                //-- Verify Conditions don't overlap
+                FOREACH_TRANSITION_CONDITIONS(transition)
+
+                END_FOREACH_TRANSITION_CONDITIONS
             }
 
-            //-- Foreach conditions
-            FOREACH_TRANSITION_CONDITIONS(transition)
-            END_FOREACH_TRANSITION_CONDITIONS
+
 
         END_FOREACH_STATE_STARTING_TRANSITIONS
 
@@ -70,7 +93,7 @@ QList<RuleError*> StateTransitions::applyRule(Fsm * fsm) {
             RuleError * error = new RuleError();
             error->setConcernedObject(state);
             error->setConcernedObjectType(FSMDesigner::STATE);
-            error->setMessage(QString("The State ")+state->getName().c_str()+" has no default transition");
+            error->setMessage(QString("State ")+state->getName().c_str()+" has no default transition");
             result.append(error);
         }
         //-- Add error if more than one default transition
@@ -78,7 +101,7 @@ QList<RuleError*> StateTransitions::applyRule(Fsm * fsm) {
             RuleError * error = new RuleError();
             error->setConcernedObject(state);
             error->setConcernedObjectType(FSMDesigner::STATE);
-            error->setMessage(QString("The State ")+state->getName().c_str()+" has multiple default transitions");
+            error->setMessage(QString("State ")+state->getName().c_str()+" has multiple default transitions");
             result.append(error);
         }
 

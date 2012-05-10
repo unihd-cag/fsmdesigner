@@ -161,5 +161,19 @@
         <sname><![CDATA[State_2]]></sname>
         <output>00</output>
     </state>
+    <trans id='3' color='0' textposx='-365.004' textposy='-155.247'>
+        <name><![CDATA[trans_1]]></name>
+        <default>1</default>
+        <start>1</start>
+        <end>1</end>
+        <trackpoint posx='-309.566' posy='-115.972' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='-309.566' posy='-159.403' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans id='4' color='0' textposx='-219' textposy='-78.8636'>
+        <name><![CDATA[trans_2]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>2</end>
+    </trans>
   </fsm>
 </project>

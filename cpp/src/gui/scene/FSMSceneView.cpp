@@ -56,6 +56,7 @@ using namespace std;
 #include <verification/Verificator.h>
 #include <verification/VerificationListener.h>
 #include <verification/StateOutputsRule.h>
+#include <verification/StateTransitions.h>
 
 #include <gui/verify/TableVerificationListener.h>
 #include <gui/verify/FSMVerificator.h>
@@ -118,16 +119,16 @@ FSMSceneView::FSMSceneView(Scene* scene, QWidget* parent) :
 	//------------------------
 
 	// Verify
-    QToolButton * verifyButton = this->controlToolBar->addActionButton(QIcon(QPixmap(":/icons/verification.png")),"Quick Verify");
+    QToolButton * verifyButton = this->controlToolBar->addActionButton(QIcon(QPixmap(":/icons/verification.png")),"Quick FSM check");
 	this->connect(verifyButton->defaultAction(),SIGNAL(triggered()),this->getRelatedScene(),SLOT(verify()));
 
 	// Verify in details
-	QAction * verifyDetailsAction = new QAction("Verify...",verifyButton);
+	QAction * verifyDetailsAction = new QAction("Check FSM...",verifyButton);
 	verifyButton->addAction(verifyDetailsAction);
     this->connect(verifyDetailsAction,SIGNAL(triggered()),SLOT(verifyTable()));
 
 	// Verify Clear
-	FAction * verifyClearAction = this->controlToolBar->addAction(QIcon(QPixmap(":/icons/Clear-brush")),"Clear Verification Result");
+	FAction * verifyClearAction = this->controlToolBar->addAction(QIcon(QPixmap(":/icons/Clear-brush")),"Clear check results");
     this->connect(verifyClearAction,SIGNAL(triggered()),this->getRelatedScene()->getFSMVerificator(),SLOT(reset()));
 
 	this->controlToolBar->getToolBar()->addSeparator();
@@ -922,6 +923,7 @@ void FSMSceneView::verifyTable() {
     //--------------
     Verificator * verificator = new Verificator();
     verificator->addRule(new StateOutputsRule());
+    verificator->addRule(new StateTransitions());
     verificator->verify(this->getRelatedScene()->getFsm(),&listener);
 
     delete verificator;
