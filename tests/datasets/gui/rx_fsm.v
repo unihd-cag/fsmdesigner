@@ -15,6 +15,8 @@ wire fsm_dummy1;
 
 rx rx_I (
 
+    .clk(), 
+    .res_n(), 
 	//-- Inputs
 	.axi_sof(fsm_axi_sof), 
 	.axi_header_has_data(fsm_axi_header_has_data), 

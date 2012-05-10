@@ -52,6 +52,9 @@ void TableVerificationListener::ruleSuccessful(VerificatorRule * rule) {
     //-- Add Result Line
     this->model.appendRow(columns);
 
+    //-- Resize Name
+    this->resizeColumnToContents(0);
+
 
 }
 
@@ -76,6 +79,9 @@ void TableVerificationListener::ruleFailed(VerificatorRule * rule,QList<RuleErro
 
     }
 
+
+    //-- Resize Name
+    this->resizeColumnToContents(0);
 
 
 }

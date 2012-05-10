@@ -904,8 +904,8 @@ void FSMSceneView::verifyTable() {
     // Create Table verify listener
     //---------------
     QDialog dialog(this);
-    dialog.setBaseSize(600,600);
-    dialog.setFixedSize(600,600);
+    dialog.setBaseSize(this->width(),600);
+    dialog.setFixedSize(this->width(),600);
     dialog.setLayout(new QVBoxLayout());
 
     //-- Add Table to dialog
