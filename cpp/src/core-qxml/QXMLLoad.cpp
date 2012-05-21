@@ -198,9 +198,7 @@ void QXMLLoad::parseFSM(QDomElement fsmElement) {
 	//-----------------
 	Fsm * fsm = c.getProject()->addFSM();
 
-	//-- FSM attributes
-	fsm->setName(QXMLLoad::getAttributeValue("fname",fsmElement));
-	fsm->setResetState(atoi(QXMLLoad::getAttributeValue("resetstate",fsmElement)));
+
 
 	//-- Generators parameters
 	//--------------------------------------
@@ -449,6 +447,9 @@ void QXMLLoad::parseFSM(QDomElement fsmElement) {
     } // EO Transitions --//
 
 
+    //-- FSM attributes
+    fsm->setName(QXMLLoad::getAttributeValue("fname",fsmElement));
+    fsm->setResetState(atoi(QXMLLoad::getAttributeValue("resetstate",fsmElement)));
 
 }
 
@@ -573,8 +574,9 @@ void QXMLLoad::convert(QDomDocument * document) {
 
                 // Reset state must be incremented
                 //-------------------------
-                unsigned int resetstate = atoi(QXMLLoad::getAttributeValue("resetstate",(*fsm)))+1;
-                (*fsm).setAttribute("resetstate",Utils::itos(resetstate).c_str());
+                unsigned int resetstate = atoi(QXMLLoad::getAttributeValue("resetstate",(*fsm)));
+                (*fsm).setAttribute("resetstate",Utils::itos(resetstate+1).c_str());
+
 
                 // States must have IDs
                 // Set the id to the number in the list is sufficient
