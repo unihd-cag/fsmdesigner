@@ -40,6 +40,7 @@
 #include <generate/GeneratorFactory.h>
 #include <genverilog/VerificationPlanGenerator.h>
 #include <genverilog/VerilogGenerator.h>
+#include <genverilog/VerilogGenerator2.h>
 
 using namespace std;
 
@@ -64,7 +65,7 @@ int main(int argc, char ** argv, char** envp) {
 
         // Determine arguments
         //-----------------------
-        list<QString> includeArgs;
+        QStringList includeArgs;
         string projectFile;
         string verilogDestination;
         string vplanDestination;
@@ -73,6 +74,7 @@ int main(int argc, char ** argv, char** envp) {
         bool forwardAsync = false;
         bool forwardState = false;
         bool generateMap = false;
+        bool useVerilogGenerator2 = false;
 
         for (int i = 1; i < argc; i++) {
 
@@ -97,8 +99,13 @@ int main(int argc, char ** argv, char** envp) {
                     forwardState = true;
             } else if (strcmp(argv[i], "-i") == 0) {
 
+                QString nextarg(argv[++i]);
+
+                //-- Split
+                includeArgs = nextarg.split(' ');
+
                 //-- Includes, store all following arguments until a '-' start
-                int fi = 0;
+                /*int fi = 0;
                 for (fi = i + 1; fi < argc; fi++) {
                     if (argv[fi][0] == '-') {
                         // Stop
@@ -107,10 +114,13 @@ int main(int argc, char ** argv, char** envp) {
                         // Add include to include args
                         includeArgs.push_back(QString(argv[fi]));
                     }
-                }
+                }*/
 
                 //-- Restart at forward looking -1 to balance the i++ in for definition
-                i = fi - 1;
+                //i = fi - 1;
+            } else if (strcmp(argv[i], "-v2") == 0) {
+
+                useVerilogGenerator2 = true;
             }
         }
 
@@ -142,6 +152,8 @@ int main(int argc, char ** argv, char** envp) {
         //-- Register Verilog Generator
         GeneratorFactory::getInstance()->registerGenerator("Verilog",
                 new VerilogGenerator());
+        GeneratorFactory::getInstance()->registerGenerator("Verilog2",
+                        new VerilogGenerator2());
 
         //-- Generate Verilog
         //------------
@@ -149,7 +161,7 @@ int main(int argc, char ** argv, char** envp) {
 
             //-- Create Generator and generate
             Generator * generator =
-                    GeneratorFactory::getInstance()->newGenerator("Verilog");
+                    useVerilogGenerator2 ? GeneratorFactory::getInstance()->newGenerator("Verilog2") : GeneratorFactory::getInstance()->newGenerator("Verilog");
             if (generator == NULL) {
                 cerr
                         << "There are no Generator registered under the 'Verilog' name. No Verilog can generated"
@@ -161,6 +173,7 @@ int main(int argc, char ** argv, char** envp) {
             generator->setParameter("forward.delayed", forwardDelayed);
             generator->setParameter("forward.async", forwardAsync);
             generator->setParameter("forward.sync", forwardState);
+            generator->setParameter("includes", includeArgs);
 
             //-- Open File
             QFile verilogFile(QString::fromStdString(verilogDestination));
