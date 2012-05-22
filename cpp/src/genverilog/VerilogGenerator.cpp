@@ -581,7 +581,7 @@ void VerilogGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
                     out << "\t"
                         << transName.str().c_str() << "_default"
                         << ": cover property( @(posedge clk) disable iff (!res_n)"
-                        << "if (current_state == " << sstate << "))"
+                        << " (current_state == " << sstate << ")"
                         << "|=> (current_state == " << tstate
                         << ") );" << endl << endl;
 

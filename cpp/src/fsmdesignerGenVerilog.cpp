@@ -203,7 +203,7 @@ int main(int argc, char ** argv, char** envp) {
                 Generator * mmapGenerator =
                         GeneratorFactory::getInstance()->newGenerator(
                                 "SimvisionMmap");
-                if (generator == NULL) {
+                if (mmapGenerator == NULL) {
                     cerr
                             << "There are no Generator registered under the 'SimvisionMmap' name. No Simvision Mmap can generated"
                             << endl;
@@ -212,7 +212,7 @@ int main(int argc, char ** argv, char** envp) {
 
                 //-- Open File
                 QFile mmapFile(QString::fromStdString(verilogDestination).replace("(.+)\\.v","$1._mmap.tcl"));
-                if (!verilogFile.open(
+                if (!mmapFile.open(
                         QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
 
                     cerr
@@ -223,12 +223,12 @@ int main(int argc, char ** argv, char** envp) {
                 }
 
                 //-- Generate
-                QDataStream outputStream(&verilogFile);
-                generator->generate(fsm, &outputStream);
+                QDataStream mmapOutputStream(&mmapFile);
+                mmapGenerator->generate(fsm, &mmapOutputStream);
 
                 //-- Close
-                delete generator;
-                verilogFile.close();
+                delete mmapGenerator;
+                mmapFile.close();
 
             }
 
