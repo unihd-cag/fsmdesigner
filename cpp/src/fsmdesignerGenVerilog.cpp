@@ -41,6 +41,7 @@
 #include <genverilog/VerificationPlanGenerator.h>
 #include <genverilog/VerilogGenerator.h>
 #include <genverilog/VerilogGenerator2.h>
+#include <genverilog/SimvisionMmapGenerator.h>
 
 using namespace std;
 
@@ -154,6 +155,7 @@ int main(int argc, char ** argv, char** envp) {
                 new VerilogGenerator());
         GeneratorFactory::getInstance()->registerGenerator("Verilog2",
                         new VerilogGenerator2());
+        GeneratorFactory::getInstance()->registerGenerator("Simvision_Mmap",new SimvisionMmapGenerator());
 
         //-- Generate Verilog
         //------------
@@ -202,16 +204,16 @@ int main(int argc, char ** argv, char** envp) {
                 //-- Create Generator and generate
                 Generator * mmapGenerator =
                         GeneratorFactory::getInstance()->newGenerator(
-                                "SimvisionMmap");
+                                "Simvision_Mmap");
                 if (mmapGenerator == NULL) {
                     cerr
-                            << "There are no Generator registered under the 'SimvisionMmap' name. No Simvision Mmap can generated"
+                            << "There are no Generator registered under the 'Simvision_Mmap' name. No Simvision Mmap can generated"
                             << endl;
                     return -1;
                 }
 
                 //-- Open File
-                QFile mmapFile(QString::fromStdString(verilogDestination).replace("(.+)\\.v","$1._mmap.tcl"));
+                QFile mmapFile(QString::fromStdString(verilogDestination).replace(".v",".svcf"));
                 if (!mmapFile.open(
                         QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
 
