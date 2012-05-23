@@ -155,6 +155,7 @@ FSMSceneView::FSMSceneView(Scene* scene, QWidget* parent) :
     this->connect(reloadVerilogAction,SIGNAL(triggered()),SLOT(generateVerilog()));
 
 
+
     this->controlToolBar->getToolBar()->addSeparator();
 
 	//-- Initialise Scene per default to see
