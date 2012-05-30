@@ -1,7 +1,7 @@
 /***********************************************************************
 *                                                                      *
-* (C) 2008, Frank Lemke, Computer Architecture Group,                  *
-* University of Mannheim, Germany                                      *
+* (C) 2008-12, Frank Lemke, Computer Architecture Group,               *
+* University of Heidelberg, Germany                                    *
 *                                                                      *
 * This program is free software; you can redistribute it and/or modify *
 * it under the terms of the GNU General Public License as published by *
@@ -19,7 +19,7 @@
 * USA                                                                  *
 *                                                                      *
 * For informations regarding this file contact                         *
-*                 office@mufasa.informatik.uni-mannheim.de *
+*                 lsra_admin@ziti.uni-heidelberg.de        *
 *                                                                      *
 ***********************************************************************/
 
@@ -45,6 +45,10 @@ InvertDNF::InvertDNF() {
   mainCTerm="";
   result="";
   currentCALCTerm="";
+  overlap = false;
+  overlapall = false;
+  intersection = true;
+  currentMaxNumber = 0;
   
 }
 
@@ -52,6 +56,7 @@ InvertDNF::InvertDNF() {
 string InvertDNF::invert(vector <string> inputDNF) {
 
   vector <string>::iterator iter;
+  vector <string>::iterator ite;
   vector <string>::iterator it;
   vector <string>::iterator ii;
   
@@ -146,11 +151,10 @@ string InvertDNF::invert(vector <string> inputDNF) {
     }
   */
 
-  // Substract restTerms from complementDNF to receive
+  // Substract restTerms from complementDNF to receive complete set of inverted values
 
   
-  bool overlap;
-  bool overlapall;
+
 
   for(it=restTerms.begin(); it!=restTerms.end(); it++){
     iter=complementDNF.begin();
@@ -226,6 +230,217 @@ string InvertDNF::invert(vector <string> inputDNF) {
     minimizeComplementDNF();
   }
 
+  // Remove intersections
+
+
+  while (intersection) {
+
+    // Find maximum intersection (ite is maximum)
+
+    intersection = false;
+    for(iter=complementDNF.begin(); iter!=complementDNF.end(); iter++){
+      for(it=complementDNF.begin(); it!=complementDNF.end(); it++){
+        cnt = 0;
+
+        // Calculate the intersection distance
+
+        for(int i=0; i<len; i++) {
+          help=(*iter)[i];
+          if(help!='-') {
+        helpvalue=(*it)[i];
+        if(helpvalue!='-') {
+           if(help!=helpvalue){
+              cnt = 0;
+              i = len;
+           }
+        } else {
+           cnt++;
+        }
+          }
+        }
+
+        // There is an intersection with distance > 0
+        //cout << "intersection: "<< intersection << endl;
+        if(cnt!=0) {
+          intersection = true;
+        }
+
+        // New maximum distance ?
+
+        if(cnt>currentMaxNumber) {
+          currentMaxNumber = cnt;
+          ii=iter;
+          ite=it;
+        }
+      }
+    }
+
+    // remove maximum intersection and add substitution terms without intersection
+
+    /*for(iter=complementDNF.begin(); iter!=complementDNF.end(); iter++){
+    for(int i=0; i<len; i++) {
+      cout << (*iter)[i];
+       }
+       cout << " CDNF" << endl;
+    }*/
+
+    if(intersection) {
+
+        for(int i=0; i<len; i++) {
+          help=(*ii)[i];
+          if(help!='-') {
+        helpvalue=(*ite)[i];
+        if(helpvalue=='-') {
+          curres="";
+          for(int z=0; z<len; z++) {
+            if(i!=z) {
+              curres+=(*ite)[z];
+            } else {
+              if(help=='0') {
+            curres+="1";
+              } else {
+            curres+="0";
+              }
+            }
+          }
+          //cout << "curres " << curres << endl;
+          currentResult.push_back(curres);
+        }
+          }
+        }
+
+      complementDNF.erase(ite);
+      if(!currentResult.empty()){
+      for(ii=currentResult.begin(); ii!=currentResult.end(); ii++){
+        complementDNF.push_back(*ii);
+      }
+    }
+    ii=currentResult.begin();
+    while(!currentResult.empty()) {
+      currentResult.erase(ii);
+      ii=currentResult.begin();
+    }
+      currentMaxNumber = 0;
+    }
+
+
+  }
+
+  // Remove duplicates
+
+
+  for(iter=complementDNF.begin(); iter!=complementDNF.end(); iter++){
+    for(it=complementDNF.begin(); it!=complementDNF.end(); it++){
+    if(iter!=it) {
+
+        // Duplicate ?
+
+        overlap = true;
+        for(int i=0; i<len; i++) {
+          help=(*iter)[i];
+          helpvalue=(*it)[i];
+        if(helpvalue!=help) {
+             overlap = false;
+        }
+        }
+
+        // Delete duplicate and restart
+
+        if(overlap) {
+          complementDNF.erase(iter);
+          iter=complementDNF.begin();
+          it=complementDNF.begin();
+        }
+    }
+      }
+    }
+
+
+  // Compact code (add don't cares)
+
+  overlapall = true;
+
+  while(overlapall) {
+    overlapall = false;
+    for(iter=complementDNF.begin(); iter!=complementDNF.end(); iter++){
+      for(it=complementDNF.begin(); it!=complementDNF.end(); it++){
+        currentBitsSet=0;
+        cnt=0;
+        for(int i=0; i<len; i++) {
+          help=(*iter)[i];
+          helpvalue=(*it)[i];
+        if(helpvalue!=help) {
+          if((help=='0' && helpvalue=='1') || (help=='1' && helpvalue=='0')) {
+            if(cnt==0) {
+              overlap = true;
+              currentBitsSet=i;
+            } else {
+              overlap = false;
+            }
+            cnt++;
+          } else {
+            overlap = false;
+            i = len;
+          }
+        }
+        }
+
+        // Create new Value
+
+        if(overlap) {
+            curres ="";
+            for(int z=0; z<len; z++) {
+              if(z==currentBitsSet) {
+            curres+="-";
+              } else {
+            curres+=(*iter)[z];
+              }
+
+              }
+            //cout << "curres " << curres << endl;
+            currentResult.push_back(curres);
+          }
+
+        // Delete duplicate and restart
+
+        if(overlap) {
+        overlapall = true;
+         curres = (*it);
+        complementDNF.erase(iter);
+        intersection = false;
+        for(it=complementDNF.begin(); it!=complementDNF.end(); it++){
+          for(int i=0; i<len; i++) {
+            help = (*it)[i];
+            helpvalue = curres [i];
+            if(help==helpvalue) {
+              intersection = true;
+            } else {
+              intersection = false;
+              i = len;
+            }
+          }
+          if(intersection) {
+              complementDNF.erase(it);
+              it=complementDNF.begin();
+              intersection = false;
+          }
+        }
+        if(!currentResult.empty()){
+          for(ii=currentResult.begin(); ii!=currentResult.end(); ii++){
+              complementDNF.push_back(*ii);
+          }
+        }
+        ii=currentResult.begin();
+        while(!currentResult.empty()) {
+          currentResult.erase(ii);
+          ii=currentResult.begin();
+        }
+        iter=complementDNF.begin();
+        it=complementDNF.begin();
+        }
+      }
+    }
+  }
   
   // Return result
 

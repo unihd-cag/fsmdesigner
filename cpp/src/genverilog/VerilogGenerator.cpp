@@ -283,8 +283,7 @@ void VerilogGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
         bool notfound = true;
         if (input.size() > 0) {
 
-            // use InverDNF to find the minimal bit vector not matching the ones that should be used as input
-            //-----------------------
+            //--
             InvertDNF INV;
             string defaultvalue = INV.invert(input);
             //string defaultvalue = input[0];
