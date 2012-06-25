@@ -26,7 +26,7 @@
 
 //-- Gen Verilog
 #include <genverilog/VerilogGenerator.h>
-
+#include <genverilog/VerilogGenerator2.h>
 
 
 
@@ -62,7 +62,7 @@ struct PCIeXC6V {
 
 BOOST_FIXTURE_TEST_SUITE( genverilog, PCIeXC6V)
 
-    BOOST_AUTO_TEST_CASE( simple_generate )
+    BOOST_AUTO_TEST_CASE( genverilog1 )
     {
 
         //-- Parse FSM
@@ -70,7 +70,7 @@ BOOST_FIXTURE_TEST_SUITE( genverilog, PCIeXC6V)
         load.load("./datasets/genverilog/pcie_bridge_xc6v_128.pro.xml");
 
         //-- Prepare output path
-        QFile verilogFile("output/pcie_bridge_xc6v_128.rx.v");
+        QFile verilogFile("output/pcie_bridge_xc6v_128_rx_v1.v");
         verilogFile.open(QFile::Text | QFile::WriteOnly | QIODevice::Truncate);
 
         //-- Generate
@@ -78,6 +78,53 @@ BOOST_FIXTURE_TEST_SUITE( genverilog, PCIeXC6V)
 
         //-- Generate Verilog
         VerilogGenerator * generator = new VerilogGenerator();
+        generator->generate(Core::getInstance()->getProject()->getFSMs().first(),&outputStream);
+
+
+        verilogFile.close();
+
+    }
+
+    BOOST_AUTO_TEST_CASE( genverilog1_rma_no_intersections )
+    {
+
+        //-- Parse FSM
+        QXMLLoad load;
+        load.load("./datasets/genverilog/rma_responder_fsms.pro.xml");
+
+        //-- Prepare output path
+        QFile verilogFile("output/responder_stage4_128_fsm.v");
+        verilogFile.open(QFile::Text | QFile::WriteOnly | QIODevice::Truncate);
+
+        //-- Generate
+        QDataStream outputStream(&verilogFile);
+
+        //-- Generate Verilog
+        VerilogGenerator * generator = new VerilogGenerator();
+        generator->setParameter("removeIntersections",false);
+        generator->generate(Core::getInstance()->getProject()->getFSMs().at(4),&outputStream);
+
+
+        verilogFile.close();
+
+    }
+
+    BOOST_AUTO_TEST_CASE( genverilog2 )
+    {
+
+        //-- Parse FSM
+        QXMLLoad load;
+        load.load("./datasets/genverilog/pcie_bridge_xc6v_128.pro.xml");
+
+        //-- Prepare output path
+        QFile verilogFile("output/pcie_bridge_xc6v_128_rx_v2.v");
+        verilogFile.open(QFile::Text | QFile::WriteOnly | QIODevice::Truncate);
+
+        //-- Generate
+        QDataStream outputStream(&verilogFile);
+
+        //-- Generate Verilog
+        VerilogGenerator2 * generator = new VerilogGenerator2();
         generator->generate(Core::getInstance()->getProject()->getFSMs().first(),&outputStream);
 
 

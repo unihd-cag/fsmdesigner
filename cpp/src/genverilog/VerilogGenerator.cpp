@@ -284,7 +284,7 @@ void VerilogGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
         if (input.size() > 0) {
 
             //--
-            InvertDNF INV;
+            InvertDNF INV(this->getParameter("removeIntersections").toBool());
             string defaultvalue = INV.invert(input);
             //string defaultvalue = input[0];
             cout << "\tDefault value: " << defaultvalue
@@ -317,10 +317,7 @@ void VerilogGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
                     out
                             << ", "
                             << state->getName().c_str()
-                            << "}:   next_state = "
-                            << this->cleanString(
-                                    targetDefaultState->getName()) << ";"
-                            << endl;
+                            << "}," << endl;
                     out << "    {" << fsm->getNumberOfInputs()
                             << "'b";
                 }
@@ -339,10 +336,16 @@ void VerilogGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
                 out
                         << ", "
                         << state->getName().c_str()
-                        << "}:   next_state = "
-                        << this->cleanString(
-                                targetDefaultState->getName()) << ";"
+                        << "}";
+
+
+                // End of default conditions
+                // Write end case
+                //-------------------
+                out  << ":   next_state = "
+                        << this->cleanString(targetDefaultState->getName()) << ";"
                         << endl;
+
             }
         } else {
 

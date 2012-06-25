@@ -47,7 +47,13 @@ using namespace std;
 
 void cmdsyntaxerror() {
     cout
-            << "Usage: fsmdesignerGenVerilog -p infile -fsm fsm (-vlog outfile)? (-vplan vplanFile)? (-forward delayed|async|sync)? (-i include...)? (-fmap)? "
+            << "Usage: fsmdesignerGenVerilog"
+            << " -p infile -fsm fsm (-vlog outfile)?"
+            << " (-vplan vplanFile)?"
+            << " (-forward delayed|async|sync)?"
+            << " (-i include...)? (-fmap)? "
+            << " (-v2)?"
+            << " (-v1RemoveIntersections)"
             << endl;
 }
 ;
@@ -76,6 +82,7 @@ int main(int argc, char ** argv, char** envp) {
         bool forwardState = false;
         bool generateMap = false;
         bool useVerilogGenerator2 = false;
+        bool genverilog1RemoveIntersections = false;
 
         for (int i = 1; i < argc; i++) {
 
@@ -122,7 +129,13 @@ int main(int argc, char ** argv, char** envp) {
             } else if (strcmp(argv[i], "-v2") == 0) {
 
                 useVerilogGenerator2 = true;
+
+            } else if (strcmp(argv[i], "-v1RemoveIntersections") == 0) {
+
+                genverilog1RemoveIntersections = true;
             }
+
+
         }
 
         // Verify all arguments where provided
@@ -176,6 +189,12 @@ int main(int argc, char ** argv, char** envp) {
             generator->setParameter("forward.async", forwardAsync);
             generator->setParameter("forward.sync", forwardState);
             generator->setParameter("includes", includeArgs);
+
+            // v1 Parameters
+            if (!useVerilogGenerator2) {
+                generator->setParameter("removeIntersections", genverilog1RemoveIntersections);
+
+            }
 
             //-- Open File
             QFile verilogFile(QString::fromStdString(verilogDestination));
