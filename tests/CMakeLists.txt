@@ -58,7 +58,7 @@ set(PACKAGES
         common 
         convert 
         core
-        genverilog)
+        generators)
 
 ## Includes ############################
 

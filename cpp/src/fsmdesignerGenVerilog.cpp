@@ -169,6 +169,7 @@ int main(int argc, char ** argv, char** envp) {
         GeneratorFactory::getInstance()->registerGenerator("Verilog2",
                         new VerilogGenerator2());
         GeneratorFactory::getInstance()->registerGenerator("Simvision_Mmap",new SimvisionMmapGenerator());
+        GeneratorFactory::getInstance()->registerGenerator("VPlan",new VerificationPlanGenerator());
 
         //-- Generate Verilog
         //------------
@@ -287,15 +288,29 @@ int main(int argc, char ** argv, char** envp) {
 
             cout << "Generating VPlan to " << vplanDestination << endl;
 
-            //-- Prepare output file
-            ofstream vplanStream(vplanDestination.c_str(),
-                    ios_base::out | ios_base::trunc);
+            //-- Generate
+            Generator * vplanGenerator =
+                                    GeneratorFactory::getInstance()->newGenerator(
+                                            "VPlan");
+
+            //-- Open File
+            QFile vplanFile(QString::fromStdString(vplanDestination.c_str()));
+            if (!vplanFile.open(
+                    QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
+                cerr
+                        << "The provided file to generate a vplan to cannot be opened for writing"
+                        << endl;
+                return -1;
+
+            }
 
             //-- Generate
-            VerificationPlanGenerator generator(fsm);
-            generator.generate(vplanStream);
+            QDataStream vplanOutputStream(&vplanFile);
+            vplanGenerator->generate(fsm, &vplanOutputStream);
 
-            vplanStream.close();
+            //-- Close
+            delete vplanGenerator;
+            vplanFile.close();
 
         }
 

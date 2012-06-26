@@ -18,36 +18,72 @@
 //-- Core
 class Fsm;
 
+//-- Generator
+#include <generate/Generator.h>
+#include <generate/GeneratorBuilder.h>
+
 /**
  * This class generates a verification Plan for FSM to provided output stream
  * The generated file is to be used with Cadence verification tools
  */
-class VerificationPlanGenerator {
-public:
-	VerificationPlanGenerator(Fsm * fsm);
-	virtual ~VerificationPlanGenerator();
+class VerificationPlanGenerator : public Generator, public GeneratorBuilder {
 
+    public:
 
-	/**
-	 * Generate to output
-	 *
-	 * @param output
-	 */
-	void generate(ostream& output);
+        /**
+         *
+         */
+        VerificationPlanGenerator();
 
+        /**
+         *
+         */
+        virtual ~VerificationPlanGenerator();
 
-protected:
+        /** \defgroup Builder Builder Methods */
+        /** @{ */
 
-	/// FSM For which to generate verification plan
-	Fsm * fsm;
+        virtual Generator * newInstance();
 
-	/**
-	 * Cleans the input string: <br/>
-	 *  - Spaces are replaced with _
-	 * @param an input string
-	 * @return The input string, cleaned to match verilog rules
-	 */
-	string cleanString(string);
+        /** @} */
+
+        /** \defgroup Generator Generator Methods */
+        /** @{ */
+
+        /**
+         * Returns a short name of this Generator
+         * @return
+         */
+        virtual QString getName();
+
+        /**
+         * Returns a short description of this Generator
+         * @return
+         */
+        virtual QString getDescription();
+
+        /**
+         * Do the actual generation
+         * @param fsm
+         * @param dataStream
+         */
+        virtual void generate(Fsm * fsm, QDataStream * dataStream);
+
+        /**
+         * Generate an example instanciation of the created verilog module
+         */
+        QString createInstance(Fsm * fsm);
+
+        /**
+         * Cleans the input string: <br/>
+         *  - Spaces are replaced with _
+         * @param an input string
+         * @return The input string, cleaned to match verilog rules
+         */
+        string cleanString(string);
+
+        /** @} */
+
 
 
 

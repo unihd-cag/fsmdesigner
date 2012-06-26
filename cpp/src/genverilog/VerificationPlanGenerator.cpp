@@ -24,21 +24,46 @@ using namespace std;
 #include <core/State.h>
 #include <core/Link.h>
 
+//-- Generator
+#include <generate/Generator.h>
+#include <generate/GeneratorBuilder.h>
+
 #include "VerificationPlanGenerator.h"
 
-VerificationPlanGenerator::VerificationPlanGenerator(Fsm * fsm ) {
-	this->fsm = fsm;
+VerificationPlanGenerator::VerificationPlanGenerator() {
+
 
 }
 
-void VerificationPlanGenerator::generate(ostream& output) {
+Generator * VerificationPlanGenerator::newInstance() {
+
+    return new VerificationPlanGenerator();
+
+}
+
+QString VerificationPlanGenerator::getName()  {
+
+    return "Cadence Vplan generator";
+}
 
 
-	string sectionInstance("");
-	string logicalInstance("FSM_");
-	logicalInstance+=this->fsm->getFsmName();
-	sectionInstance+=this->fsm->getFsmName();
-	string fileName(this->fsm->getFsmName());
+QString VerificationPlanGenerator::getDescription()  {
+
+    return "Generates a cadence eplanner verification plan for transitions and states coverages";
+
+}
+
+
+void VerificationPlanGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
+
+    QTextStream output (dataStream->device());
+
+
+	QString sectionInstance("");
+	QString logicalInstance("FSM_");
+	logicalInstance+= fsm->getFsmName().c_str();
+	sectionInstance+= fsm->getFsmName().c_str();
+	QString fileName(fsm->getFsmName().c_str());
 	fileName+=".vplan";
 
 	output << "ep_Label : \""<<fileName<<".vplan\";" << endl;
@@ -63,7 +88,7 @@ void VerificationPlanGenerator::generate(ostream& output) {
 	//-- Transitions loop
 	int transitionCount = 0;
 	map<string,int> transitionsNames;// Map to solve multiple identical transition names
-	FOREACH_TRANSITIONS(this->fsm)
+	FOREACH_TRANSITIONS(fsm)
 
 
         //-- Get target state and source state
@@ -80,18 +105,7 @@ void VerificationPlanGenerator::generate(ostream& output) {
         if (transition->getName().size() == 0) {
             transName << this->cleanString(sstate) << "_to_" << this->cleanString(tstate);
         }
-        /*if ( fsm->getCurrentTrans()->tname.size()==0) {
-            transName<<sstate<<"_to_" << tstate;
-        }
-        //-- Replace  White spaces with _
-        else {
-            for (int ci=0;ci< fsm->getCurrentTrans()->tname.size();ci++) {
-                if ( fsm->getCurrentTrans()->tname.at(ci)==' ')
-                    transName<<"_";
-                else
-                    transName<< fsm->getCurrentTrans()->tname.at(ci);
-            }
-        }*/
+
 
         //-- Check buildup name doesn_t already exists, if yes, then increment the counter on it
 
@@ -105,10 +119,46 @@ void VerificationPlanGenerator::generate(ostream& output) {
             transName<<transitionsNames[transName.str()];
         }
 
-        output << "			coverage \""<< transName.str() <<"\" {"<< endl;
-        output << "				ep_CovChkTc : \"COV\";"<< endl;
-        output << "				items_pattern : \"(HDL,instance)"<< logicalInstance <<"."<< transName.str() <<"\";"<< endl;
-        output << "			}"<< endl;
+        //-- Default transition (not condition on input to be checked)
+        //------------------------------
+        if (transition->isDefault()) {
+
+
+            output << "         coverage \""<< transName.str().c_str() << "_default" <<"\" {"<< endl;
+            output << "             ep_CovChkTc : \"COV\";"<< endl;
+            output << "             items_pattern : \"(HDL,instance)"<< logicalInstance <<"."<< transName.str().c_str() <<"\";"<< endl;
+            output << "         }"<< endl;
+
+
+        }
+        //-- Otherwise one cover property per condition
+        //------------------------------
+        else {
+            int cCount = 0 ;
+            FOREACH_TRANSITION_CONDITIONS(transition)
+
+                //-- Property Name
+                stringstream propertyName;
+                propertyName << transName.str();
+
+                //-- Add Condition index and condition name (if one)
+                if (transition->getConditions().size()>1)
+                    propertyName << "_c" << cCount;
+                if (condition->getName().size()>0)
+                    propertyName << "_" << this->cleanString(condition->getName());
+
+
+                output << "         coverage \""<< propertyName.str().c_str() <<"\" {"<< endl;
+                output << "             ep_CovChkTc : \"COV\";"<< endl;
+                output << "             items_pattern : \"(HDL,instance)"<< logicalInstance <<"."<< propertyName.str().c_str() <<"\";"<< endl;
+                output << "         }"<< endl;
+
+                cCount++;
+
+            END_FOREACH_TRANSITION_CONDITIONS
+
+        }
+
 
     END_FOREACH_TRANSITIONS
 
@@ -135,22 +185,20 @@ VerificationPlanGenerator::~VerificationPlanGenerator() {
 
 string VerificationPlanGenerator::cleanString(string input) {
 
-	//-- Use QString
-	QString inputQString(input.c_str());
+    //-- Use QString
+    QString inputQString(input.c_str());
 
-	// Replace spaces with _
-	//------------------------
-	inputQString = inputQString.replace(QChar(' '),QChar('_'));
+    // Replace spaces with _
+    //------------------------
+    inputQString = inputQString.replace(QRegExp("\\s+"), QChar('_'));
 
+    //-- replaces then non \\W characters by nothing
+    //inputQString = inputQString.replace(QRegExp("\\W"),"");
 
-	//-- replaces then non \\W characters by nothing
-	//inputQString = inputQString.replace(QRegExp("\\W"),"");
+    //-- Only Allow letters and numbers
+    inputQString = inputQString.replace(QRegExp("[^A-Za-z0-9_]*"), "");
 
-	//-- Only Allow letters and numbers
-	inputQString = inputQString.replace(QRegExp("[^A-Za-z0-9_]*"),"");
-
-
-	return inputQString.toStdString();
+    return inputQString.toStdString();
 
 }
 
