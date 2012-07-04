@@ -126,7 +126,7 @@ void VerificationPlanGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 
             output << "         coverage \""<< transName.str().c_str() << "_default" <<"\" {"<< endl;
             output << "             ep_CovChkTc : \"COV\";"<< endl;
-            output << "             items_pattern : \"(HDL,instance)"<< logicalInstance <<"."<< transName.str().c_str() <<"\";"<< endl;
+            output << "             items_pattern : \"(HDL,instance)"<< logicalInstance <<"."<< transName.str().c_str() << "_default" <<"\";"<< endl;
             output << "         }"<< endl;
 
 
