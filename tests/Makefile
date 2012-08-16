@@ -228,29 +228,53 @@ src/fsmDesignerRegressions.cpp.s:
 	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/fsmDesignerRegressions.cpp.s
 .PHONY : src/fsmDesignerRegressions.cpp.s
 
-src/genverilog/GenverilogTest.o: src/genverilog/GenverilogTest.cpp.o
-.PHONY : src/genverilog/GenverilogTest.o
+src/generators/GenVPlanTest.o: src/generators/GenVPlanTest.cpp.o
+.PHONY : src/generators/GenVPlanTest.o
 
 # target to build an object file
-src/genverilog/GenverilogTest.cpp.o:
-	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/genverilog/GenverilogTest.cpp.o
-.PHONY : src/genverilog/GenverilogTest.cpp.o
+src/generators/GenVPlanTest.cpp.o:
+	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/generators/GenVPlanTest.cpp.o
+.PHONY : src/generators/GenVPlanTest.cpp.o
 
-src/genverilog/GenverilogTest.i: src/genverilog/GenverilogTest.cpp.i
-.PHONY : src/genverilog/GenverilogTest.i
+src/generators/GenVPlanTest.i: src/generators/GenVPlanTest.cpp.i
+.PHONY : src/generators/GenVPlanTest.i
 
 # target to preprocess a source file
-src/genverilog/GenverilogTest.cpp.i:
-	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/genverilog/GenverilogTest.cpp.i
-.PHONY : src/genverilog/GenverilogTest.cpp.i
+src/generators/GenVPlanTest.cpp.i:
+	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/generators/GenVPlanTest.cpp.i
+.PHONY : src/generators/GenVPlanTest.cpp.i
 
-src/genverilog/GenverilogTest.s: src/genverilog/GenverilogTest.cpp.s
-.PHONY : src/genverilog/GenverilogTest.s
+src/generators/GenVPlanTest.s: src/generators/GenVPlanTest.cpp.s
+.PHONY : src/generators/GenVPlanTest.s
 
 # target to generate assembly for a file
-src/genverilog/GenverilogTest.cpp.s:
-	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/genverilog/GenverilogTest.cpp.s
-.PHONY : src/genverilog/GenverilogTest.cpp.s
+src/generators/GenVPlanTest.cpp.s:
+	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/generators/GenVPlanTest.cpp.s
+.PHONY : src/generators/GenVPlanTest.cpp.s
+
+src/generators/GenverilogTest.o: src/generators/GenverilogTest.cpp.o
+.PHONY : src/generators/GenverilogTest.o
+
+# target to build an object file
+src/generators/GenverilogTest.cpp.o:
+	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/generators/GenverilogTest.cpp.o
+.PHONY : src/generators/GenverilogTest.cpp.o
+
+src/generators/GenverilogTest.i: src/generators/GenverilogTest.cpp.i
+.PHONY : src/generators/GenverilogTest.i
+
+# target to preprocess a source file
+src/generators/GenverilogTest.cpp.i:
+	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/generators/GenverilogTest.cpp.i
+.PHONY : src/generators/GenverilogTest.cpp.i
+
+src/generators/GenverilogTest.s: src/generators/GenverilogTest.cpp.s
+.PHONY : src/generators/GenverilogTest.s
+
+# target to generate assembly for a file
+src/generators/GenverilogTest.cpp.s:
+	$(MAKE) -f CMakeFiles/fsmDesignerRegressions.dir/build.make CMakeFiles/fsmDesignerRegressions.dir/src/generators/GenverilogTest.cpp.s
+.PHONY : src/generators/GenverilogTest.cpp.s
 
 # Help Target
 help:
@@ -276,9 +300,12 @@ help:
 	@echo "... src/fsmDesignerRegressions.o"
 	@echo "... src/fsmDesignerRegressions.i"
 	@echo "... src/fsmDesignerRegressions.s"
-	@echo "... src/genverilog/GenverilogTest.o"
-	@echo "... src/genverilog/GenverilogTest.i"
-	@echo "... src/genverilog/GenverilogTest.s"
+	@echo "... src/generators/GenVPlanTest.o"
+	@echo "... src/generators/GenVPlanTest.i"
+	@echo "... src/generators/GenVPlanTest.s"
+	@echo "... src/generators/GenverilogTest.o"
+	@echo "... src/generators/GenverilogTest.i"
+	@echo "... src/generators/GenverilogTest.s"
 .PHONY : help
 
 

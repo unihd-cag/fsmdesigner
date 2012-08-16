@@ -402,10 +402,11 @@ FIND_PROGRAM(QT_QMAKE_EXECUTABLE NAMES qmake qmake4 qmake-qt4 qmake-mac PATHS
 # If cross compiling, use QT_DIR to detect lib and headers folder
 IF (CMAKE_CROSSCOMPILING)
 
-MESSAGE(STATUS "Crosscompiling with QT! (QTDIR: $ENV{QTDIR}")
+MESSAGE(STATUS "Crosscompiling with QT! (QTDIR: $ENV{QTDIR})")
 
 SET(QT_LIBRARY_DIR $ENV{QTDIR}/lib/)
 SET(QT_HEADERS_DIR $ENV{QTDIR}/include/)
+#SET(QT_INCLUDE_DIR $ENV{QTDIR}/include/)
 
 
 ENDIF(CMAKE_CROSSCOMPILING)
@@ -511,21 +512,27 @@ IF (QT4_QMAKE_FOUND)
 
       # ask qmake for the library dir
       # Set QT_LIBRARY_DIR
-
-    EXEC_PROGRAM( ${QT_QMAKE_EXECUTABLE}
-      ARGS "-query QT_INSTALL_LIBS"
-      OUTPUT_VARIABLE QT_LIBRARY_DIR_TMP )
-    # make sure we have / and not \ as qmake gives on windows
-    FILE(TO_CMAKE_PATH "${QT_LIBRARY_DIR_TMP}" QT_LIBRARY_DIR_TMP)
     
+    ## FIXED : In Crosscompiling case -> lib already set
+    #IF (NOT CMAKE_CROSSCOMPILING)
+        
+        EXEC_PROGRAM( ${QT_QMAKE_EXECUTABLE}
+          ARGS "-query QT_INSTALL_LIBS"
+          OUTPUT_VARIABLE QT_LIBRARY_DIR_TMP )
+        # make sure we have / and not \ as qmake gives on windows
+        FILE(TO_CMAKE_PATH "${QT_LIBRARY_DIR_TMP}" QT_LIBRARY_DIR_TMP)
+        
+         IF(EXISTS "${QT_LIBRARY_DIR_TMP}")
+            SET(QT_LIBRARY_DIR ${QT_LIBRARY_DIR_TMP} CACHE PATH "Qt library dir" FORCE)
+         ELSE(EXISTS "${QT_LIBRARY_DIR_TMP}")
+            MESSAGE("Warning: QT_QMAKE_EXECUTABLE reported QT_INSTALL_LIBS as ${QT_LIBRARY_DIR_TMP}")
+            MESSAGE("Warning: ${QT_LIBRARY_DIR_TMP} does NOT exist, Qt must NOT be installed correctly.")
+         ENDIF(EXISTS "${QT_LIBRARY_DIR_TMP}")
+        
+    #ENDIF (NOT CMAKE_CROSSCOMPILING)
    
     
-    IF(EXISTS "${QT_LIBRARY_DIR_TMP}")
-      SET(QT_LIBRARY_DIR ${QT_LIBRARY_DIR_TMP} CACHE PATH "Qt library dir" FORCE)
-    ELSE(EXISTS "${QT_LIBRARY_DIR_TMP}")
-      MESSAGE("Warning: QT_QMAKE_EXECUTABLE reported QT_INSTALL_LIBS as ${QT_LIBRARY_DIR_TMP}")
-      MESSAGE("Warning: ${QT_LIBRARY_DIR_TMP} does NOT exist, Qt must NOT be installed correctly.")
-    ENDIF(EXISTS "${QT_LIBRARY_DIR_TMP}")
+   
 
 
   IF (APPLE)
@@ -548,14 +555,16 @@ IF (QT4_QMAKE_FOUND)
      FILE(TO_CMAKE_PATH "${qt_bins}" qt_bins)
      SET(QT_BINARY_DIR ${qt_bins} CACHE INTERNAL "" FORCE)
      
-      # ask qmake for the include dir
-      EXEC_PROGRAM( ${QT_QMAKE_EXECUTABLE}
-        ARGS "-query QT_INSTALL_HEADERS"
-        OUTPUT_VARIABLE qt_headers )
-      # make sure we have / and not \ as qmake gives on windows
-      FILE(TO_CMAKE_PATH "${qt_headers}" qt_headers)
-      SET(QT_HEADERS_DIR ${qt_headers} CACHE INTERNAL "" FORCE)
-
+     ## FIXED : In Crosscompiling case -> headers already set
+     IF (NOT CMAKE_CROSSCOMPILING)
+          # ask qmake for the include dir
+          EXEC_PROGRAM( ${QT_QMAKE_EXECUTABLE}
+            ARGS "-query QT_INSTALL_HEADERS"
+            OUTPUT_VARIABLE qt_headers )
+          # make sure we have / and not \ as qmake gives on windows
+          FILE(TO_CMAKE_PATH "${qt_headers}" qt_headers)
+          SET(QT_HEADERS_DIR ${qt_headers} CACHE INTERNAL "" FORCE)
+     ENDIF (NOT CMAKE_CROSSCOMPILING)
 
   # ask qmake for the documentation directory
   IF (QT_LIBRARY_DIR AND NOT QT_DOC_DIR  OR  QT_QMAKE_CHANGED)
@@ -771,6 +780,8 @@ IF (QT4_QMAKE_FOUND)
     ENDIF (QT_USE_FRAMEWORKS)
   ENDIF( QT_QTCORE_INCLUDE_DIR )
 
+
+  
   IF( NOT QT_INCLUDE_DIR)
     IF(Qt4_FIND_REQUIRED)
       MESSAGE( FATAL_ERROR "Could NOT find QtCore header")
@@ -830,7 +841,7 @@ IF (QT4_QMAKE_FOUND)
         )
         
     #MESSAGE(STATUS "Searching dbg library for ${QT_MODULE}${QT_LIBINFIX} into /usr/lib/debug${QT_LIBRARY_DIR}: ${QT_${_upper_qt_module}_LIBRARY_DEBUG}")
-    #MESSAGE(STATUS "Result Searching rel library for ${QT_MODULE}${QT_LIBINFIX} into ${QT_LIBRARY_DIR}: ${QT_${_upper_qt_module}_LIBRARY_RELEASE}")
+    MESSAGE(STATUS "Result Searching rel library for ${QT_MODULE}${QT_LIBINFIX} into ${QT_LIBRARY_DIR}: ${QT_${_upper_qt_module}_LIBRARY_RELEASE}")
          
   ENDFOREACH(QT_MODULE)
 

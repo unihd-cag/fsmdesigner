@@ -1,0 +1,140 @@
+/**
+ reg fsm_activate_link;
+reg fsm_synth_ready;
+reg fsm_synth_status_toggle;
+reg fsm_txrx_status_toggle;
+reg fsm_txrx_ready;
+
+wire fsm_state0;
+wire fsm_state1;
+wire fsm_state2;
+
+fsm_1 fsm_1_I (
+
+	//-- Inputs
+	.activate_link(fsm_activate_link), 
+	.synth_ready(fsm_synth_ready), 
+	.synth_status_toggle(fsm_synth_status_toggle), 
+	.txrx_status_toggle(fsm_txrx_status_toggle), 
+	.txrx_ready(fsm_txrx_ready), 
+
+	//-- Outputs
+	.state0(fsm_state0), 
+	.state1(fsm_state1), 
+	.state2(fsm_state2)
+);
+
+ */
+module fsm_1 ( 
+    input wire clk, 
+    input wire res_n, 
+
+    // Inputs
+    //------------ 
+    input wire activate_link, 
+    input wire synth_ready, 
+    input wire synth_status_toggle, 
+    input wire txrx_status_toggle, 
+    input wire txrx_ready, 
+
+    // Outputs
+    //------------ 
+    output wire state0, 
+    output wire state1, 
+    output wire state2
+ );
+
+localparam IDLE = 3'b000;
+localparam HARD_RESET = 3'b001;
+localparam POWER_DOWN = 3'b010;
+localparam P0S = 3'b011;
+localparam P0 = 3'b100;
+
+reg [2:0] current_state, next_state;
+assign {state0, state1, state2} = current_state;
+
+wire [4:0] inputvector;
+assign inputvector = {activate_link, synth_ready, synth_status_toggle, txrx_status_toggle, txrx_ready};
+
+
+always @(*) begin
+  casex({inputvector, current_state})
+    {5'b1xxxx, IDLE}:   next_state = IDLE;
+    {5'b0xxxx, IDLE}:   next_state = HARD_RESET;
+    {5'b1xxxx, HARD_RESET}:   next_state = POWER_DOWN;
+    {5'b1x0xx, POWER_DOWN}:   next_state = POWER_DOWN;
+    {5'b10xxx, POWER_DOWN}:   next_state = POWER_DOWN;
+    {5'bx11xx, POWER_DOWN}:   next_state = P0S;
+    {5'b1xxx0, P0S}:   next_state = P0S;
+    {5'b1xx0x, P0S}:   next_state = P0S;
+    {5'bxxx11, P0S}:   next_state = P0;
+    {5'b1xxxx, P0}:   next_state = IDLE;
+    {5'b0xxxx, 3'bxxx}:   next_state = IDLE;
+    default:  next_state = IDLE;
+  endcase
+end
+
+`ifdef ASYNC_RES
+ always @(posedge clk or negedge res_n ) begin
+`else
+ always @(posedge clk) begin
+`endif
+    if (!res_n)
+    begin
+        current_state <= IDLE;
+    end
+    else begin
+        current_state <= next_state;
+    end
+end
+
+`ifdef CAG_COVERAGE
+// synopsys translate_off
+
+	// State coverage
+	//--------
+
+	//-- Coverage group declaration
+	covergroup cg_states @(posedge clk);
+		states : coverpoint current_state {
+			bins IDLE = {IDLE};
+			bins HARD_RESET = {HARD_RESET};
+			bins POWER_DOWN = {POWER_DOWN};
+			bins P0S = {P0S};
+			bins P0 = {P0};
+		}
+	endgroup : cg_states
+
+	//-- Coverage group instanciation
+	cg_states state_cov_I;
+	initial begin
+		state_cov_I = new();
+		state_cov_I.set_inst_name("state_cov_I");
+	end
+
+	// Transitions coverage
+	//--------
+
+	tc_deactivate_link: cover property( @(posedge clk) disable iff (!res_n)(inputvector ==? 5'b0xxxx) &&(current_state == IDLE)|=> (current_state == HARD_RESET));
+
+	tc_trans_8_default: cover property( @(posedge clk) disable iff (!res_n)if (current_state == POWER_DOWN))|=> (current_state == POWER_DOWN) );
+
+	tc_trans_9_default: cover property( @(posedge clk) disable iff (!res_n)if (current_state == P0S))|=> (current_state == P0S) );
+
+	tc_default_default: cover property( @(posedge clk) disable iff (!res_n)if (current_state == IDLE))|=> (current_state == IDLE) );
+
+	tc_default2_default: cover property( @(posedge clk) disable iff (!res_n)if (current_state == HARD_RESET))|=> (current_state == HARD_RESET) );
+
+	tc_activate_link: cover property( @(posedge clk) disable iff (!res_n)(inputvector ==? 5'b1xxxx) &&(current_state == HARD_RESET)|=> (current_state == POWER_DOWN));
+
+	tc_trans_7: cover property( @(posedge clk) disable iff (!res_n)(inputvector ==? 5'bx11xx) &&(current_state == POWER_DOWN)|=> (current_state == P0S));
+
+	tc_trans_82: cover property( @(posedge clk) disable iff (!res_n)(inputvector ==? 5'bxxx11) &&(current_state == P0S)|=> (current_state == P0));
+
+	tc_default3_default: cover property( @(posedge clk) disable iff (!res_n)if (current_state == P0))|=> (current_state == IDLE) );
+
+// synopsys translate_on
+`endif
+
+
+endmodule
