@@ -5,18 +5,26 @@ project (FSMDesigner)
 #########################
 set (FSMDesigner_VERSION_MAJOR 5)
 set (FSMDesigner_VERSION_MINOR 2)
+set (FSMDesigner_VERSION_PATCH 0)
 
-## Determine revision
+### Determine revision
 SET(revisionsCount 0)
-execute_process(
-    COMMAND git log --all --pretty=oneline
-    COMMAND wc -l
-    OUTPUT_VARIABLE revisionsCount
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
+IF(WIN32)
+	execute_process(
+		COMMAND git-get-revision.bat
+		OUTPUT_VARIABLE revisionsCount
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+ELSE(WIN32)
+	execute_process(
+		COMMAND git log --all --pretty=oneline
+		COMMAND wc -l
+		OUTPUT_VARIABLE revisionsCount
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+ENDIF(WIN32)
 
-## Set as Patch Version
-set (FSMDesigner_VERSION_PATCH ${revisionsCount})
-  
+## Add to Patch Version
+set (FSMDesigner_VERSION_PATCH ${FSMDesigner_VERSION_PATCH}~${revisionsCount})
+message(STATUS "Patch version set from GIT to: ${revisionsCount}")
   
 ##########################################
 # Libraries needed
@@ -237,10 +245,7 @@ IF(NOT WIN32)
         COMMAND dpkg --print-architecture
         OUTPUT_VARIABLE arch
         OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    ## Append Revision to patch version
-    #SET(CPACK_PACKAGE_VERSION_PATCH ${FSMDesigner_VERSION_PATCH}~${revisionsCount})
-
+		
     ## Append Arch to patch version
     SET(CPACK_PACKAGE_VERSION_PATCH ${CPACK_PACKAGE_VERSION_PATCH}-${arch})
 
@@ -259,7 +264,7 @@ ENDIF(NOT WIN32)
 IF(WIN32)
 
     ### Reset Patch Version for Windows installer to avoid Multiple installation folders
-    set(CPACK_PACKAGE_INSTALL_DIRECTORY "FSMDesigner ${FSMDesigner_VERSION_MAJOR}.${FSMDesigner_VERSION_MINOR}
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY "FSMDesigner ${FSMDesigner_VERSION_MAJOR}.${FSMDesigner_VERSION_MINOR}")
     
     ### Package QT  Libraries DLLs
     FOREACH(qtlib ${QT_LIBRARIES})
@@ -275,18 +280,31 @@ IF(WIN32)
     ENDFOREACH(qtlib ${QT_LIBRARIES})
     
     ### If CrossCompiling -> Package mingw runtime dll
-    IF(CMAKE_CROSSCOMPILING)
+    #IF(CMAKE_CROSSCOMPILING)
         set (MINGW_LIBS libgcc_s_dw2-1.dll libgcc_s_sjlj-1.dll libstdc++-6.dll mingwm10.dll)
         FOREACH(extra_lib ${MINGW_LIBS})
         
             find_file(${extra_lib}_path ${extra_lib} PATHS ${CMAKE_FIND_ROOT_PATH} /usr/lib/gcc/x86_64-w64-mingw32/4.6/ PATH_SUFFIXES lib CMAKE_FIND_ROOT_PATH_BOTH)
-            message(STATUS "NSIS Installer Packaging extra runtime library ${extra_lib} from ${${extra_lib}_path}")
-            INSTALL(FILES ${${extra_lib}_path}
-                DESTINATION bin
-                COMPONENT runtime)
+            #message(STATUS "NSIS Installer Packaging extra runtime library ${extra_lib} from ${${extra_lib}_path}")
+            if(${${extra_lib}_path} MATCHES ".*-NOTFOUND")
+			
+				 message(STATUS "NSIS Installer Not Packaging extra runtime library ${extra_lib} (not found)")
+				
+			else(${${extra_lib}_path} MATCHES ".*-NOTFOUND")
+			
+				message(STATUS "NSIS Installer Packaging extra runtime library ${extra_lib} from ${${extra_lib}_path}")
+				INSTALL(FILES ${${extra_lib}_path}
+					DESTINATION bin
+					COMPONENT runtime)
+			
+			   
+			
+			endif(${${extra_lib}_path} MATCHES ".*-NOTFOUND")
+			
+			
                 
         ENDFOREACH(extra_lib ${MINGW_LIBS})
-    ENDIF(CMAKE_CROSSCOMPILING)
+    #ENDIF(CMAKE_CROSSCOMPILING)
     
    
 
