@@ -63,8 +63,7 @@ QList<RuleError*> StateOutputsRule::applyRule(Fsm * fsm) {
 
             //-- Create new error
             RuleError * error = new RuleError();
-            error->setConcernedObject(state);
-            error->setConcernedObjectType(FSMDesigner::STATE);
+            error->addConcernedObject(state,FSMDesigner::STATE);
 
             //-- Set error message
             error->setMessage(QString("State ")+state->getName().c_str()+ " has the same output as "+(outputsMap[state->getOutput()]->getName().c_str()));

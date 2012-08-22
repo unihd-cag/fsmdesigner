@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='ISO-8859-1' ?>
-<project pname='pcie_bridge_xc6v_128' version="5.1">
+<project pname='pcie_bridge_xc6v_128' version="5.2">
   <fsm fname='rx' resetstate='1' numberofinputs='8' numberofoutputs='4'>
     <ToolsParameters>
         <Parameters userid="linux:3010">
@@ -106,7 +106,7 @@
         <end>2</end>
         <condition>
             <cname><![CDATA[]]></cname>
-            <input>1-1111--</input>
+            <input>----0---</input>
         </condition>
         <condition>
             <cname><![CDATA[]]></cname>
@@ -890,7 +890,7 @@
         <trackpoint posx='0' posy='0' link='0' linkid='0' join='8' color='0' />
     </trans>
     <link id='7' posx='-87' posy='-275' color='0' goal='1' />
-    <Join id="8" posx="23" posy="47" targetState="5">
-    </Join>
+	<Join id="8" posx="23" posy="47" targetState="5">
+	</Join>
   </fsm>
 </project>

@@ -74,7 +74,7 @@ QWidget* TableTransDelegate::createEditor(QWidget* parent,
 
     // C3 & C4 : States
     //--------------------------
-    if (index.column() == 3 || index.column() == 4) {
+    if (index.column() == 0 || index.column() == 4) {
 
         // Create a list of states name
         //-------------------
@@ -99,7 +99,7 @@ void TableTransDelegate::setModelData(QWidget* editor,
 
     // C3 & C4 : States
     //--------------------------
-    if (index.column() == 3 || index.column() == 4) {
+    if (index.column() == 0 || index.column() == 4) {
 
 
         // Get Editor

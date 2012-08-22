@@ -19,18 +19,17 @@
 #include "RuleError.h"
 
 RuleError::RuleError() {
-    this->concernedObject = NULL;
 }
 
 RuleError::~RuleError() {
 }
 
-FSMDesigner::Item RuleError::getConcernedObjectType() {
+/*FSMDesigner::Item RuleError::getConcernedObjectType() {
     return this->concernedObjectType;
 }
-void RuleError::setConcernedObjectType(FSMDesigner::Item type) {
-    this->concernedObjectType = type;
-}
+void RuleError::addConcernedObjectType(FSMDesigner::Item type) {
+    this->concernedObjectTypes = type;
+}*/
 
 QString& RuleError::getMessage() {
     return this->message;

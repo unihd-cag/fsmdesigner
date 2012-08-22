@@ -38,6 +38,10 @@
 #include <gui/scene/SceneRelatedObject.h>
 #include <gui/scene/Scene.h>
 
+//-- Verify
+#include <verification/Verificator.h>
+#include <verification/OverlappingTransitionsRule.h>
+
 #include "table.h"
 Table::Table(Scene * scene, QWidget* parent) :
         QDialog(parent), SceneRelatedObject(scene) {
@@ -55,9 +59,27 @@ Table::Table(Scene * scene, QWidget* parent) :
     this->undoIndex = this->getRelatedScene()->getUndoStack()->index();
 
 
+    // Set Icon on Transitions Page Check button
+    //---------
+    this->checkTransitionsButton->setIcon(QIcon(":/icons/Check"));
+    this->connect(this->checkTransitionsButton,SIGNAL(clicked ()),SLOT(checkTransitionsOverlapping()));
+
 }
 
 Table::~Table() {
+
+}
+
+
+void Table::checkTransitionsOverlapping() {
+
+    qDebug() << "Verifing overlapping";
+
+    // Create Verificator
+    //--------------------------
+    Verificator verificator;
+    verificator.addRule(new OverlappingTransitionsRule());
+    verificator.verify(this->getRelatedScene()->getFsm(),this->TransitionView);
 
 }
 

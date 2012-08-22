@@ -76,6 +76,9 @@ class Table: public QDialog, public Ui_Tables , public SceneRelatedObject {
         void addCondition();
         void deleteCondition();
 
+        void checkTransitionsOverlapping();
+
+
     private:
         void createconnections();
 

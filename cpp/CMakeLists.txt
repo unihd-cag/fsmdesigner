@@ -29,7 +29,7 @@ message(STATUS "Patch version set from GIT to: ${revisionsCount}")
 ##########################################
 # Libraries needed
 ##########################################
-   
+    
 set(CMAKE_MODULE_PATH "./macros/")
 
 ## QT4 ###################################

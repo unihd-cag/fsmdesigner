@@ -27,7 +27,7 @@ class VerificatorRule;
  * This class Proceeds in the verification of a FSM, by calling Rules on it.
  * The rules are registered as object instances (not a factory), and execution can be followed using a Callback listener
  *
- * This class uses a singleton Pattern
+ * The verificator cleans the Registered Rules at delete time
  *
  */
 class Verificator {

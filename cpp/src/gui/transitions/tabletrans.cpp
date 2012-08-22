@@ -32,6 +32,8 @@
 //-- Core
 #include <core/Core.h>
 #include <core/Fsm.h>
+#include <core/Trans.h>
+#include <core/Condition.h>
 #include <core/Project.h>
 
 //-- Scene
@@ -49,8 +51,10 @@ TableTrans::TableTrans(QWidget* parent) :
 
     // Init Table
     //----------------------
-    TableTransModel * transmodel = new TableTransModel(this->getRelatedScene(),this);
-    TableTransDelegate * transdelegate = new TableTransDelegate(this->getRelatedScene(),this);
+    TableTransModel * transmodel = new TableTransModel(this->getRelatedScene(),
+            this);
+    TableTransDelegate * transdelegate = new TableTransDelegate(
+            this->getRelatedScene(), this);
     this->setModel(transmodel);
     this->setItemDelegate(transdelegate);
     this->setAlternatingRowColors(true);
@@ -94,7 +98,8 @@ void TableTrans::setRelatedScene(Scene * scene) {
     SceneRelatedObject::setRelatedScene(scene);
 
     // Delegate
-    dynamic_cast<TableTransDelegate*>(this->itemDelegate())->setRelatedScene(scene);
+    dynamic_cast<TableTransDelegate*>(this->itemDelegate())->setRelatedScene(
+            scene);
 
     // Model
     dynamic_cast<TableTransModel*>(this->model())->setRelatedScene(scene);
@@ -103,26 +108,103 @@ void TableTrans::setRelatedScene(Scene * scene) {
 void TableTrans::contextMenuEvent(QContextMenuEvent* e) {
 
     /*
-    Core& core = CoreFactory::getCore();
-    Fsm& f = *(core.getProject()->getFSMs().first());
-    QMenu contextMenu(this);
-    contextMenu.addAction(addTrans);
-    if (currentIndex().parent() == QModelIndex()) {
-        int row = 0;
-        if (f.getFirstTrans()) {
-            do {
-                if (row == currentIndex().row()) {
-                    contextMenu.addAction(deleteTrans);
-                    contextMenu.addAction(addCondition);
-                }
-                row++;
-            } while (f.getNextTrans());
-        }
-    } else {
-        if (currentIndex().isValid()) {
-            contextMenu.addAction(deleteCondition);
-        }
+     Core& core = CoreFactory::getCore();
+     Fsm& f = *(core.getProject()->getFSMs().first());
+     QMenu contextMenu(this);
+     contextMenu.addAction(addTrans);
+     if (currentIndex().parent() == QModelIndex()) {
+     int row = 0;
+     if (f.getFirstTrans()) {
+     do {
+     if (row == currentIndex().row()) {
+     contextMenu.addAction(deleteTrans);
+     contextMenu.addAction(addCondition);
+     }
+     row++;
+     } while (f.getNextTrans());
+     }
+     } else {
+     if (currentIndex().isValid()) {
+     contextMenu.addAction(deleteCondition);
+     }
+     }
+     contextMenu.exec(e->globalPos());*/
+}
+
+void TableTrans::enteredRule(VerificatorRule * rule) {
+
+    // Clean all coloring
+    //----------------------------
+
+    for (int row = 0; row < this->model()->rowCount(); row++) {
+
+        //-- Get Row data
+        QMap<int, QVariant> rowDatas = this->model()->itemData(
+                this->model()->index(row, 2));
+
+        //-- Remove background color
+        rowDatas.remove(Qt::BackgroundColorRole);
+
+        //-- Reset
+        this->model()->setItemData(this->model()->index(row, 2), rowDatas);
     }
-    contextMenu.exec(e->globalPos());*/
+
+}
+
+void TableTrans::ruleSuccessful(VerificatorRule * rule) {
+
+}
+
+void TableTrans::ruleFailed(VerificatorRule * rule, QList<RuleError*>& errors) {
+
+    // Go through all errors
+    //----------------------
+    for (QList<RuleError*>::iterator eit = errors.begin(); eit != errors.end();
+            eit++) {
+
+        // Condition
+        list<pair<FSMDesigner::Item, void *> > objects =
+                (*eit)->getConcernedObjects();
+
+        Condition * erroredSourceCondition = (Condition*) (objects.front()).second;
+        Condition * erroredComparedCondition = (Condition*) (objects.back()).second;
+
+        // Go through all lines to find out if the error is targetting this line
+        //------------
+        for (int row = 0; row < this->model()->rowCount(); row++) {
+
+            //-- Get Row data
+            QMap<int, QVariant> rowDatas = this->model()->itemData(
+                    this->model()->index(row, 2));
+
+            //-- Row Transition ID is at column 2 Qt::UserRole in QVariant map
+            Trans * currentTrans =
+                    this->getRelatedScene()->getFsm()->getTransbyID(
+                            rowDatas[Qt::UserRole].toUInt());
+
+            //-- Row condition ID is at column 2, Qt::UserRole+1 in QVariant map
+            Condition * currentCondition = currentTrans->getConditionByID(
+                    rowDatas[Qt::UserRole + 1].toUInt());
+
+            // Check this current Condition is concerned by the error
+            //------------------------
+            if (currentCondition == erroredSourceCondition || currentCondition == erroredComparedCondition ) {
+
+                //-- Paint the row red
+                //this->itemDelegate(this->model()->index(row,2))->setUserData(Qt::BackgroundColorRole,QBrush(Qt::red));
+                //this->model()->itemData(this->model()->index)
+                qDebug() << "An Error is matching at line: " << row;
+                rowDatas[Qt::BackgroundColorRole] = QBrush(Qt::red);
+                this->model()->setItemData(this->model()->index(row, 2),
+                        rowDatas);
+
+
+
+            }
+
+        }
+
+    }
+
 }
 

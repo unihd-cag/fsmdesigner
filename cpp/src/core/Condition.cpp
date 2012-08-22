@@ -30,7 +30,7 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <iostream>
-
+#include <sstream>
 using namespace std;
 
 //-- Core
@@ -47,6 +47,51 @@ Condition::Condition(int numberOfInputs) {
 Condition::~Condition() {
 
 }
+
+
+bool Condition::isOverlappingWith(string comparingInput) {
+
+
+    string dontcare = "x-?"; // Posssible Don't care characters
+
+    // Verify both inputs are of the same length
+    //----------------
+    if (this->input.length() != comparingInput.length()) {
+
+        stringstream ss;
+        ss << "Condition::isOverlappingWith needs inputs of the same length (local: " << this->input.length() << ", comparing: " << comparingInput.length();
+        throw runtime_error(ss.str().c_str());
+
+    }
+
+    // Proceed
+    //---------------
+    for (int i = 0 ; i < this->input.length() ; i++) {
+
+        //-- Get Characters
+        char base = this->input[i];
+        char compare = comparingInput[i];
+
+        //-- If one is "Don't care" -> not decisive
+        //-------------------
+        if (dontcare.find(base)!=dontcare.npos || dontcare.find(compare,0)!=dontcare.npos ) {
+            continue;
+        }
+        //-- If not don't care, and different -> It is not overlapping
+        //------------
+        else if (base!=compare) {
+            return false;
+        }
+
+    }
+
+    //-- If we come up to here, not decisive bit has been found -> overlapping
+    return true;
+
+
+}
+
+
 string Condition::getName() {
     return this->name;
 }

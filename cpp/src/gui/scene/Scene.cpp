@@ -1223,16 +1223,16 @@ void Scene::ruleFailed(VerificatorRule * rule,QList<RuleError*>& errors) {
 
         // Map To GUI Item
         //-----------------------
-        switch (error->getConcernedObjectType()) {
+        switch (error->getConcernedObjects().front().first) {
 
             //-- State Item
             case FSMDesigner::STATE: {
 
-                if (error->getConcernedObject<State>()==NULL)
+                if (error->getConcernedObjects().front().second==NULL)
                     break;
 
                 // Find back and Set
-                StateItem * stateItem = this->findStateItem(dynamic_cast<State*>(error->getConcernedObject<State>()));
+                StateItem * stateItem = this->findStateItem(static_cast<State*>(error->getConcernedObjects().front().second));
                 if (stateItem!=NULL) {
                     guiError->addConcernedItem(stateItem);
                     stateItem->addVerificationError(guiError);

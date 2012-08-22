@@ -61,6 +61,7 @@
         <file alias="SaveAs">icons/Actions-save-as-icon.png</file>
         <file alias="TableEditor16">icons/icon-table-editor-16.png</file>
         <file alias="TableEditor28">icons/icon-table-editor-28.png</file>
+        <file alias="Check">icons/verification.png</file>
     </qresource>  
     <!-- XML things -->
     <qresource prefix="/xml/">
@@ -79,4 +80,5 @@
        <file alias="PlaceMode_Join">help/PlaceMode_Join.html</file>
        <file alias="PlaceMode_State">help/PlaceMode_State.html</file>
     </qresource>  
+  
 </RCC>

@@ -62,10 +62,10 @@ TableTransModel::TableTransModel(Scene * scene,QObject* parent) :
 
     // Define  Columns
     //---------------------------
-    this->setHorizontalHeaderItem(0,new  QStandardItem("Transition"));
-    this->setHorizontalHeaderItem(1,new  QStandardItem("Name"));
-    this->setHorizontalHeaderItem(2,new  QStandardItem("Value"));
-    this->setHorizontalHeaderItem(3,new  QStandardItem("Start"));
+    this->setHorizontalHeaderItem(0,new  QStandardItem("Start"));
+    this->setHorizontalHeaderItem(1,new  QStandardItem("Transition"));
+    this->setHorizontalHeaderItem(2,new  QStandardItem("Condition Name"));
+    this->setHorizontalHeaderItem(3,new  QStandardItem("Value"));
     this->setHorizontalHeaderItem(4,new  QStandardItem("End"));
 
     // Watch over changes
@@ -86,7 +86,6 @@ void TableTransModel::setRelatedScene(Scene * scene) {
 
     // Update Content
     //---------------
-    qDebug() << "HHHEHERERERERERERERR" << endl;
     QStandardItem * root = this->invisibleRootItem();
     FOREACH_TRANSITIONS(scene->getFsm())
 
@@ -102,6 +101,11 @@ void TableTransModel::setRelatedScene(Scene * scene) {
             // Create Columns for Transition
             QList<QStandardItem *> cols;
 
+            //-- Start State
+            cols+=new QStandardItem(QString::fromStdString(transition->getStartState()->getName()));
+            cols.last()->setData(transition->getEndState()->getId(),Qt::EditRole);
+            cols.last()->setData(QString::fromStdString(transition->getEndState()->getName()),Qt::DisplayRole);
+
             //-- Transition Name
             cols+=new QStandardItem(QString::fromStdString(transition->getName()));
             //cols.last()->setData(QVariant(transition),Qt::EditRole);
@@ -115,12 +119,6 @@ void TableTransModel::setRelatedScene(Scene * scene) {
             cols+=new QStandardItem(QString::fromStdString(condition->getInput()));
             cols.last()->setData(transition->getId(),Qt::UserRole);
             cols.last()->setData(cCount,Qt::UserRole+1);
-
-            //-- Start State
-            cols+=new QStandardItem(QString::fromStdString(transition->getStartState()->getName()));
-            cols.last()->setData(transition->getEndState()->getId(),Qt::EditRole);
-            cols.last()->setData(QString::fromStdString(transition->getEndState()->getName()),Qt::DisplayRole);
-
 
             //-- End State
             cols+=new QStandardItem(QString::fromStdString(transition->getEndState()->getName()));
@@ -151,18 +149,18 @@ void TableTransModel::changed(QStandardItem* item) {
         Trans * transition = getRelatedScene()->getFsm()->getTransbyID(item->data(Qt::UserRole).toUInt());
         Condition * condition = transition->getConditionByID(item->data(Qt::UserRole+1).toUInt());
 
-        // Name
+        // Condition Name
         //----------------
-        if (item->column()==1) {
+        if (item->column()==2) {
 
             qDebug() << "Changing Condition to: " << item->data(Qt::EditRole) << " and " << item->data(Qt::EditRole+1);
 
             ChangeConditionNameAction * changeName = new ChangeConditionNameAction(item->data(Qt::EditRole).toString(),condition);
             getRelatedScene()->getUndoStack()->push(changeName);
         }
-        // Input Condition
+        // Condition Input Condition
         //-----------------
-        else if (item->column()==2) {
+        else if (item->column()==3) {
 
 
             ChangeConditionValueAction * changeValue = new ChangeConditionValueAction(item->data(Qt::EditRole).toString(),condition);
@@ -179,9 +177,9 @@ void TableTransModel::changed(QStandardItem* item) {
         Trans * transition = getRelatedScene()->getFsm()->getTransbyID(item->data(Qt::UserRole).toUInt());
         Transline * transline = getRelatedScene()->findTransline(transition).first();
 
-        // Name
+        // Transition Name
         //----------------
-        if (item->column()==0) {
+        if (item->column()==1) {
 
             ChangeTransitionNameAction * changeName = new ChangeTransitionNameAction(item->data(Qt::EditRole).toString(),transline);
             getRelatedScene()->getUndoStack()->push(changeName);

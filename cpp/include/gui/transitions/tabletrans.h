@@ -36,7 +36,10 @@
 //-- Scene
 #include <gui/scene/SceneRelatedObject.h>
 
-class TableTrans: public QTreeView, SceneRelatedObject {
+//-- Verification
+#include <verification/VerificationListener.h>
+
+class TableTrans: public QTreeView, public SceneRelatedObject, public VerificationListener {
 
     protected:
         QAction* addCondition;
@@ -60,6 +63,14 @@ class TableTrans: public QTreeView, SceneRelatedObject {
          * @param scene
          */
         void setRelatedScene(Scene * scene);
+
+
+
+        virtual void enteredRule(VerificatorRule * rule) ;
+
+        virtual void ruleSuccessful(VerificatorRule * rule);
+
+        virtual void ruleFailed(VerificatorRule * rule,QList<RuleError*>& errors);
 
 
 };

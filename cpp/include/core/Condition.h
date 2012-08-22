@@ -60,7 +60,26 @@ class Condition {
         Condition(int numberOfInputs);
         virtual ~Condition();
 
-        /** \defgroup Properties */
+        /** \defgroup Overlapping Overlapping check */
+        /** @{ */
+
+        /**
+         * This method checks if the current condition is overlapping with the provided one
+         *
+         * The algorithm is following:
+         *
+         *  - Compare both inputs characters one to one (this[i] with comparing[i] )
+         *  - As soon as a position shows a decisive difference (like this[i] == && and comparing[i]==0), it is not overlapping
+         *  - If one of both input is 'x' or '-' or '?', the bit is not decisive
+         *
+         * @param comparingInput
+         * @return true if overlapping, false if not
+         */
+        bool isOverlappingWith(string comparingInput);
+
+        /** @} */
+
+        /** \defgroup Properties Properties */
         /** @{ */
 
         string getName();

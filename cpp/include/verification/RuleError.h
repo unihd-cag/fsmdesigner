@@ -13,6 +13,10 @@
 // Includes
 //-----------------
 
+//-- Std
+#include <list>
+using namespace std;
+
 //-- Qt
 #include <QtCore>
 
@@ -31,12 +35,8 @@ class RuleError {
         /**
          * The Object from Core has commited to an error
          */
-        void * concernedObject;
+        list< pair< FSMDesigner::Item ,void * > > concernedObjects;
 
-        /**
-         * The type of the concerned Object
-         */
-        FSMDesigner::Item concernedObjectType;
 
         /**
          * The content of the error
@@ -48,18 +48,19 @@ class RuleError {
         virtual ~RuleError();
 
 
-        template<class T> T * getConcernedObject(){
-            return (T*)this->concernedObject;
+        list< pair < FSMDesigner::Item,void * > > &  getConcernedObjects(){
+            return this->concernedObjects;
         }
-        template<class T> void setConcernedObject(T * object){
-            this->concernedObject = object;
+        template<class T> void addConcernedObject(T * object,FSMDesigner::Item type){
+
+            this->concernedObjects.push_back(pair<FSMDesigner::Item,void *>(type,object));
         }
 
        /* void * getConcernedObject();
         void setConcernedObject(void * object);*/
 
-        FSMDesigner::Item getConcernedObjectType();
-        void setConcernedObjectType(FSMDesigner::Item type);
+        //FSMDesigner::Item getConcernedObjectType();
+        //void addConcernedObjectType(FSMDesigner::Item type);
 
         QString& getMessage();
         void setMessage(QString message);
