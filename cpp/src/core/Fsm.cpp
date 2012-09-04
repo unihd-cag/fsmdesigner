@@ -781,12 +781,6 @@ Link * Fsm::deleteLink(Link * link) {
         throw invalid_argument("Cannot delete link with id "+Utils::itos(link->getId())+" because it is not registered in the FSM");
     }
 
-    //-- Remove from map
-    this->linksMap.erase(link->getId());
-
-    //-- Remove from ID manager
-    this->idManager.derefenceObject(link);
-
     //-- if the Link is used by a transition => Remove the transition and clear memory
     FOREACH_TRANSITIONS(this)
         FOREACH_TRANSITION_TRACKPOINTS(transition)
@@ -798,6 +792,15 @@ Link * Fsm::deleteLink(Link * link) {
             }
         END_FOREACH_TRANSITION_TRACKPOINTS
     END_FOREACH_TRANSITIONS
+
+
+    //-- Remove from map
+    this->linksMap.erase(link->getId());
+
+    //-- Remove from ID manager
+    this->idManager.derefenceObject(link);
+
+
 
     return link;
 
