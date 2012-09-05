@@ -16,6 +16,7 @@
 #include <map>
 #include <iterator>
 #include <utility>
+#include <sstream>
 using namespace std;
 
 //-- Qt
@@ -59,23 +60,38 @@ void QXMLSave::createProjectDTD(string dirname) {
 
 void QXMLSave::save(string filename, string fsmname) {
 
-	// Prepare file output
+
+
+    // Write the FSM to a string buffer before writing out to a file
+    // Otherwise any SEGFAULT happenning while saving the FSM will mangle the file
+    //---------------
+
+    // Determing platform codec
+   // QString::from
+    ;
+
+    // Prepare Output String
+    //-------------
+    stringstream out;
+    out << "<?xml version='1.0' encoding='UTF-8' ?>" << endl;
+
+    // Call Write FSM on the right FSM
+    //-------------
+    Core& core = *(Core::getInstance());
+    Fsm * fsm = core.getProject()->findFSM(fsmname);
+    if (fsm!=NULL) {
+        this->writeFSM(fsm, out);
+    }
+
+
+
+
+	// Write to file at the end
 	//-------------
-	ofstream out(filename.c_str(), ios_base::out | ios_base::trunc);
-	out << "<?xml version='1.0' encoding='ISO-8859-1' ?>" << endl;
-
-	// Call Write FSM on the right FSM
-	//-------------
-	Core& core = *(Core::getInstance());
-	Fsm * fsm = core.getProject()->findFSM(fsmname);
-	if (fsm!=NULL) {
-		this->writeFSM(fsm, out);
-	}
-
-
-	// Close output
-	//----------------
-	out.close();
+	ofstream fout(filename.c_str(), ios_base::out | ios_base::trunc);
+	fout << out.str();
+	fout << flush;
+	fout.close();
 
 }
 
@@ -88,11 +104,14 @@ void QXMLSave::saveProject(string filename) {
 	QFileInfo fileInfo = QFileInfo(filename.c_str());
 	core.getProject()->setFileInfo(fileInfo);
 
+	// Write the FSM to a string buffer before writing out to a file
+    // Otherwise any SEGFAULT happenning while saving the FSM will mangle the file
+    //---------------
 
-	// Prepare file output
-	//-------------
-	ofstream out(filename.c_str(), ios_base::out | ios_base::trunc);
-	out << "<?xml version='1.0' encoding='ISO-8859-1' ?>" << endl;
+	// Prepare Output String
+    //-------------
+    stringstream out;
+    out << "<?xml version='1.0' encoding='UTF-8' ?>" << endl;
 	out << "<project pname='" << core.getProject()->getName().toStdString() << "' version=\""<<Utils::getMajorVersion() <<"." << Utils::getMinorVersion()<<"\">" <<endl;
 
 	// Foreach FSMs and call Write FSM
@@ -106,14 +125,18 @@ void QXMLSave::saveProject(string filename) {
 	}
 
 
-	// Close output
+	// Close project and write to file
 	//----------------
 	out << "</project>" << endl;
-	out.close();
+
+	ofstream fout(filename.c_str(), ios_base::out | ios_base::trunc);
+	fout << out.str();
+	fout << flush;
+	fout.close();
 
 }
 
-void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
+void QXMLSave::writeFSM(Fsm * f, stringstream& out) {
 
 	out << "  <fsm fname='" << f->getFsmName() << "' resetstate='"
 			<< f->getResetState();
@@ -272,7 +295,7 @@ void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
                         << trackpoint->getPosition().second;
 
                 out << "' link='" << trackpoint->isLink()
-                        << "' linkid='" << trackpoint->getTargetLink()!=NULL?trackpoint->getTargetLink()->getId():0;
+                        << "' linkid='" << (trackpoint->getTargetLink()!=NULL?trackpoint->getTargetLink()->getId():0);
 
                 //qDebug() << "Transaction trackpoint join is: " << f->getTransTrackpointJoin();
 

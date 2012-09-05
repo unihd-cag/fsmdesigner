@@ -36,7 +36,7 @@ public:
 	 * @param fsm
 	 * @param output
 	 */
-	void writeFSM(Fsm * fsm,ofstream& output);
+	void writeFSM(Fsm * fsm,stringstream& output);
 
 };
 
