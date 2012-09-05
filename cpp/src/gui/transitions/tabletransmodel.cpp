@@ -103,8 +103,8 @@ void TableTransModel::setRelatedScene(Scene * scene) {
 
             //-- Start State
             cols+=new QStandardItem(QString::fromStdString(transition->getStartState()->getName()));
-            cols.last()->setData(transition->getEndState()->getId(),Qt::EditRole);
-            cols.last()->setData(QString::fromStdString(transition->getEndState()->getName()),Qt::DisplayRole);
+            cols.last()->setData(transition->getStartState()->getId(),Qt::EditRole);
+            cols.last()->setData(QString::fromStdString(transition->getStartState()->getName()),Qt::DisplayRole);
 
             //-- Transition Name
             cols+=new QStandardItem(QString::fromStdString(transition->getName()));
@@ -140,7 +140,7 @@ void TableTransModel::changed(QStandardItem* item) {
 
 
 
-    // If UserRole is valid, it is the index of the condition
+    // If UserRole+1 is valid, it is the index of the condition
     //--------------------------------
     if (item->data(Qt::UserRole+1).isValid()) {
 

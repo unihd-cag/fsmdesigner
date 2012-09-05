@@ -66,16 +66,23 @@ LinkDeparture::LinkDeparture(Trackpoint * model,QGraphicsItem * startItem) :
 	//-------------------------
 	if (this->getModel()!=NULL) {
 
-		//-- Color ?
-		// Take in predefined list
-		//this->getModel()->
-		//this->setBrush(QBrush(LinkArrival::getDefaultLinkColor(this->getModel()->lid)));
-		if (this->getModel()->getColor()>0){
-			this->setBrush(QBrush(QColor(this->getModel()->getColor())));
-		} else {
-			// Take in predefined list
-			this->setBrush(QBrush(LinkArrival::getDefaultLinkColor(this->getModel()->getTargetLink())));
-		}
+
+	    //-- Color: Local one or link one ?
+        unsigned int targetColor = this->getModel()->getTargetLink() !=NULL ? this->getModel()->getTargetLink()->getColor() : this->getModel()->getColor();
+
+        // Take in predefined list
+        //this->getModel()->
+        //this->setBrush(QBrush(LinkArrival::getDefaultLinkColor(this->getModel()->lid)));
+        if (targetColor>0){
+
+            this->setBrush(QBrush(QColor::fromRgb(targetColor)));
+
+        } else if(this->getModel()->getTargetLink() !=NULL) {
+
+            // Take in predefined list
+            this->setBrush(QBrush(LinkArrival::getDefaultLinkColor(this->getModel()->getTargetLink()->getId())));
+        }
+
 
 	}
 
@@ -85,6 +92,16 @@ LinkDeparture::LinkDeparture(Trackpoint * model,QGraphicsItem * startItem) :
 }
 
 LinkDeparture::~LinkDeparture() {
+
+}
+
+
+void LinkDeparture::modelChanged() {
+
+    TrackpointItem::modelChanged();
+
+
+
 
 }
 
@@ -106,6 +123,7 @@ QList<QUndoCommand*> LinkDeparture::remove(QUndoCommand * parentComand) {
 	return undoCommands;
 
 }
+
 
 void LinkDeparture::preparePath() {
 

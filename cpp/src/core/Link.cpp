@@ -57,11 +57,11 @@ void    Link::setTargetState(State * state) {
     this->targetState = state;
 }
 
-void Link::setColor(int color) {
+void Link::setColor(unsigned int color) {
     this->color = color;
 }
 
-int Link::getColor() {
+unsigned int Link::getColor() {
     return this->color;
 }
 

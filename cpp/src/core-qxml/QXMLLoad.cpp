@@ -361,7 +361,7 @@ void QXMLLoad::parseFSM(QDomElement fsmElement) {
 
 			//-- Link ?
 			bool link = atoi(QXMLLoad::getAttributeValue("link",*it2))==1?true:false;
-			addedTrackpoint->setTargetLink(atoi(QXMLLoad::getAttributeValue("linkid",*it2)));
+			addedTrackpoint->setTargetLink(fsm->getLinkbyID(atoi(QXMLLoad::getAttributeValue("linkid",*it2))));
 
 			//-- Color
 			addedTrackpoint->setColor(atoi(QXMLLoad::getAttributeValue("color",*it2)));
@@ -418,7 +418,7 @@ void QXMLLoad::parseFSM(QDomElement fsmElement) {
             //-- Link ?
             bool link = atoi(QXMLLoad::getAttributeValue("link",*it2))==1?true:false;
             if (link) {
-                addedTrackpoint->setTargetLink(atoi(QXMLLoad::getAttributeValue("linkid",*it2)));
+                addedTrackpoint->setTargetLink(fsm->getLinkbyID(atoi(QXMLLoad::getAttributeValue("linkid",*it2))));
             }
 
             //-- Join

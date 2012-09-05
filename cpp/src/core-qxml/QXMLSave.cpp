@@ -223,12 +223,12 @@ void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
                     << trackpoint->getPosition().first << "' posy='"
                     << trackpoint->getPosition().second;
 
-            out << "' link='" << trackpoint->isLink()
-                    << "' linkid='" << trackpoint->getTargetLink();
+            out << "' link='" << trackpoint->isLink() << "'";
+            out << " linkid='" << (trackpoint->getTargetLink()!=NULL?trackpoint->getTargetLink()->getId():0) << "'";
 
             //qDebug() << "Transaction trackpoint join is: " << f->getTransTrackpointJoin();
 
-            out << "' join='" << (trackpoint->getJoin()!=NULL ? trackpoint->getJoin()->getId() : 0)
+            out << " join='" << (trackpoint->getJoin()!=NULL ? trackpoint->getJoin()->getId() : 0)
                     << "' color='" << trackpoint->getColor();
             out << "' />" << endl;
 
@@ -272,7 +272,7 @@ void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
                         << trackpoint->getPosition().second;
 
                 out << "' link='" << trackpoint->isLink()
-                        << "' linkid='" << trackpoint->getTargetLink();
+                        << "' linkid='" << trackpoint->getTargetLink()!=NULL?trackpoint->getTargetLink()->getId():0;
 
                 //qDebug() << "Transaction trackpoint join is: " << f->getTransTrackpointJoin();
 
@@ -318,7 +318,7 @@ void QXMLSave::writeFSM(Fsm * f, ofstream& out) {
 			out << " posy=\""			<< (*tit)->getPosition().second <<"\"";
 			out << " color=\""			<< (*tit)->getColor()<<"\"";
 			out << " link=\""			<< (*tit)->isLink()<<"\"";
-			out << " linkid=\""			<< (*tit)->getTargetLink()<<"\"";
+			out << " linkid=\""			<< ((*tit)->getTargetLink()!=NULL?(*tit)->getTargetLink()->getId():0)<<"\"";
 
 			out << "/>" << endl;
 

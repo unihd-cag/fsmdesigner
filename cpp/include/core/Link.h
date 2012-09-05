@@ -61,7 +61,7 @@ class Link : public UniqueIDObject {
 
         State *                 targetState;
         pair<double, double>    position;
-        int                     color;
+        unsigned int                     color;
 
 
     public:
@@ -79,13 +79,13 @@ class Link : public UniqueIDObject {
          * Define color
          * @param color
          */
-        void setColor(int color);
+        void setColor(unsigned int color);
 
         /**
          * Return the actual set color
          * @return
          */
-        int getColor();
+        unsigned int getColor();
 
         void setPosition(pair<double, double> position);
 

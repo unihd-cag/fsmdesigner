@@ -641,21 +641,22 @@ bool PropertiesModel::setData(const QModelIndex& index, const QVariant& value,
     //---------------------------
 	case FSMDesigner::LINKDEPARTURE: // Link
 
+	    //-- FIXME Target State: If the target state does not have a Link defined on it -> we need to add one. Put that on hold
 		switch (index.row()) {
 		case 2:
 
-
-			s = value.toString().trimmed().toStdString();
+		    //-- Find out the
+			/*s = value.toString().trimmed().toStdString();
 			FOREACH_STATE(relatedScene->getFsm())
 					if (strcmp(s.c_str(), state->getName().c_str()) == 0) {
 					    static_cast<LinkDeparture*>(editingItem)->getModel()->setTargetLink(state->getId());
 					}
-			END_FOREACH_STATE
+			END_FOREACH_STATE*/
 
 			break;
 
 		case 3: {
-			unsigned int color = value.value<QColor> ().rgb();
+			unsigned int color = value.value<QColor> ().value();
 			static_cast<LinkDeparture*>(editingItem)->getModel()->setColor(color);
 		}
 			break;

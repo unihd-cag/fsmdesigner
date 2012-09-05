@@ -708,7 +708,7 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 				Trackpoint * tp = linkToTransition->appendTrackpoint(
 						(double) e->scenePos().x(), (double) e->scenePos().y());
 
-				tp->setTargetLink(link->getId());
+				tp->setTargetLink(link);
 
 				// Add Items to GUI using toPlace stack
 				//-----------------
@@ -1357,7 +1357,7 @@ QList<LinkDeparture*> Scene::findLinkDepartures(Link * link) {
 
 		if (FSMGraphicsItem<>::isLinkDeparture((*it))
 				&& FSMGraphicsItem<>::toLinkDeparture(*it)->getModel()!= NULL
-				&& FSMGraphicsItem<>::toLinkDeparture(*it)->getModel()->getTargetLink() == link->getId()) {
+				&& FSMGraphicsItem<>::toLinkDeparture(*it)->getModel()->getTargetLink() == link) {
 			result << FSMGraphicsItem<>::toLinkDeparture(*it);
 		}
 	}

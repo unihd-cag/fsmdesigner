@@ -784,7 +784,7 @@ Link * Fsm::deleteLink(Link * link) {
     //-- if the Link is used by a transition => Remove the transition and clear memory
     FOREACH_TRANSITIONS(this)
         FOREACH_TRANSITION_TRACKPOINTS(transition)
-            if ((trackpoint->getTargetLink() == link->getId())) {
+            if ((trackpoint->getTargetLink() == link)) {
                 // Delete transition
                 Trans * deletedTransition = this->deleteTrans(transition);
                 delete deletedTransition;

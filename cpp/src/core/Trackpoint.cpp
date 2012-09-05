@@ -34,13 +34,15 @@ using namespace std;
 //-- Core
 #include <core/Trans.h>
 #include <core/Join.h>
+#include <core/Link.h>
 
 #include "Trackpoint.h"
 
 Trackpoint::Trackpoint(double posx, double posy, TransitionBase * transition) {
 
     this->setPosition(make_pair(posx, posy));
-    this->setTargetLink(0);
+    this->setTargetLink(NULL);
+
 
     this->join = NULL;
     this->color = 0;
@@ -67,24 +69,23 @@ void Trackpoint::setPosition(pair<double, double> newPosition) {
     this->position = newPosition;
 }
 
-int Trackpoint::getColor() {
+unsigned int Trackpoint::getColor() {
     return this->color;
 }
-void Trackpoint::setColor(int color) {
+void Trackpoint::setColor(unsigned int color) {
     this->color = color;
 }
 
-void Trackpoint::setTargetLink(unsigned int targetLink) {
-    this->lid = targetLink;
-    this->link = this->lid == 0 ? false : true;
+void Trackpoint::setTargetLink(Link* targetLink) {
+    this->targetLink = targetLink;
 }
 
-unsigned int Trackpoint::getTargetLink() {
-    return this->lid;
+Link* Trackpoint::getTargetLink() {
+    return this->targetLink;
 }
 
 bool Trackpoint::isLink() {
-    return this->link;
+    return this->targetLink==NULL ? false : true;
 }
 
 void Trackpoint::setJoin(Join* join) {

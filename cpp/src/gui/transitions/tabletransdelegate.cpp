@@ -72,7 +72,7 @@ QWidget* TableTransDelegate::createEditor(QWidget* parent,
         const QStyleOptionViewItem& option, const QModelIndex& index) const {
 
 
-    // C3 & C4 : States
+    // C0 & C4 : States
     //--------------------------
     if (index.column() == 0 || index.column() == 4) {
 
@@ -97,7 +97,7 @@ QWidget* TableTransDelegate::createEditor(QWidget* parent,
 void TableTransDelegate::setModelData(QWidget* editor,
         QAbstractItemModel* model, const QModelIndex& index) const {
 
-    // C3 & C4 : States
+    // C0 & C4 : States
     //--------------------------
     if (index.column() == 0 || index.column() == 4) {
 

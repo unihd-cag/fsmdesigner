@@ -102,7 +102,9 @@ LinkArrival::LinkArrival(Link * model,StateItem * targetState) :
 
 		//-- Color ?
 		if (this->getModel()->getColor() > 0) {
-			this->setBrush(QBrush(QColor(this->getModel()->getColor())));
+
+			this->setBrush(QBrush(QColor::fromRgb(this->getModel()->getColor())));
+
 		} else {
 			// Take in predefined list
 			this->setBrush(QBrush(LinkArrival::getDefaultLinkColor(

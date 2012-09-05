@@ -47,6 +47,7 @@ using namespace std;
 //-- Core
 class TransitionBase;
 class Join;
+class Link;
 
 /*!
  \brief Trackpoint-object
@@ -62,17 +63,14 @@ class Trackpoint {
         /// The transition this trackpoint is related to
         TransitionBase *         transition;
 
-        /// Is the trackpoint a link
-        bool            link;
-
         /// The link id that is targetting (0 means not a link)
-        unsigned int    lid;
+        Link * targetLink;
 
         /// The Join that is targetted
         Join *   join;
 
         /// The color of the trackpoint
-        int             color;
+        unsigned int            color;
 
         /// Position of the trackpoint
         pair<double, double> position;
@@ -99,13 +97,13 @@ class Trackpoint {
 
         void setPosition(pair<double,double> newPosition);
 
-        int getColor();
+        unsigned int getColor();
 
-        void setColor(int color);
+        void setColor(unsigned int color);
 
-        void setTargetLink(unsigned int targetLink);
+        void setTargetLink(Link* targetLink);
 
-        unsigned int getTargetLink();
+        Link* getTargetLink();
 
         /**
          *
