@@ -58,6 +58,8 @@ DeleteStateAction::DeleteStateAction(StateItem * item,QUndoCommand * parentComma
 
         Transline * t = this->item->getIncomingTransitions().takeFirst();
 
+        //if (t->sc)
+
 
         //-- If coming from Link Arrival -> delete hypertransition
         if (t->getStartItem()->type()==LinkArrival::Type) {

@@ -627,6 +627,15 @@ void Transline::mouseMoveEvent(QGraphicsSceneMouseEvent * event) {
 	if (foundItems.size() > 1)
 		return;
 
+	// The Mouse move must be large enough, to improve usability
+	//-------------------------------------------
+	unsigned int requiredMoveAmplitude = 2; // 15 pixels
+	unsigned int xAmplitude = abs(event->pos().x() - event->lastPos().x());
+	unsigned int yAmplitude = abs(event->pos().y() - event->lastPos().y());
+	if (xAmplitude <= requiredMoveAmplitude && yAmplitude <= requiredMoveAmplitude) {
+	    return;
+	}
+
 	// Otherwise, Create Trackpoint
 	//-------------------
 	Fsm& f = *(dynamic_cast<Scene *>(this->scene())->getFsm());
@@ -689,8 +698,14 @@ void Transline::mouseMoveEvent(QGraphicsSceneMouseEvent * event) {
 
 QList<QUndoCommand*> Transline::remove(QUndoCommand * parentComand) {
 
+
+
 	//-- Prepare Undo
 	QList<QUndoCommand*> undoCommands;
+
+	//-- Don't remove if not on the scene
+	if (this->scene()==NULL)
+	    return undoCommands;
 
 
 	//-- FIXME If the far end is a LinkDeparture, uses a delete Link Item object not delete Transition
