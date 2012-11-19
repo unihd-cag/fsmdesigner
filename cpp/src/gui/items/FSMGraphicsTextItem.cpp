@@ -83,9 +83,9 @@ void FSMGraphicsTextItem::startEditing() {
 	this->setTextCursor(cursor);
 
 	//-- No Wrapping of text to keep one line
-    QTextOption option = this->document()->defaultTextOption();
+	/* QTextOption option = this->document()->defaultTextOption();
     option.setWrapMode(QTextOption::NoWrap);
-    this->document()->setDefaultTextOption(option);
+    this->document()->setDefaultTextOption(option);*/
 
 
 
@@ -105,6 +105,8 @@ void FSMGraphicsTextItem::stopEditing() {
 		//-- Disable edition
 		QTextCursor cursor = this->textCursor();
 		cursor.clearSelection();
+		cursor.endEditBlock();
+		cursor.setPosition(0);
 		this->setTextCursor(cursor);
 
 		this->setTextInteractionFlags(Qt::NoTextInteraction);

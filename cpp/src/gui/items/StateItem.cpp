@@ -360,7 +360,8 @@ void	  StateItem::focusOutEvent ( QFocusEvent * event ) {
 
 	QGraphicsItemGroup::focusOutEvent(event);
 
-	this->stateText->stopEditing();
+	if (this->stateText->textInteractionFlags() & Qt::TextEditorInteraction)
+	    this->stateText->stopEditing();
 
 }
 
@@ -370,9 +371,10 @@ void StateItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event) {
 
 
 	//-- Start Editing text if we are under it
-	this->setSelected(false);
-	if (this->scene()->items(event->scenePos()).contains(this->stateText)) {
-		this->stateText->startEditing();
+	if (this->scene()->items(event->scenePos()).contains(this->stateText) && !(this->stateText->textInteractionFlags() & Qt::TextEditorInteraction)) {
+	    this->setSelected(false);
+	    this->stateText->startEditing();
+		event->accept();
 	}
 
 
@@ -847,7 +849,7 @@ void StateItemText::paint(QPainter *painter,
 	int middlex = 50 / 2;
 	int middley = 50 / 2;
 	QPointF correctPosition(middlex - textWidth / 2, middley - textHeight / 2);
-	if (this->pos() != correctPosition) {
+	if (this->pos().x() != correctPosition.x() || this->pos().y() != correctPosition.y() ) {
 		this->setPos(correctPosition);
 	}
 
@@ -859,29 +861,40 @@ void StateItemText::paint(QPainter *painter,
 
 void StateItemText::stopEditing() {
 
-	//-- Let parent do its job first
-	FSMGraphicsTextItem::stopEditing();
+    if (this->textInteractionFlags() & Qt::TextEditorInteraction) {
 
-	//-- Remove as filter
-	if (this->parentItem()!=NULL) {
-	    this->parentItem()->removeSceneEventFilter(this);
-	    this->parentItem()->setFlag(ItemIsMovable,true);
-	    this->parentItem()->setFlag(ItemIsSelectable,true);
-	}
+        //-- Let parent do its job first
+        FSMGraphicsTextItem::stopEditing();
 
-	//-- Do a scene repaint for Artefacts
-	this->scene()->update();
+        qDebug() << "Stop Editing" ;
+
+        //-- Remove as filter
+        /*if (this->parentItem()!=NULL) {
+            this->parentItem()->removeSceneEventFilter(this);
+            this->parentItem()->setFlag(ItemIsMovable,true);
+            this->parentItem()->setFlag(ItemIsSelectable,true);
+        }
+
+        //-- Do a scene repaint for Artefacts
+        this->scene()->update();*/
+
+    }
 }
 
 void StateItemText::startEditing() {
 
-	//-- Let parent do its job first
-	FSMGraphicsTextItem::startEditing();
+    if (!(this->textInteractionFlags() & Qt::TextEditorInteraction)) {
 
-	//-- Set ourselves as filter
-	this->parentItem()->installSceneEventFilter(this);
-	this->parentItem()->setFlag(ItemIsMovable,false);
-	this->parentItem()->setFlag(ItemIsSelectable,false);
+        //-- Let parent do its job first
+        FSMGraphicsTextItem::startEditing();
+
+        qDebug() << "Start Editing" ;
+
+        //-- Set ourselves as filter
+        /*this->parentItem()->installSceneEventFilter(this);
+        this->parentItem()->setFlag(ItemIsMovable,false);
+        this->parentItem()->setFlag(ItemIsSelectable,false);*/
+    }
 }
 
 bool StateItemText::sceneEventFilter ( QGraphicsItem * watched, QEvent * event ) {
@@ -941,6 +954,7 @@ bool StateItemText::sceneEvent(QEvent * event) {
 		case QEvent::KeyRelease:
 			QGraphicsItem::keyReleaseEvent((QKeyEvent*) event);
 			event->accept();
+			return true;
 			break;
 
 		default:

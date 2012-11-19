@@ -52,7 +52,7 @@ using namespace FSMDesigner;
 Scene::Scene(Fsm * fsm, QObject *parent) :
 	QGraphicsScene(-5000,-5000,10000,10000,parent) {
 
-	//this->setBackgroundBrush(Qt::blue);
+	this->setBackgroundBrush(Qt::white);
 	//this->setBackgroundBrush(QPixmap());
 	//this->setStickyFocus(true);
 
