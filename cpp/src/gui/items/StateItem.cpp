@@ -866,17 +866,17 @@ void StateItemText::stopEditing() {
         //-- Let parent do its job first
         FSMGraphicsTextItem::stopEditing();
 
-        qDebug() << "Stop Editing" ;
+
 
         //-- Remove as filter
-        /*if (this->parentItem()!=NULL) {
+        if (this->parentItem()!=NULL) {
             this->parentItem()->removeSceneEventFilter(this);
             this->parentItem()->setFlag(ItemIsMovable,true);
             this->parentItem()->setFlag(ItemIsSelectable,true);
         }
 
         //-- Do a scene repaint for Artefacts
-        this->scene()->update();*/
+        this->scene()->update();
 
     }
 }
@@ -888,12 +888,11 @@ void StateItemText::startEditing() {
         //-- Let parent do its job first
         FSMGraphicsTextItem::startEditing();
 
-        qDebug() << "Start Editing" ;
 
         //-- Set ourselves as filter
-        /*this->parentItem()->installSceneEventFilter(this);
+        this->parentItem()->installSceneEventFilter(this);
         this->parentItem()->setFlag(ItemIsMovable,false);
-        this->parentItem()->setFlag(ItemIsSelectable,false);*/
+        this->parentItem()->setFlag(ItemIsSelectable,false);
     }
 }
 
