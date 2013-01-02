@@ -537,6 +537,9 @@ void QXMLLoad::convert(QDomDocument * document) {
                                 joinElement.setAttribute("posx",QXMLLoad::getAttributeValue("posx",*it2));
                                 joinElement.setAttribute("posy",QXMLLoad::getAttributeValue("posy",*it2));
                                 joinsMap[targetState] = joinElement;
+
+                                qDebug() << "Added a new <Join> element with id: " << joinElement.attribute("id","1");
+
                             } else
                                 joinElement = joinsMap[targetState];
 
@@ -616,7 +619,7 @@ void QXMLLoad::convert(QDomDocument * document) {
                 //---------------------------
                 map<unsigned int,unsigned int> joinsOldTONewIDs;
                 QList<QDomElement> joins = QXMLLoad::getChildElements("Join",(*fsm));
-                unsigned int joinsCount = 0; // The counter is the old ID
+                unsigned int joinsCount = 1; // The counter is the old ID
                 for (QList<QDomElement>::iterator it=joins.begin();it!=joins.end();it++,ids++,joinsCount++) {
 
                     // ID
@@ -664,16 +667,23 @@ void QXMLLoad::convert(QDomDocument * document) {
                         if (link) {
                             // Get new id from map and set
 
-                            unsigned int newid = linksOldTONewIDs[atoi(QXMLLoad::getAttributeValue("linkid",*tit))];
-                            (*tit).setAttribute("linkid",Utils::itos(newid).c_str());
+                            unsigned int newid = linksOldTONewIDs[atoi(QXMLLoad::getAttributeValue("link",*tit))];
+                            (*tit).setAttribute("link",Utils::itos(newid).c_str());
                         }
 
                         //-- If join > 0, adapt id
                         int joinid = atoi(QXMLLoad::getAttributeValue("join",*tit));
                         if (joinid>0) {
+
+
+
                             // Get new id from map and set
-                            unsigned int newid = joinsOldTONewIDs[atoi(QXMLLoad::getAttributeValue("joinid",*tit))];
+                            unsigned int newid = joinsOldTONewIDs[joinid];
                             (*tit).setAttribute("join",Utils::itos(newid).c_str());
+
+
+                            qDebug() << "Found trackpoint pointing to join " << joinid << ", switched to : " << newid;
+
                         }
 
                     }
