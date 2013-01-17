@@ -97,7 +97,7 @@ QList<RuleError*> OverlappingTransitionsRule::applyRule(Fsm * fsm) {
 
                             //-- Message
                             stringstream message;
-                            message << "Transition: "<< transition->getName() <<" , Condition: "<< condition->getName() <<" ,with input: "<< condition->getInput() <<" overlaps with Transition: "<< comparingTransition->getName() <<" , Condition: "<< (*cit)->getName() <<" ,with input: "<< (*cit)->getInput();
+                            message << "State: "<< state->getName() <<", Transition: "<< transition->getName() <<" , Condition: "<< condition->getName() <<" ,with input: "<< condition->getInput() <<" overlaps with Transition: "<< comparingTransition->getName() <<" , Condition: "<< (*cit)->getName() <<" ,with input: "<< (*cit)->getInput();
                             error->setMessage(QString::fromStdString(message.str()));
 
 
