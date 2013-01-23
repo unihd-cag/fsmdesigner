@@ -608,8 +608,10 @@ void QXMLLoad::convert(QDomDocument * document) {
                     unsigned int goal = atoi(QXMLLoad::getAttributeValue("goal",*it))+1;
                     (*it).setAttribute("goal",Utils::itos(goal).c_str());
 
-                    // Map old to new id
-                    linksOldTONewIDs[linksCount] = ids;
+
+                    // Map goal to link id. Adapt transitions by using transitions target to find back link
+                    linksOldTONewIDs[goal] = ids;
+
 
                 }
 
@@ -667,8 +669,8 @@ void QXMLLoad::convert(QDomDocument * document) {
                         if (link) {
                             // Get new id from map and set
 
-                            unsigned int newid = linksOldTONewIDs[atoi(QXMLLoad::getAttributeValue("link",*tit))];
-                            (*tit).setAttribute("link",Utils::itos(newid).c_str());
+                            unsigned int newid = linksOldTONewIDs[end];
+                            (*tit).setAttribute("linkid",Utils::itos(newid).c_str());
                         }
 
                         //-- If join > 0, adapt id
