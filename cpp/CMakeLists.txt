@@ -26,6 +26,7 @@ ENDIF(WIN32)
 set (FSMDesigner_VERSION_PATCH ${FSMDesigner_VERSION_PATCH}~${revisionsCount})
 message(STATUS "Patch version set from GIT to: ${revisionsCount}")
   
+  
 ##########################################
 # Libraries needed
 ##########################################
