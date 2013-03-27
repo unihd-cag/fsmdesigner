@@ -39,7 +39,7 @@ VerilogGeneratorChecks::~VerilogGeneratorChecks() {
 
 QString VerilogGeneratorChecks::getName() {
 
-    return "Overlapping Transitions' Conditions Rule";
+    return "Verilog Generator v1, Generated Default transitions' conditions not overlapping with transitions' conditions";
 }
 
 /**

@@ -1,4 +1,14 @@
-#Fri Jan 27 09:29:23 CET 2012
 eclipse.preferences.version=1
 environment/project/cdt.managedbuild.toolchain.gnu.base.616271357/append=true
 environment/project/cdt.managedbuild.toolchain.gnu.base.616271357/appendContributed=true
+indexer/indexAllFiles=false
+indexer/indexOnOpen=true
+indexer/indexUnusedHeadersWithAlternateLang=false
+indexer/indexUnusedHeadersWithDefaultLang=false
+indexer/indexerId=org.eclipse.cdt.core.fastIndexer
+indexer/skipFilesLargerThanMB=16
+indexer/skipImplicitReferences=false
+indexer/skipMacroReferences=false
+indexer/skipReferences=false
+indexer/skipTypeReferences=false
+indexer/useHeuristicIncludeResolution=true
