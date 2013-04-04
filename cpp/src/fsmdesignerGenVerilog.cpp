@@ -97,6 +97,7 @@ int main(int argc, char ** argv, char** envp) {
         bool useVerilogGenerator2 = false;
         bool genverilog1RemoveIntersections = false;
         bool errorForce = false;
+        bool noChecks = false;
 
         for (int i = 1; i < argc; i++) {
 
@@ -151,6 +152,9 @@ int main(int argc, char ** argv, char** envp) {
             } else if (strcmp(argv[i], "-force") == 0) {
 
                 errorForce = true;
+            } else if (strcmp(argv[i], "-noChecks") == 0) {
+
+                noChecks = true;
             }
 
 
@@ -238,12 +242,14 @@ int main(int argc, char ** argv, char** envp) {
             if (!useVerilogGenerator2) {
                 verificator->addRule(new VerilogGeneratorChecks());
             }
-            
+
 
             //-- Start
             StdoutVerificationListener verificationListener;
-            bool verifyResult = verificator->verify(fsm,&verificationListener);
-
+            bool verifyResult = true;
+            if (noChecks==false) {
+                verifyResult = verificator->verify(fsm,&verificationListener);
+            }
 
             //-- Generate only if no error and not force
             //--------------------------
@@ -333,7 +339,7 @@ int main(int argc, char ** argv, char** envp) {
 
         }
 
-        
+
 
         return returnCode;
 

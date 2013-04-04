@@ -1,9 +1,9 @@
 /**
  * VerilogGenerator.cpp
  *
- * This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. 
- * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send 
- * a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.  
+ * This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send
+ * a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
  *
  */
 
@@ -283,12 +283,19 @@ void VerilogGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
         bool notfound = true;
         if (input.size() > 0) {
 
+            cout << "\tInvertDNF on : " << input.size() << "inputs" << endl;
+
+
             //--
             InvertDNF INV(this->getParameter("removeIntersections").toBool());
             string defaultvalue = INV.invert(input);
+
             //string defaultvalue = input[0];
             cout << "\tDefault value: " << defaultvalue
                     << endl;
+
+
+
             int maxlen = defaultvalue.length();
             int len = maxlen;
             if (len > 0) {
