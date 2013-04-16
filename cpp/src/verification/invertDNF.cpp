@@ -233,7 +233,7 @@ string InvertDNF::invert(vector <string> inputDNF) {
       overlap=false;
       overlapall=true;
     }
-    minimizeComplementDNF();
+    //minimizeComplementDNF();
   }
 
   // Remove intersections
