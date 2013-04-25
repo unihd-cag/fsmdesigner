@@ -310,7 +310,7 @@ string InvertDNF::invert(vector <string> inputDNF) {
                   }
                 }
               }
-              cout << "curres " << curres << endl;
+              //cout << "curres " << curres << endl;
               currentResult.push_back(curres);
             }
               }
@@ -428,7 +428,11 @@ string InvertDNF::invert(vector <string> inputDNF) {
               }
               if(intersection) {
                   complementDNF.erase(it);
-                  it=complementDNF.begin();
+		  if(!complementDNF.empty()) {
+		    it=complementDNF.begin();
+		  } else {
+		    break;
+		  }
                   intersection = false;
               }
             }
