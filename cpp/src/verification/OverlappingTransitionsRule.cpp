@@ -1,9 +1,9 @@
 /**
  * OverlappingTransitionsRule.cpp
  *
- * This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. 
- * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send 
- * a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.  
+ * This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send
+ * a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
  *
  */
 
@@ -41,12 +41,18 @@ QList<RuleError*> OverlappingTransitionsRule::applyRule(Fsm * fsm) {
 
     QList<RuleError*> result;
 
+    // Gather All Hypertransitions
+    //---------------------------
+
+
     // Foreach States transitions and conditions
     //-----------------------------
     FOREACH_STATE(fsm)
 
         //-- Make a copy of all the transitions which are the ones with which we make the overlapping verifications
         list    <Trans*> remainingCompareTransitions = state->getStartingTransitions();
+
+
 
         FOREACH_STATE_STARTING_TRANSITIONS(state)
 
@@ -68,9 +74,9 @@ QList<RuleError*> OverlappingTransitionsRule::applyRule(Fsm * fsm) {
                     if (comparingTransition->isDefault())
                         continue;
 
-                    //-- Don't compare twice if comparing with yourself, because all conditions
 
                     //-- Compare with all the comparingTransition's condition
+                    //------------------------------------------------------------------------
                     int comparingConditionsCount = 0;
                     for (vector<Condition*>::iterator cit = comparingTransition->getConditions().begin(); cit != comparingTransition->getConditions().end();cit++) {
 
@@ -104,14 +110,48 @@ QList<RuleError*> OverlappingTransitionsRule::applyRule(Fsm * fsm) {
                         }
                         comparingConditionsCount++;
 
-                    } // EOF Comparing transition condition's
 
 
+                    } // EOF Comparing transition condition's againsts other transitions's conditions
 
-                } // EOF Comparing Transitions
 
+                } // EOF Comparing against other Transitions
                 sourceConditionsCount++;
+
+
+
+                // Compare with Hypertransitions' Conditions
+                //----------------------------------------
+                FOREACH_HYPERTRANSITIONS(fsm)
+
+                    //-- Foreach conditions
+                    for (vector<Condition*>::iterator hcit = hypertransition->getConditions().begin();hcit!=hypertransition->getConditions().end();hcit++) {
+
+                        ::Condition* hTransCondition = *hcit;
+                        if(hTransCondition->isOverlappingWith(condition->getInput())) {
+
+                            //-- Create Error
+                            RuleError * error = new RuleError();
+                            result+=error;
+
+                            //-- Target objects are 1st source condition, then target condition
+                            error->addConcernedObject(hTransCondition,FSMDesigner::HYPERTRANS);
+                            error->addConcernedObject(condition,FSMDesigner::CONDITION);
+
+                            //-- Message
+                            stringstream message;
+                            message << "State: "<< state->getName() <<", Transition: "<< transition->getName() <<" , Condition: "<< condition->getName() <<" ,with input: "<< condition->getInput() <<" overlaps with Hypertransition: "<< hypertransition->getName() <<" , Condition: "<< hTransCondition->getName() <<" ,with input: "<< hTransCondition->getInput();
+                            error->setMessage(QString::fromStdString(message.str()));
+
+
+                        }
+                     }
+
+                 END_FOREACH_HYPERTRANSITIONS
+                // EOF Comparing current condition with Hypertransitions
+
             END_FOREACH_TRANSITION_CONDITIONS
+            // EOF Transitions's conditions comparison
 
             //-- First Remaining Compare transition is the current one -> remove it because done
             remainingCompareTransitions.remove(transition);
