@@ -128,6 +128,8 @@ QVariant TableStateModel::data(const QModelIndex& index, int role) const {
         //------------------
         case 1: {
 
+
+
             return QString::fromStdString(relatedScene->getFsm()->getStatesArray()[index.row()]->getOutput());
 
             break;

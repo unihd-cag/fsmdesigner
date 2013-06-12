@@ -122,7 +122,7 @@ void TrackpointBaseItem::setEndItem(QGraphicsItem * item) {
 	// Create a transline between this trackpoint and the End Item
 	//----------------
 
-	//-- The next trackpoint has as previous line, this ones next
+	//-- The next trackpoint has as previous line, this one's next
 	if (this->getNextTransline()!=NULL) {
 		this->getNextTransline()->setEndItem(item);
 	} else  {
