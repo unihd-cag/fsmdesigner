@@ -39,6 +39,9 @@ class Transline: public QGraphicsPathItem, public FSMGraphicsItem<TransitionBase
 
         bool selectedTransline;
 
+        // Save press location for mouseMoveEvent to wait for mouse to be far enough from line to add trackpoint
+        QPointF pressLocation;
+
     public:
 
         enum {
@@ -116,6 +119,8 @@ class Transline: public QGraphicsPathItem, public FSMGraphicsItem<TransitionBase
 
         /// When mouse is moved, add a trackpoint
         virtual void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
+
+        virtual void mousePressEvent(QGraphicsSceneMouseEvent * event) ;
 
         /// Performs selection propagation
         virtual void propagateSelection();

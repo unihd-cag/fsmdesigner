@@ -594,6 +594,20 @@ void Transline::mouseReleaseEvent(QGraphicsSceneMouseEvent * event) {
 
 }
 
+void Transline::mousePressEvent(QGraphicsSceneMouseEvent * event) {
+
+
+	// Call Parent
+	QGraphicsPathItem::mousePressEvent(event);
+
+	// Save press location for mouseMoveEvent to wait for mouse to be far enough from line to add trackpoint
+	//this->pressLocation = QRectF(event->scenePos().toRect());
+	//this->pressLocation.x(event->scenePos().x());
+	//this->pressLocation.y(event->scenePos().y());
+	this->pressLocation = event->scenePos();
+
+}
+
 void Transline::mouseMoveEvent(QGraphicsSceneMouseEvent * event) {
 
 	// If trackpoint already added, then forward to it
@@ -618,10 +632,12 @@ void Transline::mouseMoveEvent(QGraphicsSceneMouseEvent * event) {
 	//----------------------
 
 	// Trace a selection area
-	qreal selectionArea = 15;
+	qreal selectionArea = 5;
 	QList<QGraphicsItem *> foundItems = this->scene()->items(QRectF(
 			event->scenePos().x() - selectionArea / 2, event->scenePos().y()
 					- selectionArea / 2, selectionArea, selectionArea));
+
+	//qDebug() << "[Transline move] Area check found items: " << foundItems.size() ;
 
 	// If we find something else than the line into it, do nothing
 	if (foundItems.size() > 1)
@@ -629,21 +645,25 @@ void Transline::mouseMoveEvent(QGraphicsSceneMouseEvent * event) {
 
 	// The Mouse move must be large enough, to improve usability
 	//-------------------------------------------
-	unsigned int requiredMoveAmplitude = 2; // 15 pixels
-	unsigned int xAmplitude = abs(event->pos().x() - event->lastPos().x());
-	unsigned int yAmplitude = abs(event->pos().y() - event->lastPos().y());
+	unsigned int requiredMoveAmplitude = 2; // x pixels
+	unsigned int xAmplitude = abs(event->pos().x() - this->pressLocation.x());
+	unsigned int yAmplitude = abs(event->pos().y() - this->pressLocation.y());
+
+
+    //qDebug() << "[Transline move] detected movement amplitude : " << xAmplitude << "in x and " << yAmplitude << "in y" ;
+
 	if (xAmplitude <= requiredMoveAmplitude && yAmplitude <= requiredMoveAmplitude) {
 	    return;
 	}
 
 	// Otherwise, Create Trackpoint
 	//-------------------
-	Fsm& f = *(dynamic_cast<Scene *>(this->scene())->getFsm());
-	f.getTransbyID(this->getModel()->getId());
+	//Fsm& f = *(dynamic_cast<Scene *>(this->scene())->getFsm());
+	//f.getTransbyID(this->getModel()->getId());
 	Trackpoint * newTrackpointModel = NULL;
 
 
-
+	//qDebug() << "[Transline move] Add new trackpoint: " << foundItems.size() ;
 
 	//-- Trackpoint position
 	bool after = true;
@@ -675,6 +695,13 @@ void Transline::mouseMoveEvent(QGraphicsSceneMouseEvent * event) {
 
 
 	addedTrackpoint->grabMouse();
+
+	//-- Remove this transline from end
+	//------------
+	if (this->getEndItem()->type() == StateItem::Type) {
+		dynamic_cast<StateItem*>(this->getEndItem())->removeIncomingTransition(this);
+	}
+
 
 	//-- At that point, the transline might not be visible anymore
 	// If not visible anymore, then delete ourselves
