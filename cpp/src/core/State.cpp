@@ -98,10 +98,7 @@ string State::getOutputHamming() {
 
 void State::setHammingOutput() {
 
-	// Test-Vector with 8 bits
-	this->output = "01001100000";
-
-	// TODO: What to do with output vectors not matching the count?
+	string output = this->output;
 
 	int i,j,l,index;
 	int n, k;
@@ -110,32 +107,31 @@ void State::setHammingOutput() {
 	int m; // Number of parity bits
 	int parity[10];
 	int test, result;
+	int zeropadding;
 
-	switch( this->output.size() ) {
-		case 1:
-			m = 2;
-			break;
-		case 4:
-			m = 3;
-			break;
-		case 11:
-			m = 4;
-			break;
-		case 26:
-			m = 5;
-			break;
-		case 57:
-			m = 6;
-			break;
-		case 120:
-			m = 7;
-			break;
-		case 247:
-			m = 8;
-			break;
-	    default:
-	    	cout << "Error: No possible count of bits";
-	    	break;
+	if (output.size() == 1) {
+		m = 2;
+		zeropadding = 0;
+	} else if (output.size() < 4) {
+		m = 3;
+		zeropadding = 4 - output.size();
+	} else if (output.size() < 11) {
+		m = 4;
+		zeropadding = 11 - output.size();
+	} else if (output.size() < 26) {
+		m = 5;
+		zeropadding = 26 - output.size();
+	} else if (output.size() <= 57) {
+		m = 6;
+		zeropadding = 57 - output.size();
+	} else {
+    	cout << "Error: No possible count of bits";
+    	this->outputHamming = "";
+    	exit(0);
+	}
+
+	for(int z=1; z <= zeropadding; z++) {
+		output.append("0");
 	}
 
     n = pow(2,m)-1;
@@ -151,9 +147,9 @@ void State::setHammingOutput() {
     	cout << parity[i] << " / ";
     cout << endl;
 
-    for (i = 1; i <= this->output.size(); i++)
+    for (i = 1; i <= output.size(); i++)
     {
-    	info[i] = this->output[i - 1] - '0';
+    	info[i] = output[i - 1] - '0';
     }
 
     cout << "information bits = ";

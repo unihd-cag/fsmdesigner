@@ -162,7 +162,7 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 
     	if (this->getParameter("Hamming").toBool()) {
     		state->setHammingOutput();
-    		cout << "State without / with Hamming-Distance of 3: " << state->getOutputHamming().c_str() << " / " << state->getOutputHamming().c_str() << endl;
+    		cout << "State without / with Hamming-Distance of 3: " << state->getOutput().c_str() << " / " << state->getOutputHamming().c_str() << endl;
     		out << "localparam " << state->getName().c_str() << "_Hamming = "
     				<< numberofoutputs << "'b" << state->getOutputHamming().c_str() << ";"
     				<< endl;
