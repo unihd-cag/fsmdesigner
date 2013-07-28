@@ -144,7 +144,7 @@ void State::setHammingOutput() {
 
     cout << "parity positions: ";
     for (i=1; i<=m; i++)
-    	cout << parity[i] << " / ";
+    	cout << parity[i] << " ";
     cout << endl;
 
     for (i = 1; i <= output.size(); i++)

@@ -73,8 +73,24 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 
     int numberofinputs = fsm->getNumberOfInputs();
     int numberofoutputs = fsm->getNumberOfOutputs();
+    int numberofoutputsHamming = 0;
     int resetstate = fsm->getResetState();
     int tmrcount = 1;
+
+    if (numberofoutputs == 1) {
+    	numberofoutputsHamming = 3;
+	} else if (numberofoutputs < 4) {
+    	numberofoutputsHamming = 7;
+	} else if (numberofoutputs < 11) {
+    	numberofoutputsHamming = 15;
+	} else if (numberofoutputs < 26) {
+    	numberofoutputsHamming = 31;
+	} else if (numberofoutputs <= 57) {
+    	numberofoutputsHamming = 63;
+	} else {
+		cout << "Error: No possible count of bits";
+		exit(0);
+	}
 
     //calcHammingDistance();
     //extendStateEncoding();
@@ -164,7 +180,7 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
     		state->setHammingOutput();
     		cout << "State without / with Hamming-Distance of 3: " << state->getOutput().c_str() << " / " << state->getOutputHamming().c_str() << endl;
     		out << "localparam " << state->getName().c_str() << "_Hamming = "
-    				<< numberofoutputs << "'b" << state->getOutputHamming().c_str() << ";"
+    				<< numberofoutputsHamming << "'b" << state->getOutputHamming().c_str() << ";"
     				<< endl;
     	}
 
@@ -373,13 +389,25 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 					// Write end case
 					//-------------------
 				    if (this->getParameter("TMR").toBool()) {
-						out  << ":   next_state_" << tmri << " = "
-								<< this->cleanString(targetDefaultState->getName()) << ";"
-								<< endl;
+				    	if (this->getParameter("Hamming").toBool()) {
+							out  << ":   next_state_" << tmri << " = "
+									<< this->cleanString(targetDefaultState->getName()) << "_Hamming;"
+									<< endl;
+				    	} else {
+							out  << ":   next_state_" << tmri << " = "
+									<< this->cleanString(targetDefaultState->getName()) << ";"
+									<< endl;
+				    	}
 				    } else {
-						out  << ":   next_state = "
-								<< this->cleanString(targetDefaultState->getName()) << ";"
-								<< endl;
+				    	if (this->getParameter("Hamming").toBool()) {
+							out  << ":   next_state = "
+									<< this->cleanString(targetDefaultState->getName()) << "_Hamming;"
+									<< endl;
+				    	} else {
+							out  << ":   next_state = "
+									<< this->cleanString(targetDefaultState->getName()) << ";"
+									<< endl;
+				    	}
 				    }
 
 				}
@@ -393,15 +421,29 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 				}
 
 				if (this->getParameter("TMR").toBool()) {
-					out << invec.c_str() << ", " << state->getName().c_str()
-							<< "}:   next_state_" << tmri << " = "
-							<< this->cleanString(targetDefaultState->getName())
-							<< ";" << endl;
+					if (this->getParameter("Hamming").toBool()) {
+						out << invec.c_str() << ", " << state->getName().c_str()
+								<< "}:   next_state_" << tmri << " = "
+								<< this->cleanString(targetDefaultState->getName())
+								<< "_Hamming;" << endl;
+					} else {
+						out << invec.c_str() << ", " << state->getName().c_str()
+								<< "}:   next_state_" << tmri << " = "
+								<< this->cleanString(targetDefaultState->getName())
+								<< ";" << endl;
+					}
 				} else {
-					out << invec.c_str() << ", " << state->getName().c_str()
-							<< "}:   next_state = "
-							<< this->cleanString(targetDefaultState->getName())
-							<< ";" << endl;
+					if (this->getParameter("Hamming").toBool()) {
+						out << invec.c_str() << ", " << state->getName().c_str()
+								<< "}:   next_state = "
+								<< this->cleanString(targetDefaultState->getName())
+								<< "_Hamming;" << endl;
+					} else {
+						out << invec.c_str() << ", " << state->getName().c_str()
+								<< "}:   next_state = "
+								<< this->cleanString(targetDefaultState->getName())
+								<< ";" << endl;
+					}
 				}
 
 
@@ -430,15 +472,29 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 						}
 
 						if (this->getParameter("TMR").toBool()) {
-							out << ", " << state->getName().c_str()
-									<< "}:   next_state_" << tmri << " = "
-									<< this->cleanString(transEndState->getName())
-									<< ";" << endl;
+							if (this->getParameter("Hamming").toBool()) {
+								out << ", " << state->getName().c_str()
+										<< "}:   next_state_" << tmri << " = "
+										<< this->cleanString(transEndState->getName())
+										<< "_Hamming;" << endl;
+							} else {
+								out << ", " << state->getName().c_str()
+										<< "}:   next_state_" << tmri << " = "
+										<< this->cleanString(transEndState->getName())
+										<< ";" << endl;
+							}
 						} else {
-							out << ", " << state->getName().c_str()
-									<< "}:   next_state = "
-									<< this->cleanString(transEndState->getName())
-									<< ";" << endl;
+							if (this->getParameter("Hamming").toBool()) {
+								out << ", " << state->getName().c_str()
+										<< "}:   next_state = "
+										<< this->cleanString(transEndState->getName())
+										<< "_Hamming;" << endl;
+							} else {
+								out << ", " << state->getName().c_str()
+										<< "}:   next_state = "
+										<< this->cleanString(transEndState->getName())
+										<< ";" << endl;
+							}
 						}
 
 					END_FOREACH_TRANSITION_CONDITIONS
@@ -472,13 +528,25 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 					}
 
 					if (this->getParameter("TMR").toBool()) {
-						out << "}:   next_state_" << tmri << " = "
-								<< this->cleanString(hypertransition->getTargetState()->getName())
-								<< ";" << endl;
+						if (this->getParameter("Hamming").toBool()) {
+							out << "}:   next_state_" << tmri << " = "
+									<< this->cleanString(hypertransition->getTargetState()->getName())
+									<< "_Hamming;" << endl;
+						} else {
+							out << "}:   next_state_" << tmri << " = "
+									<< this->cleanString(hypertransition->getTargetState()->getName())
+									<< ";" << endl;
+						}
 					} else {
-						out << "}:   next_state = "
-								<< this->cleanString(hypertransition->getTargetState()->getName())
-								<< ";" << endl;
+						if (this->getParameter("Hamming").toBool()) {
+							out << "}:   next_state = "
+									<< this->cleanString(hypertransition->getTargetState()->getName())
+									<< "_Hamming;" << endl;
+						} else {
+							out << "}:   next_state = "
+									<< this->cleanString(hypertransition->getTargetState()->getName())
+									<< ";" << endl;
+						}
 					}
 
 			 END_FOREACH_HYPERTRANSITION_CONDITIONS
@@ -499,7 +567,11 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 				out << "    default:  next_state = ";
 		    }
 
-		    out << this->cleanString(fsm->getStatebyID(fsm->getResetState())->getName()) << ";" << endl;
+		    if (this->getParameter("Hamming").toBool()) {
+		    	out << this->cleanString(fsm->getStatebyID(fsm->getResetState())->getName()) << "_Hamming;" << endl;
+		    } else {
+		    	out << this->cleanString(fsm->getStatebyID(fsm->getResetState())->getName()) << ";" << endl;
+		    }
 		}
 
 		out << "  endcase" << endl;
@@ -507,10 +579,60 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 	}
 
     if (this->getParameter("TMR").toBool()) {
-    	out << "  next_state = (next_state_1 & next_state_2) | (next_state_1 & next_state_3) | (next_state_2 & next_state_3);" << endl;
+        if (this->getParameter("Hamming").toBool()) {
+        	out << "  next_state_Hamming = (next_state_1 & next_state_2) | (next_state_1 & next_state_3) | (next_state_2 & next_state_3);" << endl;
+        } else {
+        	out << "  next_state = (next_state_1 & next_state_2) | (next_state_1 & next_state_3) | (next_state_2 & next_state_3);" << endl;
+        }
     }
 
     out << "end" << endl << endl;
+
+    // Hamming-Decoder
+    if (this->getParameter("Hamming").toBool()) {
+    	out << "always @(*) begin" << endl;
+
+    	switch (numberofoutputsHamming) {
+			case 3:
+	    		out << "  // hamming decoder for 1 + 2 = 3 bits" << endl;
+				break;
+			case 7:
+	    		out << "  // hamming decoder for 4 + 3 = 7 bits" << endl;
+				break;
+			case 15:
+	    		out << "  // hamming decoder for 11 + 4 = 15 bits" << endl;
+				out << "  r1 = ^(next_state_hamm & 11'b101_0101_0101);" << endl;
+				out << "  r2 = ^(next_state_hamm & 11'b110_0110_0110);" << endl;
+				out << "  r4 = ^(next_state_hamm & 11'b000_0111_1000);" << endl;
+				out << "  r8 = ^(next_state_hamm & 11'b111_1000_0000);" << endl;
+				out << "  r = {r8,r4,r2,r1};" << endl;
+				out << "  IN = next_state_hamm;" << endl;
+				out << "  IN[r-1] = ~IN[r-1];" << endl;
+				out << "  i=0; j=0;" << endl << endl;
+				out << "  while((i<n) || (j<k)) " << endl;
+				out << "  begin" << endl;
+				out << "    while(i==0 || i==1 || i==3 || i==7)" << endl;
+				out << "      i=i+1;" << endl << endl;
+				out << "    next_state[j]=IN[i];" << endl;
+				out << "    i=i+1;" << endl;
+				out << "    j=j+1;" << endl;
+				out << "  end" << endl;
+				break;
+			case 31:
+	    		out << "  // hamming decoder for 26 + 5 = 31 bits" << endl;
+				break;
+			case 63:
+	    		out << "  // hamming decoder for 57 + 6 = 63 bits" << endl;
+				break;
+			default:
+				cout << "Number of Hamming-Bits not supported";
+				exit(0);
+				break;
+
+    	}
+
+    	out << "end" << endl << endl;
+    }
 
     // Write always-block => assigns next_state to state
     //------------------------------
