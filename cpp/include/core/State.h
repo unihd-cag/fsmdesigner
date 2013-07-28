@@ -78,6 +78,9 @@ class State: public UniqueIDObject {
         /// The output string
         string output;
 
+        /// The output string
+        string outputHamming;
+
         /// Is this state the reset sate? (default is false)
         bool reset;
 
@@ -98,6 +101,11 @@ class State: public UniqueIDObject {
          * @param name
          */
         void setName(string name);
+
+        /**
+         * Calculate Hamming-Output
+         */
+        void setHammingOutput();
 
         /**
          * Returns the name of the state
@@ -136,6 +144,12 @@ class State: public UniqueIDObject {
          * @return
          */
         string getOutput();
+
+        /**
+         * String representing the output of this state
+         * @return
+         */
+        string getOutputHamming();
 
         /**
          *

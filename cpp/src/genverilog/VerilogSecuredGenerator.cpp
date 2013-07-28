@@ -74,7 +74,7 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
     int numberofinputs = fsm->getNumberOfInputs();
     int numberofoutputs = fsm->getNumberOfOutputs();
     int resetstate = fsm->getResetState();
-
+    int tmrcount = 1;
 
     //calcHammingDistance();
     //extendStateEncoding();
@@ -155,16 +155,32 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
     // Write Parameters (States)
     //-----------------------------
     FOREACH_STATE(fsm)
-        out << "localparam " << state->getName().c_str() << " = "
-                << numberofoutputs << "'b" << state->getOutput().c_str() << ";"
-                << endl;
+
+    	out << "localparam " << state->getName().c_str() << " = "
+				<< numberofoutputs << "'b" << state->getOutput().c_str() << ";"
+				<< endl;
+
+    	if (this->getParameter("Hamming").toBool()) {
+    		state->setHammingOutput();
+    		cout << "State without / with Hamming-Distance of 3: " << state->getOutputHamming().c_str() << " / " << state->getOutputHamming().c_str() << endl;
+    		out << "localparam " << state->getName().c_str() << "_Hamming = "
+    				<< numberofoutputs << "'b" << state->getOutputHamming().c_str() << ";"
+    				<< endl;
+    	}
 
     END_FOREACH_STATE
 
     // current_state Declaration
     //----------------------------------
-    out << endl << "reg [" << (numberofoutputs - 1)
-            << ":0] current_state, next_state;" << endl;
+    if (this->getParameter("TMR").toBool()) {
+        out << endl << "reg [" << (numberofoutputs - 1)
+                << ":0] current_state, next_state, next_state_1, next_state_2, next_state_3;" << endl;
+    } else {
+        out << endl << "reg [" << (numberofoutputs - 1)
+                << ":0] current_state, next_state;" << endl;
+    }
+
+
     out << "assign {";
     for (int i = 0; i < numberofoutputs - 1; i++) {
         out << fsm->getOutputName(i).c_str() << ", ";
@@ -197,246 +213,303 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
     //--------------------------------------
     out << "always @(*) begin" << endl;
 
-    //-- If we are in delayed forward mode, use the forward_state declaration for computing
-    if (this->getParameter("forward.delayed").toBool()) {
-        out << "  casex({inputvector, forward_state_delayed})" << endl;
+    if (this->getParameter("TMR").toBool()) {
+        cout << "TMR active" << endl;
+        tmrcount = 3;
     } else {
-        out << "  casex({inputvector, current_state})" << endl;
+        cout << "TMR not active" << endl;
+        tmrcount = 1;
     }
 
-    // Foreach State
-    //------------------------
-    FOREACH_STATE(fsm)
+    int tmri;
 
-        cout << "Working on State " << state->getName() << endl;
+    for(tmri=1; tmri <= tmrcount; tmri++) {
 
-        //---- Foreach Transitions that start from this state
-        //-----------------
-        vector<string> input;
+        cout << "Working on case-definition " << tmri << " of " << tmrcount << endl;
 
-        //FOREACH_TRANSITIONS(fsm)
+    	//-- If we are in delayed forward mode, use the forward_state declaration for computing
+		if (this->getParameter("forward.delayed").toBool()) {
+			out << "  casex({inputvector, forward_state_delayed})" << endl;
+		} else {
+			out << "  casex({inputvector, current_state})" << endl;
+		}
 
-        // Determine Inputs for the transitions starting from this state, and non default
-        //  - The conditions' inputs are then inverted, then minimized to determine all the cases matching the default transition
-        //---------------------
-        State * targetDefaultState = NULL;
-        FOREACH_STATE_STARTING_TRANSITIONS(state)
+		// Foreach State
+		//------------------------
+		FOREACH_STATE(fsm)
 
-            //-- Record default transition target
-            targetDefaultState = transition->isDefault() ? transition->getEndState() : targetDefaultState;
+			cout << "Working on State " << state->getName() << endl;
 
-            //-- Non default transition input is stacked for minimization
-            if (!transition->isDefault()) {
+			//---- Foreach Transitions that start from this state
+			//-----------------
+			vector<string> input;
 
-                //-- Foreach Conditions
-                FOREACH_TRANSITION_CONDITIONS(transition)
+			//FOREACH_TRANSITIONS(fsm)
 
-                    string conditionInput =
-                            condition->getInput();
-                    string result = "";
-                    char X;
-                    for (int i = 0;
-                            i
-                                    < fsm->getNumberOfInputs();
-                            i++) {
-                        X = conditionInput[i];
-                        if (X == 'x' || X == 'X') {
-                            result = result + '-';
-                        } else {
-                            result = result + X;
-                        }
-                    }
-                    input.push_back(result);
+			// Determine Inputs for the transitions starting from this state, and non default
+			//  - The conditions' inputs are then inverted, then minimized to determine all the cases matching the default transition
+			//---------------------
+			State * targetDefaultState = NULL;
+			FOREACH_STATE_STARTING_TRANSITIONS(state)
 
-                END_FOREACH_TRANSITION_CONDITIONS
+				//-- Record default transition target
+				targetDefaultState = transition->isDefault() ? transition->getEndState() : targetDefaultState;
 
+				//-- Non default transition input is stacked for minimization
+				if (!transition->isDefault()) {
 
-            }
-        END_FOREACH_STATE_STARTING_TRANSITIONS
+					//-- Foreach Conditions
+					FOREACH_TRANSITION_CONDITIONS(transition)
 
-        // Determine input for hypertrans
-        //---------------------
-        FOREACH_HYPERTRANSITIONS(fsm)
+						string conditionInput =
+								condition->getInput();
+						string result = "";
+						char X;
+						for (int i = 0;
+								i
+										< fsm->getNumberOfInputs();
+								i++) {
+							X = conditionInput[i];
+							if (X == 'x' || X == 'X') {
+								result = result + '-';
+							} else {
+								result = result + X;
+							}
+						}
+						input.push_back(result);
 
-            FOREACH_HYPERTRANSITION_CONDITIONS(hypertransition)
-
-                string conditionInput =
-                        condition->getInput();
-                string result = "";
-                char X;
-                for (int i = 0;
-                        i < fsm->getNumberOfInputs(); i++) {
-                    X = conditionInput[i];
-                    if (X == 'x' || X == 'X') {
-                        result = result + '-';
-                    } else {
-                        result = result + X;
-                    }
-                }
-                input.push_back(result);
-
-            END_FOREACH_HYPERTRANSITION_CONDITIONS
-        END_FOREACH_HYPERTRANSITIONS
-
-        // Minimize input vector to find out bit conditions leading to default transition
-        //-------------------------
-        bool notfound = true;
-        if (input.size() > 0) {
-
-            //--
-            InvertDNF INV(this->getParameter("removeIntersections").toBool());
-            string defaultvalue = INV.invert(input);
-            //string defaultvalue = input[0];
-            cout << "\tDefault value: " << defaultvalue
-                    << endl;
-            int maxlen = defaultvalue.length();
-            int len = maxlen;
-            if (len > 0) {
-
-                out << "    {" << fsm->getNumberOfInputs() << "'b";
-
-                while (len > fsm->getNumberOfInputs()) {
-                    string s = defaultvalue;
-                    do {
-                        len--;
-                    } while ((s[len] != '+') && (len != 0));
-                    s.assign(s, (len + 1),
-                            (maxlen - len - 1));
-                    defaultvalue.assign(defaultvalue, 0,
-                            len);
-                    char X;
-                    for (int i = 0; i < fsm->getNumberOfInputs();
-                            i++) {
-                        X = s[i];
-                        if (X == '-' || X == 'X') {
-                            out << "x";
-                        } else {
-                            out << X;
-                        }
-                    }
-                    out
-                            << ", "
-                            << state->getName().c_str()
-                            << "}," << endl;
-                    out << "    {" << fsm->getNumberOfInputs()
-                            << "'b";
-                }
-
-                char X;
-                for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
-
-                    X = defaultvalue[i];
-                    if (X == '-' || X == 'X') {
-                        out << "x";
-                    } else {
-                        out << X;
-                    }
-                }
-
-                out
-                        << ", "
-                        << state->getName().c_str()
-                        << "}";
+					END_FOREACH_TRANSITION_CONDITIONS
 
 
-                // End of default conditions
-                // Write end case
-                //-------------------
-                out  << ":   next_state = "
-                        << this->cleanString(targetDefaultState->getName()) << ";"
-                        << endl;
+				}
+			END_FOREACH_STATE_STARTING_TRANSITIONS
 
-            }
-        } else {
+			// Determine input for hypertrans
+			//---------------------
+			FOREACH_HYPERTRANSITIONS(fsm)
+
+				FOREACH_HYPERTRANSITION_CONDITIONS(hypertransition)
+
+					string conditionInput =
+							condition->getInput();
+					string result = "";
+					char X;
+					for (int i = 0;
+							i < fsm->getNumberOfInputs(); i++) {
+						X = conditionInput[i];
+						if (X == 'x' || X == 'X') {
+							result = result + '-';
+						} else {
+							result = result + X;
+						}
+					}
+					input.push_back(result);
+
+				END_FOREACH_HYPERTRANSITION_CONDITIONS
+			END_FOREACH_HYPERTRANSITIONS
+
+			// Minimize input vector to find out bit conditions leading to default transition
+			//-------------------------
+			bool notfound = true;
+			if (input.size() > 0) {
+
+				//--
+				InvertDNF INV(this->getParameter("removeIntersections").toBool());
+				string defaultvalue = INV.invert(input);
+				//string defaultvalue = input[0];
+				cout << "\tDefault value: " << defaultvalue
+						<< endl;
+				int maxlen = defaultvalue.length();
+				int len = maxlen;
+				if (len > 0) {
+
+					out << "    {" << fsm->getNumberOfInputs() << "'b";
+
+					while (len > fsm->getNumberOfInputs()) {
+						string s = defaultvalue;
+						do {
+							len--;
+						} while ((s[len] != '+') && (len != 0));
+						s.assign(s, (len + 1),
+								(maxlen - len - 1));
+						defaultvalue.assign(defaultvalue, 0,
+								len);
+						char X;
+						for (int i = 0; i < fsm->getNumberOfInputs();
+								i++) {
+							X = s[i];
+							if (X == '-' || X == 'X') {
+								out << "x";
+							} else {
+								out << X;
+							}
+						}
+						out
+								<< ", "
+								<< state->getName().c_str()
+								<< "}," << endl;
+						out << "    {" << fsm->getNumberOfInputs()
+								<< "'b";
+					}
+
+					char X;
+					for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
+
+						X = defaultvalue[i];
+						if (X == '-' || X == 'X') {
+							out << "x";
+						} else {
+							out << X;
+						}
+					}
+
+					out
+							<< ", "
+							<< state->getName().c_str()
+							<< "}";
 
 
-            out << "    {" << fsm->getNumberOfInputs() << "'b";
-            string invec = "";
-            for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
-                invec = invec + "x";
-            }
-            out << invec.c_str() << ", " << state->getName().c_str()
-                    << "}:   next_state = "
-                    << this->cleanString(targetDefaultState->getName())
-                    << ";" << endl;
+					// End of default conditions
+					// Write end case
+					//-------------------
+				    if (this->getParameter("TMR").toBool()) {
+						out  << ":   next_state_" << tmri << " = "
+								<< this->cleanString(targetDefaultState->getName()) << ";"
+								<< endl;
+				    } else {
+						out  << ":   next_state = "
+								<< this->cleanString(targetDefaultState->getName()) << ";"
+								<< endl;
+				    }
+
+				}
+			} else {
 
 
-        }
+				out << "    {" << fsm->getNumberOfInputs() << "'b";
+				string invec = "";
+				for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
+					invec = invec + "x";
+				}
 
-        // Write out non default transitions
-        //---------------------------
-        FOREACH_STATE_STARTING_TRANSITIONS(state)
-            State * transEndState = transition->getEndState();
-            if(!transition->isDefault()) {
+				if (this->getParameter("TMR").toBool()) {
+					out << invec.c_str() << ", " << state->getName().c_str()
+							<< "}:   next_state_" << tmri << " = "
+							<< this->cleanString(targetDefaultState->getName())
+							<< ";" << endl;
+				} else {
+					out << invec.c_str() << ", " << state->getName().c_str()
+							<< "}:   next_state = "
+							<< this->cleanString(targetDefaultState->getName())
+							<< ";" << endl;
+				}
 
-                // Foreach conditions and write out transition
-                //--------------
-                FOREACH_TRANSITION_CONDITIONS(transition)
 
-                    out << "    {" << fsm->getNumberOfInputs() << "'b";
-                    string conditionInput = condition->getInput();
-                    char X;
-                    for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
-                        X = conditionInput[i];
-                        if (X == '-' || X == 'X') {
-                            out << "x";
-                        } else {
-                            out << X;
-                        }
-                    }
-                    out << ", " << state->getName().c_str()
-                            << "}:   next_state = "
-                            << this->cleanString(transEndState->getName())
-                            << ";" << endl;
+			}
 
-                END_FOREACH_TRANSITION_CONDITIONS
-            }
-        END_FOREACH_STATE_STARTING_TRANSITIONS
+			// Write out non default transitions
+			//---------------------------
+			FOREACH_STATE_STARTING_TRANSITIONS(state)
+				State * transEndState = transition->getEndState();
+				if(!transition->isDefault()) {
 
-    END_FOREACH_STATE
-    // EOF States transitions //
+					// Foreach conditions and write out transition
+					//--------------
+					FOREACH_TRANSITION_CONDITIONS(transition)
 
-    // FOREACH Hyper transitions
-    //----------------------------------
-    FOREACH_HYPERTRANSITIONS(fsm)
+						out << "    {" << fsm->getNumberOfInputs() << "'b";
+						string conditionInput = condition->getInput();
+						char X;
+						for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
+							X = conditionInput[i];
+							if (X == '-' || X == 'X') {
+								out << "x";
+							} else {
+								out << X;
+							}
+						}
 
-        //-- Foreach conditions
-        FOREACH_HYPERTRANSITION_CONDITIONS(hypertransition)
+						if (this->getParameter("TMR").toBool()) {
+							out << ", " << state->getName().c_str()
+									<< "}:   next_state_" << tmri << " = "
+									<< this->cleanString(transEndState->getName())
+									<< ";" << endl;
+						} else {
+							out << ", " << state->getName().c_str()
+									<< "}:   next_state = "
+									<< this->cleanString(transEndState->getName())
+									<< ";" << endl;
+						}
 
-                out << "    {" << fsm->getNumberOfInputs() << "'b";
-                string conditionInput = condition->getInput();
-                char X;
-                for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
-                    X = conditionInput[i];
-                    if (X == '-' || X == 'X') {
-                        out << "x";
-                    } else {
-                        out << X;
-                    }
-                }
-                out << ", " << fsm->getNumberOfOutputs() << "'b";
-                for (int i = 0; i < fsm->getNumberOfOutputs(); i++) {
-                    out << "x";
-                }
-                out << "}:   next_state = "
-                        << this->cleanString(hypertransition->getTargetState()->getName())
-                        << ";" << endl;
-         END_FOREACH_HYPERTRANSITION_CONDITIONS
+					END_FOREACH_TRANSITION_CONDITIONS
+				}
+			END_FOREACH_STATE_STARTING_TRANSITIONS
 
-     END_FOREACH_HYPERTRANSITIONS
+		END_FOREACH_STATE
+		// EOF States transitions //
 
-    // Default Reset State
-    // Not necessary if number of states is a power of 2 and
-    // the number of output states is equal to number of outputs as a power of 2 !!!
-    //------------------------
-    int a;
-    a = 1 << numberofoutputs;
-    if (!(a == fsm->getStateCount())) {
-        out << "    default:  next_state = ";
-        out << this->cleanString(fsm->getStatebyID(fsm->getResetState())->getName()) << ";" << endl;
+		// FOREACH Hyper transitions
+		//----------------------------------
+		FOREACH_HYPERTRANSITIONS(fsm)
+
+			//-- Foreach conditions
+			FOREACH_HYPERTRANSITION_CONDITIONS(hypertransition)
+
+					out << "    {" << fsm->getNumberOfInputs() << "'b";
+					string conditionInput = condition->getInput();
+					char X;
+					for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
+						X = conditionInput[i];
+						if (X == '-' || X == 'X') {
+							out << "x";
+						} else {
+							out << X;
+						}
+					}
+					out << ", " << fsm->getNumberOfOutputs() << "'b";
+					for (int i = 0; i < fsm->getNumberOfOutputs(); i++) {
+						out << "x";
+					}
+
+					if (this->getParameter("TMR").toBool()) {
+						out << "}:   next_state_" << tmri << " = "
+								<< this->cleanString(hypertransition->getTargetState()->getName())
+								<< ";" << endl;
+					} else {
+						out << "}:   next_state = "
+								<< this->cleanString(hypertransition->getTargetState()->getName())
+								<< ";" << endl;
+					}
+
+			 END_FOREACH_HYPERTRANSITION_CONDITIONS
+
+		 END_FOREACH_HYPERTRANSITIONS
+
+		// Default Reset State
+		// Not necessary if number of states is a power of 2 and
+		// the number of output states is equal to number of outputs as a power of 2 !!!
+		//------------------------
+		int a;
+		a = 1 << numberofoutputs;
+		if (!(a == fsm->getStateCount())) {
+
+		    if (this->getParameter("TMR").toBool()) {
+				out << "    default:  next_state_" << tmri << " = ";
+		    } else {
+				out << "    default:  next_state = ";
+		    }
+
+		    out << this->cleanString(fsm->getStatebyID(fsm->getResetState())->getName()) << ";" << endl;
+		}
+
+		out << "  endcase" << endl;
+
+	}
+
+    if (this->getParameter("TMR").toBool()) {
+    	out << "  next_state = (next_state_1 & next_state_2) | (next_state_1 & next_state_3) | (next_state_2 & next_state_3);" << endl;
     }
 
-    out << "  endcase" << endl;
     out << "end" << endl << endl;
 
     // Write always-block => assigns next_state to state

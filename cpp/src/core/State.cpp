@@ -40,7 +40,7 @@ using namespace std;
 
 //-- Core
 #include <core/Utils.h>
-
+#include <math.h>
 
 #include "State.h"
 
@@ -90,6 +90,134 @@ void State::setReset(bool reset) {
 
 string State::getOutput() {
     return this->output;
+}
+
+string State::getOutputHamming() {
+    return this->outputHamming;
+}
+
+void State::setHammingOutput() {
+
+	// Test-Vector with 8 bits
+	this->output = "01001100000";
+
+	// TODO: What to do with output vectors not matching the count?
+
+	int i,j,l,index;
+	int n, k;
+	int code[1024];
+	int red[1024], info[1024];
+	int m; // Number of parity bits
+	int parity[10];
+	int test, result;
+
+	switch( this->output.size() ) {
+		case 1:
+			m = 2;
+			break;
+		case 4:
+			m = 3;
+			break;
+		case 11:
+			m = 4;
+			break;
+		case 26:
+			m = 5;
+			break;
+		case 57:
+			m = 6;
+			break;
+		case 120:
+			m = 7;
+			break;
+		case 247:
+			m = 8;
+			break;
+	    default:
+	    	cout << "Error: No possible count of bits";
+	    	break;
+	}
+
+    n = pow(2,m)-1;
+    k = n - m;
+
+    // Compute parity positions
+    parity[1] = 1;
+    for (i=2; i<=m; i++)
+      parity[i] = (parity[i-1]<<1) & 0xfffffffe;
+
+    cout << "parity positions: ";
+    for (i=1; i<=m; i++)
+    	cout << parity[i] << " / ";
+    cout << endl;
+
+    for (i = 1; i <= this->output.size(); i++)
+    {
+    	info[i] = this->output[i - 1] - '0';
+    }
+
+    cout << "information bits = ";
+
+    for (j=1; j<=k; j++)
+    	cout << info[j];
+
+    cout << endl;
+
+    // Compute parity bits
+    for (j=1; j<=m; j++)
+    {
+      red[j] = 0;
+      l = 0;
+      for (i=1; i<=n; i++)
+      {
+        // Check that "i" is not a parity position = not a power of 2
+        result = 0;
+        test = 1;
+        for (index=1; index<=m; index++)
+        {
+          if (i==test) result = 1;
+          test *= 2;
+        }
+        if (!result)
+        {
+          l++;
+          if ( (i>>(j-1)) & 0x01 )
+            red[j] ^= info[l];
+        }
+      }
+    }
+
+    cout << "parity bits = ";
+    for (j=1; j<=m; j++)
+    	cout << red[j];
+
+    cout << endl;
+
+    // Transmit codeword
+    i = 1;
+    l = 1;
+    for (j=1; j<=n; j++)
+      if (j==parity[l] && l<=m)
+      {
+        code[j] = red[l]; l++;
+      }
+      else
+      {
+        code[j] = info[i]; i++;
+      }
+
+
+    ostringstream oss("");
+
+    cout << "codeword = ";
+    for (j=1; j<=n; j++) {
+    	cout << code[j];
+    	oss << code[j];
+    }
+
+    this->outputHamming = oss.str();
+
+    cout << endl;
 }
 
 void State::setOutput(string output) {

@@ -84,6 +84,8 @@ int main(int argc, char ** argv, char** envp) {
         bool generateMap = false;
         bool useVerilogGenerator2 = false;
         bool useVerilogSecuredGenerator = false;
+        bool useVerilogSecuredGeneratorTMR = false;
+        bool useVerilogSecuredGeneratorHamming = false;
         bool genverilog1RemoveIntersections = false;
 
         for (int i = 1; i < argc; i++) {
@@ -139,9 +141,15 @@ int main(int argc, char ** argv, char** envp) {
 
                 useVerilogSecuredGenerator = true;
 
+            } else if (strcmp(argv[i], "-tmr") == 0) {
+
+                useVerilogSecuredGeneratorTMR = true;
+
+            } else if (strcmp(argv[i], "-hamming") == 0) {
+
+                useVerilogSecuredGeneratorHamming = true;
+
             }
-
-
 
         }
 
@@ -212,6 +220,11 @@ int main(int argc, char ** argv, char** envp) {
             generator->setParameter("forward.async", forwardAsync);
             generator->setParameter("forward.sync", forwardState);
             generator->setParameter("includes", includeArgs);
+
+            if (useVerilogSecuredGenerator) {
+                generator->setParameter("TMR", useVerilogSecuredGeneratorTMR);
+                generator->setParameter("Hamming", useVerilogSecuredGeneratorHamming);
+            }
 
             // v1 Parameters
             if (!useVerilogGenerator2) {
