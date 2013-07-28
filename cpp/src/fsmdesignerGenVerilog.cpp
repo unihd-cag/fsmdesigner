@@ -40,6 +40,7 @@
 #include <generate/GeneratorFactory.h>
 #include <genverilog/VerificationPlanGenerator.h>
 #include <genverilog/VerilogGenerator.h>
+#include <genverilog/VerilogSecuredGenerator.h>
 #include <genverilog/VerilogGenerator2.h>
 #include <genverilog/SimvisionMmapGenerator.h>
 
@@ -82,6 +83,7 @@ int main(int argc, char ** argv, char** envp) {
         bool forwardState = false;
         bool generateMap = false;
         bool useVerilogGenerator2 = false;
+        bool useVerilogSecuredGenerator = false;
         bool genverilog1RemoveIntersections = false;
 
         for (int i = 1; i < argc; i++) {
@@ -133,7 +135,12 @@ int main(int argc, char ** argv, char** envp) {
             } else if (strcmp(argv[i], "-v1RemoveIntersections") == 0) {
 
                 genverilog1RemoveIntersections = true;
+            } else if (strcmp(argv[i], "-secured") == 0) {
+
+                useVerilogSecuredGenerator = true;
+
             }
+
 
 
         }
@@ -166,6 +173,11 @@ int main(int argc, char ** argv, char** envp) {
         //-- Register Verilog Generator
         GeneratorFactory::getInstance()->registerGenerator("Verilog",
                 new VerilogGenerator());
+
+        // BB
+        GeneratorFactory::getInstance()->registerGenerator("VerilogSecured",
+                        new VerilogSecuredGenerator());
+
         GeneratorFactory::getInstance()->registerGenerator("Verilog2",
                         new VerilogGenerator2());
         GeneratorFactory::getInstance()->registerGenerator("Simvision_Mmap",new SimvisionMmapGenerator());
@@ -175,9 +187,19 @@ int main(int argc, char ** argv, char** envp) {
         //------------
         if (verilogDestination.size() > 0) {
 
+        	// BB: Abfrage einfügen, wenn Commandline-Parameter "Secured", dann
+        	// anderen Generator erstellen
             //-- Create Generator and generate
-            Generator * generator =
-                    useVerilogGenerator2 ? GeneratorFactory::getInstance()->newGenerator("Verilog2") : GeneratorFactory::getInstance()->newGenerator("Verilog");
+            Generator * generator = NULL;
+
+            if (useVerilogSecuredGenerator) {
+            	generator = GeneratorFactory::getInstance()->newGenerator("VerilogSecured");
+            } else if (useVerilogGenerator2) {
+            	generator = GeneratorFactory::getInstance()->newGenerator("Verilog2");
+            } else {
+            	generator = GeneratorFactory::getInstance()->newGenerator("Verilog");
+            }
+
             if (generator == NULL) {
                 cerr
                         << "There are no Generator registered under the 'Verilog' name. No Verilog can generated"

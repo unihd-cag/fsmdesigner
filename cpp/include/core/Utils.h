@@ -13,11 +13,11 @@
 //--------------------
 #define FSMDesigner_VERSION_MAJOR 5
 #define FSMDesigner_VERSION_MINOR 2
-#define FSMDesigner_VERSION_PATCH 0~50
+#define FSMDesigner_VERSION_PATCH 0~
 
 #define FSMDesigner_VERSION_MAJOR_STR "5"
 #define FSMDesigner_VERSION_MINOR_STR "2"
-#define FSMDesigner_VERSION_PATCH_STR "0~50"
+#define FSMDesigner_VERSION_PATCH_STR "0~"
 
 // Includes
 //----------
