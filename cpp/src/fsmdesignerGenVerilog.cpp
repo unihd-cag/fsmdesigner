@@ -55,6 +55,9 @@ void cmdsyntaxerror() {
             << " (-i include...)? (-fmap)? "
             << " (-v2)?"
             << " (-v1RemoveIntersections)"
+            << " (-secured)?" 
+            << " (-tmr)?"
+            << " (-hamming)?"
             << endl;
 }
 ;
