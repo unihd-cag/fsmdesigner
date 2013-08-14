@@ -626,7 +626,7 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 				break;
 			default:
 				cout << "Number of Hamming-Bits not supported";
-				exit(0);
+				return
 				break;
 
     	}

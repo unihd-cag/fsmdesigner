@@ -116,7 +116,7 @@ void TableTransModel::setRelatedScene(Scene * scene) {
             cols.last()->setData(cCount,Qt::UserRole+1);
 
             //-- Condition Input
-            cols+=new QStandardItem(QString::fromStdString(condition->getInput()));
+            cols+=new QStandardItem(QString::fromStdString(condition->getInput()).replace('-','x'));
             cols.last()->setData(transition->getId(),Qt::UserRole);
             cols.last()->setData(cCount,Qt::UserRole+1);
 

@@ -27,6 +27,8 @@ ENDIF(WIN32)
 set (FSMDesigner_VERSION_PATCH ${FSMDesigner_VERSION_PATCH}~${revisionsCount})
 message(STATUS "Patch version set from GIT to: ${revisionsCount}")
   
+  
+  
 ##########################################
 # Libraries needed
 ##########################################
@@ -231,7 +233,7 @@ SET(CPACK_PACKAGE_VERSION_PATCH ${FSMDesigner_VERSION_PATCH})
 SET(CPACK_RESOURCE_FILE_LICENSE "${FSMDesigner_SOURCE_DIR}/Copyright.txt")
 
 ## Create an archive
-SET(CPACK_GENERATOR TBZ2)
+#SET(CPACK_GENERATOR TBZ2)
 
 
 
@@ -253,7 +255,7 @@ IF(NOT WIN32)
     set (CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${arch})
         
     ## Append Architecture to patch version
-    SET(CPACK_PACKAGE_VERSION_PATCH ${FSMDesigner_VERSION_PATCH}~${revisionsCount}-${arch})
+    SET(CPACK_PACKAGE_VERSION_PATCH ${FSMDesigner_VERSION_PATCH}-${arch})
     SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "richard.leys@ziti.uni-heidelberg.de")
     SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4-xml (>= 4.6)")
     SET(CPACK_GENERATOR ${CPACK_GENERATOR} DEB)

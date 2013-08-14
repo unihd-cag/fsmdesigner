@@ -233,7 +233,7 @@ string InvertDNF::invert(vector <string> inputDNF) {
       overlap=false;
       overlapall=true;
     }
-    minimizeComplementDNF();
+    //minimizeComplementDNF();
   }
 
   // Remove intersections
@@ -310,7 +310,7 @@ string InvertDNF::invert(vector <string> inputDNF) {
                   }
                 }
               }
-              cout << "curres " << curres << endl;
+              //cout << "curres intersection" << curres << endl;
               currentResult.push_back(curres);
             }
               }
@@ -369,13 +369,14 @@ string InvertDNF::invert(vector <string> inputDNF) {
 
       while(overlapall) {
         overlapall = false;
+	overlap = false;
         for(iter=complementDNF.begin(); iter!=complementDNF.end(); iter++){
           for(it=complementDNF.begin(); it!=complementDNF.end(); it++){
             currentBitsSet=0;
             cnt=0;
             for(int i=0; i<len; i++) {
               help=(*iter)[i];
-              helpvalue=(*it)[i];
+              helpvalue=(*it)[i]; 
             if(helpvalue!=help) {
               if((help=='0' && helpvalue=='1') || (help=='1' && helpvalue=='0')) {
                 if(cnt==0) {
@@ -428,7 +429,11 @@ string InvertDNF::invert(vector <string> inputDNF) {
               }
               if(intersection) {
                   complementDNF.erase(it);
-                  it=complementDNF.begin();
+		  if(!complementDNF.empty()) {
+		    it=complementDNF.begin();
+		  } else {
+		    break;
+		  }
                   intersection = false;
               }
             }

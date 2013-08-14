@@ -204,7 +204,8 @@ void QXMLSave::writeFSM(Fsm * f, stringstream& out) {
 
 	// States
 	//-------------------------
-	FOREACH_STATE(f)
+	FOREACH_STATE(f);
+
 	    out << "    <state id='"<< state->getId() <<"' posx='" << state->getPosition().first << "' posy='"
 	                        << state->getPosition().second << "' color='";
         out << state->getColor() << "' >" << endl;

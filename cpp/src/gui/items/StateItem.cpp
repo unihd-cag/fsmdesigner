@@ -168,6 +168,9 @@ void StateItem::setText(QString s) {
 	// Record text
 	this->model->setName(s.toStdString());
 	this->stateText->setPlainText(s);
+
+    //this->setFont(QFont("Sans Serif",-1,QFont::Bold));
+
 	//this->stateText->update();
 
 	//-- Reevaluate and reposition the text in the middle
@@ -773,6 +776,11 @@ StateItemText::StateItemText(QGraphicsItem* parent) : FSMGraphicsTextItem(*(new 
 
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges,true);
     this->setFlag(QGraphicsItem::ItemIsFocusable,true);
+
+     QFont font = this->font();
+     font.setBold(true);
+     this->setFont(font);
+
 
 }
 

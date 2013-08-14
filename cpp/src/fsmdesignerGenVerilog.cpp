@@ -44,25 +44,38 @@
 #include <genverilog/VerilogGenerator2.h>
 #include <genverilog/SimvisionMmapGenerator.h>
 
+//-- Verify
+#include <verification/Verificator.h>
+#include <verification/StdoutVerificationListener.h>
+#include <verification/StateOutputsRule.h>
+#include <verification/StateTransitions.h>
+#include <verification/OverlappingTransitionsRule.h>
+#include <genverilog/VerilogGeneratorChecks.h>
+
 using namespace std;
 
 void cmdsyntaxerror() {
-    cout
-            << "Usage: fsmdesignerGenVerilog"
-            << " -p infile -fsm fsm (-vlog outfile)?"
-            << " (-vplan vplanFile)?"
-            << " (-forward delayed|async|sync)?"
-            << " (-i include...)? (-fmap)? "
-            << " (-v2)?"
-            << " (-v1RemoveIntersections)"
-            << " (-secured)?" 
-            << " (-tmr)?"
-            << " (-hamming)?"
+    cout    << "Usage: fsmdesignerGenVerilog" << endl
+            << " -p infile -fsm fsm (-vlog outfile)?" << endl
+            << " (-vplan vplanFile)?"    << endl
+            << " (-forward delayed|async|sync)?"   << endl
+            << " (-i include...)? (-fmap)? "  << endl
+            << " (-v2)?" << endl
+            << " (-v1RemoveIntersections)" << endl
+            << " (-force)? : Force generation even if errors occured" << endl
+            << " (-noChecks)? : Skip FSM check before generating" << endl
+            << " (-secured)?"  << endl
+            << " (-tmr)?" << endl
+            << " (-hamming)?" << endl
             << endl;
 }
 ;
 
 int main(int argc, char ** argv, char** envp) {
+
+    // Global return code
+    int returnCode = 0;
+
     string st;
     string s;
     bool c1;
@@ -90,6 +103,8 @@ int main(int argc, char ** argv, char** envp) {
         bool useVerilogSecuredGeneratorTMR = false;
         bool useVerilogSecuredGeneratorHamming = false;
         bool genverilog1RemoveIntersections = false;
+        bool errorForce = false;
+        bool noChecks = false;
 
         for (int i = 1; i < argc; i++) {
 
@@ -140,6 +155,7 @@ int main(int argc, char ** argv, char** envp) {
             } else if (strcmp(argv[i], "-v1RemoveIntersections") == 0) {
 
                 genverilog1RemoveIntersections = true;
+
             } else if (strcmp(argv[i], "-secured") == 0) {
 
                 useVerilogSecuredGenerator = true;
@@ -148,11 +164,20 @@ int main(int argc, char ** argv, char** envp) {
 
                 useVerilogSecuredGeneratorTMR = true;
 
-            } else if (strcmp(argv[i], "-hamming") == 0) {
+            }  else if (strcmp(argv[i], "-hamming") == 0) {
 
                 useVerilogSecuredGeneratorHamming = true;
 
+            } else if (strcmp(argv[i], "-force") == 0) {
+
+                errorForce = true;
+
+            } else if (strcmp(argv[i], "-noChecks") == 0) {
+
+                noChecks = true;
             }
+
+            
 
         }
 
@@ -247,112 +272,117 @@ int main(int argc, char ** argv, char** envp) {
 
             }
 
-            //-- Generate
-            QDataStream outputStream(&verilogFile);
-            generator->generate(fsm, &outputStream);
+            //-- Error Check
+            //--------------------------
+            Verificator * verificator = new Verificator();
+            verificator->addRule(new StateOutputsRule());
+            verificator->addRule(new StateTransitions());
+            verificator->addRule(new OverlappingTransitionsRule());
+
+            // Add VerilogGenerator 1 checks if not in v2 Mode
+            if (!useVerilogGenerator2) {
+                verificator->addRule(new VerilogGeneratorChecks());
+            }
+
+
+            //-- Start
+            StdoutVerificationListener verificationListener;
+            bool verifyResult = true;
+            if (noChecks==false) {
+                verifyResult = verificator->verify(fsm,&verificationListener);
+            }
+
+            //-- Generate only if no error and not force
+            //--------------------------
+            if (verifyResult==true || errorForce==true) {
+                QDataStream outputStream(&verilogFile);
+                generator->generate(fsm, &outputStream);
+
+                //---- Generate MMap If necessary
+                //-----------------------
+                if (generateMap == true) {
+
+                    //-- Create Generator and generate
+                    Generator * mmapGenerator =
+                            GeneratorFactory::getInstance()->newGenerator(
+                                    "Simvision_Mmap");
+                    if (mmapGenerator == NULL) {
+                        cerr
+                                << "There are no Generator registered under the 'Simvision_Mmap' name. No Simvision Mmap can generated"
+                                << endl;
+                        return -1;
+                    }
+
+                    //-- Open File
+                    QFile mmapFile(QString::fromStdString(verilogDestination).replace(".v",".svcf"));
+                    if (!mmapFile.open(
+                            QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
+
+                        cerr
+                                << "The provided file to generate a simvision mmap to cannot be opened for writing"
+                                << endl;
+                        return -1;
+
+                    }
+
+                    //-- Generate
+                    QDataStream mmapOutputStream(&mmapFile);
+                    mmapGenerator->generate(fsm, &mmapOutputStream);
+
+                    //-- Close
+                    delete mmapGenerator;
+                    mmapFile.close();
+
+                }
+                // EOF MMap
+
+                //-- Generate Verification Plan if necessary
+                //-------------
+                if (vplanDestination.size() > 0) {
+
+                    cout << "Generating VPlan to " << vplanDestination << endl;
+
+                    //-- Generate
+                    Generator * vplanGenerator =
+                                            GeneratorFactory::getInstance()->newGenerator(
+                                                    "VPlan");
+
+                    //-- Open File
+                    QFile vplanFile(QString::fromStdString(vplanDestination.c_str()));
+                    if (!vplanFile.open(
+                            QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
+                        cerr
+                                << "The provided file to generate a vplan to cannot be opened for writing"
+                                << endl;
+                        return -1;
+
+                    }
+
+                    //-- Generate
+                    QDataStream vplanOutputStream(&vplanFile);
+                    vplanGenerator->generate(fsm, &vplanOutputStream);
+
+                    //-- Close
+                    delete vplanGenerator;
+                    vplanFile.close();
+
+                }
+                // EOF VPlan
+
+            } else {
+                cerr << "An error occured while verifying FSM, so nothing was generated" << endl;
+                returnCode = -1;
+            }
 
             //-- Close
             delete generator;
             verilogFile.close();
 
-            //---- Generate MMap If necessary
-            //-----------------------
-            if (generateMap == true) {
-
-                //-- Create Generator and generate
-                Generator * mmapGenerator =
-                        GeneratorFactory::getInstance()->newGenerator(
-                                "Simvision_Mmap");
-                if (mmapGenerator == NULL) {
-                    cerr
-                            << "There are no Generator registered under the 'Simvision_Mmap' name. No Simvision Mmap can generated"
-                            << endl;
-                    return -1;
-                }
-
-                //-- Open File
-                QFile mmapFile(QString::fromStdString(verilogDestination).replace(".v",".svcf"));
-                if (!mmapFile.open(
-                        QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
-
-                    cerr
-                            << "The provided file to generate a simvision mmap to cannot be opened for writing"
-                            << endl;
-                    return -1;
-
-                }
-
-                //-- Generate
-                QDataStream mmapOutputStream(&mmapFile);
-                mmapGenerator->generate(fsm, &mmapOutputStream);
-
-                //-- Close
-                delete mmapGenerator;
-                mmapFile.close();
-
-            }
-
-            /* GenerationOfVerilog genver(fsm,(QWidget *)NULL,true,true,QString(verilogDestination.c_str()));
-             genver.setForwardStateAsync(forwardAsync);
-             genver.setForwardStateDelayed(forwardDelayed);
-             genver.setForwardState(forwardState);
-
-             //-- Copy environment
-             genver.setEnvp(envp);
-
-             //-- Includes
-             list<QString>::iterator it;
-             for (it = includeArgs.begin(); it != includeArgs.end(); it++) {
-             genver.addGenerateInclude(*it);
-             }
-
-             genver.generateVerilog(verilogDestination.c_str());
-
-             //-- Generate map if requested
-             if (generateMap) {
-
-             // Extract basename (no .v) from filename and then add .f
-             stringstream fFile;
-             fFile << verilogDestination.substr(0,verilogDestination.size()-2) << ".f";
-
-             genver.generateFFile(fFile.str(),true);
-             }*/
-
         }
 
-        //-- Generate Verification Plan if necessary
-        //-------------
-        if (vplanDestination.size() > 0) {
 
-            cout << "Generating VPlan to " << vplanDestination << endl;
 
-            //-- Generate
-            Generator * vplanGenerator =
-                                    GeneratorFactory::getInstance()->newGenerator(
-                                            "VPlan");
-
-            //-- Open File
-            QFile vplanFile(QString::fromStdString(vplanDestination.c_str()));
-            if (!vplanFile.open(
-                    QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
-                cerr
-                        << "The provided file to generate a vplan to cannot be opened for writing"
-                        << endl;
-                return -1;
-
-            }
-
-            //-- Generate
-            QDataStream vplanOutputStream(&vplanFile);
-            vplanGenerator->generate(fsm, &vplanOutputStream);
-
-            //-- Close
-            delete vplanGenerator;
-            vplanFile.close();
-
-        }
-
-        return 0;
+        return returnCode;
 
     }
 }

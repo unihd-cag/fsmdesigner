@@ -26,6 +26,9 @@
 // Includes
 //--------------
 
+#include <iostream>
+using namespace std;
+
 //-- Qt
 #include <QtGui>
 
@@ -49,6 +52,16 @@ int main( int argc, char ** argv )
 	// Prepare Application
 	//--------------------------
     FSMDesignerApplication a( argc, argv );
+
+    //-- Locale test
+    QLocale lc = QLocale::system();
+
+
+    QTextCodec::setCodecForLocale ( QTextCodec::codecForName ( "UTF8" ) );
+    QTextCodec::setCodecForTr ( QTextCodec::codecForName ( "UTF8" ) );
+    QTextCodec::setCodecForCStrings ( QTextCodec::codecForName ( "UTF8" ) );
+    qDebug() << "System Locale: " << lc.name();
+    qDebug() << "System encoding: "<< QTextCodec::codecForLocale()->name();
 
     //-- Application Icon
     Q_INIT_RESOURCE(resources);

@@ -59,6 +59,9 @@ using namespace std;
 #include <verification/StateTransitions.h>
 #include <verification/OverlappingTransitionsRule.h>
 
+#include <genverilog/VerilogGeneratorChecks.h>
+
+
 #include <gui/verify/TableVerificationListener.h>
 #include <gui/verify/FSMVerificator.h>
 
@@ -927,6 +930,7 @@ void FSMSceneView::verifyTable() {
     verificator->addRule(new StateOutputsRule());
     verificator->addRule(new StateTransitions());
     verificator->addRule(new OverlappingTransitionsRule());
+    verificator->addRule(new VerilogGeneratorChecks());
     verificator->verify(this->getRelatedScene()->getFsm(),&listener);
 
     delete verificator;
