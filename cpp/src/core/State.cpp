@@ -130,11 +130,18 @@ void State::setHammingOutput() {
     	exit(0);
 	}
 
+	string zeros;
 	for(int z=1; z <= zeropadding; z++) {
-		output.append("0");
+		zeros.append("0");
 	}
+	cout << "Output before zeropadding: " << output << endl;
+	cout << "Appending zeros:" << zeros << endl;
 
-    n = pow(2,m)-1;
+	output = zeros + output;
+
+	cout << "Output after zeropadding: " << output << endl;
+
+	n = pow(2,m)-1;
     k = n - m;
 
     // Compute parity positions
