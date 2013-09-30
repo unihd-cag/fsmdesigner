@@ -594,45 +594,70 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 
     	switch (numberofoutputsHamming) {
 			case 3:
-	    		out << "  // hamming decoder for 1 + 2 = 3 bits" << endl;
+			    if (!this->getParameter("HammingDirectOutput").toBool()) {
+			    	out << "  // hamming decoder for 1 + 2 = 3 bits" << endl;
+			    } else {
+			    	out << "  // hamming direct output for 1 + 2 = 3 bits" << endl;
+			    }
 				break;
 			case 7:
-	    		out << "  // hamming decoder for 4 + 3 = 7 bits" << endl;
+			    if (!this->getParameter("HammingDirectOutput").toBool()) {
+			    	out << "  // hamming decoder for 4 + 3 = 7 bits" << endl;
+			    } else {
+			    	out << "  // hamming direct output for 4 + 3 = 7 bits" << endl;
+			    	out << "next_state[0] = next_state_Hamming[2];" << endl;
+			    	out << "next_state[1] = next_state_Hamming[4];" << endl;
+			    	out << "next_state[2] = next_state_Hamming[5];" << endl;
+			    	out << "next_state[3] = next_state_Hamming[6];" << endl;
+			    }
 				break;
 			case 15:
-	    		out << "  // hamming decoder for 11 + 4 = 15 bits" << endl;
-				out << "  r1 = ^(next_state_hamm & 11'b101_0101_0101);" << endl;
-				out << "  r2 = ^(next_state_hamm & 11'b110_0110_0110);" << endl;
-				out << "  r4 = ^(next_state_hamm & 11'b000_0111_1000);" << endl;
-				out << "  r8 = ^(next_state_hamm & 11'b111_1000_0000);" << endl;
-				out << "  r = {r8,r4,r2,r1};" << endl;
-				out << "  IN = next_state_hamm;" << endl;
-				out << "  IN[r-1] = ~IN[r-1];" << endl;
-				out << "  i=0; j=0;" << endl << endl;
-				out << "  while((i<n) || (j<k)) " << endl;
-				out << "  begin" << endl;
-				out << "    while(i==0 || i==1 || i==3 || i==7)" << endl;
-				out << "      i=i+1;" << endl << endl;
-				out << "    next_state[j]=IN[i];" << endl;
-				out << "    i=i+1;" << endl;
-				out << "    j=j+1;" << endl;
-				out << "  end" << endl;
+			    if (!this->getParameter("HammingDirectOutput").toBool()) {
+					out << "  // hamming decoder for 11 + 4 = 15 bits" << endl;
+					out << "  r1 = ^(next_state_hamm & 11'b101_0101_0101);" << endl;
+					out << "  r2 = ^(next_state_hamm & 11'b110_0110_0110);" << endl;
+					out << "  r4 = ^(next_state_hamm & 11'b000_0111_1000);" << endl;
+					out << "  r8 = ^(next_state_hamm & 11'b111_1000_0000);" << endl;
+					out << "  r = {r8,r4,r2,r1};" << endl;
+					out << "  IN = next_state_hamm;" << endl;
+					out << "  IN[r-1] = ~IN[r-1];" << endl;
+					out << "  i=0; j=0;" << endl << endl;
+					out << "  while((i<n) || (j<k)) " << endl;
+					out << "  begin" << endl;
+					out << "    while(i==0 || i==1 || i==3 || i==7)" << endl;
+					out << "      i=i+1;" << endl << endl;
+					out << "    next_state[j]=IN[i];" << endl;
+					out << "    i=i+1;" << endl;
+					out << "    j=j+1;" << endl;
+					out << "  end" << endl;
+			    } else {
+					out << "  // hamming direct output for 11 + 4 = 15 bits" << endl;
+			    }
 				break;
 			case 31:
-	    		out << "  // hamming decoder for 26 + 5 = 31 bits" << endl;
-				break;
+			    if (!this->getParameter("HammingDirectOutput").toBool()) {
+			    	out << "  // hamming decoder for 26 + 5 = 31 bits" << endl;
+			    } else {
+			    	out << "  // hamming direct output for 26 + 5 = 31 bits" << endl;
+			    }
+			    break;
 			case 63:
-	    		out << "  // hamming decoder for 57 + 6 = 63 bits" << endl;
+			    if (!this->getParameter("HammingDirectOutput").toBool()) {
+			    	out << "  // hamming decoder for 57 + 6 = 63 bits" << endl;
+			    } else {
+			    	out << "  // hamming direct output for 57 + 6 = 63 bits" << endl;
+			    }
 				break;
 			default:
 				cout << "Number of Hamming-Bits not supported";
-				return
+				return;
 				break;
 
     	}
 
     	out << "end" << endl << endl;
     }
+
 
     // Write always-block => assigns next_state to state
     //------------------------------

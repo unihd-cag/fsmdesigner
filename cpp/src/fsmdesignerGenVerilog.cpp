@@ -102,6 +102,7 @@ int main(int argc, char ** argv, char** envp) {
         bool useVerilogSecuredGenerator = false;
         bool useVerilogSecuredGeneratorTMR = false;
         bool useVerilogSecuredGeneratorHamming = false;
+        bool useVerilogSecuredGeneratorHammingDirectOutput = false;
         bool genverilog1RemoveIntersections = false;
         bool errorForce = false;
         bool noChecks = false;
@@ -175,8 +176,11 @@ int main(int argc, char ** argv, char** envp) {
             } else if (strcmp(argv[i], "-noChecks") == 0) {
 
                 noChecks = true;
-            }
+            } else if (strcmp(argv[i], "-hammingdirectoutput") == 0) {
 
+                useVerilogSecuredGeneratorHammingDirectOutput = true;
+
+            }
             
 
         }
@@ -252,6 +256,7 @@ int main(int argc, char ** argv, char** envp) {
             if (useVerilogSecuredGenerator) {
                 generator->setParameter("TMR", useVerilogSecuredGeneratorTMR);
                 generator->setParameter("Hamming", useVerilogSecuredGeneratorHamming);
+                generator->setParameter("HammingDirectOutput", useVerilogSecuredGeneratorHammingDirectOutput);
             }
 
             // v1 Parameters
