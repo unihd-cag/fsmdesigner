@@ -625,6 +625,7 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 					out << "  end" << endl;
 			    } else {
 			    	out << "  // hamming direct output for 1 + 2 = 3 bits" << endl;
+			    	out << "next_state[0] = next_state_Hamming[2];" << endl;
 			    }
 				break;
 			case 7:
@@ -719,6 +720,17 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 					out << "  end" << endl;
 			    } else {
 					out << "  // hamming direct output for 11 + 4 = 15 bits" << endl;
+			    	out << "next_state[0] = next_state_Hamming[2];" << endl;
+			    	out << "next_state[1] = next_state_Hamming[4];" << endl;
+			    	out << "next_state[2] = next_state_Hamming[5];" << endl;
+			    	out << "next_state[3] = next_state_Hamming[6];" << endl;
+			    	out << "next_state[4] = next_state_Hamming[8];" << endl;
+			    	out << "next_state[5] = next_state_Hamming[9];" << endl;
+			    	out << "next_state[6] = next_state_Hamming[10];" << endl;
+			    	out << "next_state[7] = next_state_Hamming[11];" << endl;
+			    	out << "next_state[8] = next_state_Hamming[12];" << endl;
+			    	out << "next_state[9] = next_state_Hamming[13];" << endl;
+			    	out << "next_state[10] = next_state_Hamming[14];" << endl;
 			    }
 				break;
 			case 31:
@@ -787,6 +799,32 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 					out << "  end" << endl;
 			    } else {
 			    	out << "  // hamming direct output for 26 + 5 = 31 bits" << endl;
+			    	out << "next_state[0] = next_state_Hamming[2];" << endl;
+			    	out << "next_state[1] = next_state_Hamming[4];" << endl;
+			    	out << "next_state[2] = next_state_Hamming[5];" << endl;
+			    	out << "next_state[3] = next_state_Hamming[6];" << endl;
+			    	out << "next_state[4] = next_state_Hamming[8];" << endl;
+			    	out << "next_state[5] = next_state_Hamming[9];" << endl;
+			    	out << "next_state[6] = next_state_Hamming[10];" << endl;
+			    	out << "next_state[7] = next_state_Hamming[11];" << endl;
+			    	out << "next_state[8] = next_state_Hamming[12];" << endl;
+			    	out << "next_state[9] = next_state_Hamming[13];" << endl;
+			    	out << "next_state[10] = next_state_Hamming[14];" << endl;
+			    	out << "next_state[11] = next_state_Hamming[16];" << endl;
+			    	out << "next_state[12] = next_state_Hamming[17];" << endl;
+			    	out << "next_state[13] = next_state_Hamming[18];" << endl;
+			    	out << "next_state[14] = next_state_Hamming[19];" << endl;
+			    	out << "next_state[15] = next_state_Hamming[20];" << endl;
+			    	out << "next_state[16] = next_state_Hamming[21];" << endl;
+			    	out << "next_state[17] = next_state_Hamming[22];" << endl;
+			    	out << "next_state[18] = next_state_Hamming[23];" << endl;
+			    	out << "next_state[19] = next_state_Hamming[24];" << endl;
+			    	out << "next_state[20] = next_state_Hamming[25];" << endl;
+			    	out << "next_state[21] = next_state_Hamming[26];" << endl;
+			    	out << "next_state[22] = next_state_Hamming[27];" << endl;
+			    	out << "next_state[23] = next_state_Hamming[28];" << endl;
+			    	out << "next_state[24] = next_state_Hamming[29];" << endl;
+			    	out << "next_state[25] = next_state_Hamming[30];" << endl;
 			    }
 			    break;
 			case 63:
@@ -889,6 +927,63 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 					out << "  end" << endl;
 			    } else {
 			    	out << "  // hamming direct output for 57 + 6 = 63 bits" << endl;
+			    	out << "next_state[0] = next_state_Hamming[2];" << endl;
+			    	out << "next_state[1] = next_state_Hamming[4];" << endl;
+			    	out << "next_state[2] = next_state_Hamming[5];" << endl;
+			    	out << "next_state[3] = next_state_Hamming[6];" << endl;
+			    	out << "next_state[4] = next_state_Hamming[8];" << endl;
+			    	out << "next_state[5] = next_state_Hamming[9];" << endl;
+			    	out << "next_state[6] = next_state_Hamming[10];" << endl;
+			    	out << "next_state[7] = next_state_Hamming[11];" << endl;
+			    	out << "next_state[8] = next_state_Hamming[12];" << endl;
+			    	out << "next_state[9] = next_state_Hamming[13];" << endl;
+			    	out << "next_state[10] = next_state_Hamming[14];" << endl;
+			    	out << "next_state[11] = next_state_Hamming[16];" << endl;
+			    	out << "next_state[12] = next_state_Hamming[17];" << endl;
+			    	out << "next_state[13] = next_state_Hamming[18];" << endl;
+			    	out << "next_state[14] = next_state_Hamming[19];" << endl;
+			    	out << "next_state[15] = next_state_Hamming[20];" << endl;
+			    	out << "next_state[16] = next_state_Hamming[21];" << endl;
+			    	out << "next_state[17] = next_state_Hamming[22];" << endl;
+			    	out << "next_state[18] = next_state_Hamming[23];" << endl;
+			    	out << "next_state[19] = next_state_Hamming[24];" << endl;
+			    	out << "next_state[20] = next_state_Hamming[25];" << endl;
+			    	out << "next_state[21] = next_state_Hamming[26];" << endl;
+			    	out << "next_state[22] = next_state_Hamming[27];" << endl;
+			    	out << "next_state[23] = next_state_Hamming[28];" << endl;
+			    	out << "next_state[24] = next_state_Hamming[29];" << endl;
+			    	out << "next_state[25] = next_state_Hamming[30];" << endl;
+			    	out << "next_state[26] = next_state_Hamming[32];" << endl;
+			    	out << "next_state[27] = next_state_Hamming[33];" << endl;
+			    	out << "next_state[28] = next_state_Hamming[34];" << endl;
+			    	out << "next_state[29] = next_state_Hamming[35];" << endl;
+			    	out << "next_state[30] = next_state_Hamming[36];" << endl;
+			    	out << "next_state[31] = next_state_Hamming[37];" << endl;
+			    	out << "next_state[32] = next_state_Hamming[38];" << endl;
+			    	out << "next_state[33] = next_state_Hamming[39];" << endl;
+			    	out << "next_state[34] = next_state_Hamming[40];" << endl;
+			    	out << "next_state[35] = next_state_Hamming[41];" << endl;
+			    	out << "next_state[36] = next_state_Hamming[42];" << endl;
+			    	out << "next_state[37] = next_state_Hamming[43];" << endl;
+			    	out << "next_state[38] = next_state_Hamming[44];" << endl;
+			    	out << "next_state[39] = next_state_Hamming[45];" << endl;
+			    	out << "next_state[40] = next_state_Hamming[46];" << endl;
+			    	out << "next_state[41] = next_state_Hamming[47];" << endl;
+			    	out << "next_state[42] = next_state_Hamming[48];" << endl;
+			    	out << "next_state[43] = next_state_Hamming[49];" << endl;
+			    	out << "next_state[44] = next_state_Hamming[50];" << endl;
+			    	out << "next_state[45] = next_state_Hamming[51];" << endl;
+			    	out << "next_state[46] = next_state_Hamming[52];" << endl;
+			    	out << "next_state[47] = next_state_Hamming[53];" << endl;
+			    	out << "next_state[48] = next_state_Hamming[54];" << endl;
+			    	out << "next_state[49] = next_state_Hamming[55];" << endl;
+			    	out << "next_state[50] = next_state_Hamming[56];" << endl;
+			    	out << "next_state[51] = next_state_Hamming[57];" << endl;
+			    	out << "next_state[52] = next_state_Hamming[58];" << endl;
+			    	out << "next_state[53] = next_state_Hamming[59];" << endl;
+			    	out << "next_state[54] = next_state_Hamming[60];" << endl;
+			    	out << "next_state[55] = next_state_Hamming[61];" << endl;
+			    	out << "next_state[56] = next_state_Hamming[62];" << endl;
 			    }
 				break;
 			default:
