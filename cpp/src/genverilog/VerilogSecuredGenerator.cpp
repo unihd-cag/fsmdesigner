@@ -190,10 +190,10 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
     //----------------------------------
     if (this->getParameter("TMR").toBool()) {
         out << endl << "reg [" << (numberofoutputs - 1)
-                << ":0] current_state, next_state, next_state_1, next_state_2, next_state_3;" << endl;
+                << ":0] current_state, next_state, next_state_hamm, next_state_1, next_state_2, next_state_3;" << endl;
     } else {
         out << endl << "reg [" << (numberofoutputs - 1)
-                << ":0] current_state, next_state;" << endl;
+                << ":0] current_state, next_state, next_state_hamm;" << endl;
     }
 
 
@@ -580,7 +580,7 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 
     if (this->getParameter("TMR").toBool()) {
         if (this->getParameter("Hamming").toBool()) {
-        	out << "  next_state_Hamming = (next_state_1 & next_state_2) | (next_state_1 & next_state_3) | (next_state_2 & next_state_3);" << endl;
+        	out << "  next_state_hamm = (next_state_1 & next_state_2) | (next_state_1 & next_state_3) | (next_state_2 & next_state_3);" << endl;
         } else {
         	out << "  next_state = (next_state_1 & next_state_2) | (next_state_1 & next_state_3) | (next_state_2 & next_state_3);" << endl;
         }
@@ -595,14 +595,74 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
     	switch (numberofoutputsHamming) {
 			case 3:
 			    if (!this->getParameter("HammingDirectOutput").toBool()) {
-			    	out << "  // hamming decoder for 1 + 2 = 3 bits" << endl;
+					out << "  // hamming decoder for 1 + 2 = 3 bits" << endl;
+
+					/*
+					 Berechnung der R-Bits
+
+					 1 = 01
+					 2 = 10
+					 3 = 11
+
+					r1: Ist das 0te bit gesetzt => 101
+					r2: Ist das 1te bit gesetzt => 110
+
+					*/
+
+					out << "  r1 = ^(next_state_hamm & 3'b101);" << endl;
+					out << "  r2 = ^(next_state_hamm & 3'b110);" << endl;
+					out << "  r = {r2,r1};" << endl;
+					out << "  IN = next_state_hamm;" << endl;
+					out << "  IN[r-1] = ~IN[r-1];" << endl;
+					out << "  i=0; j=0;" << endl << endl;
+					out << "  while((i<n) || (j<k)) " << endl;
+					out << "  begin" << endl;
+					out << "    while(i==0 || i==1)" << endl;
+					out << "      i=i+1;" << endl << endl;
+					out << "    next_state[j]=IN[i];" << endl;
+					out << "    i=i+1;" << endl;
+					out << "    j=j+1;" << endl;
+					out << "  end" << endl;
 			    } else {
 			    	out << "  // hamming direct output for 1 + 2 = 3 bits" << endl;
 			    }
 				break;
 			case 7:
 			    if (!this->getParameter("HammingDirectOutput").toBool()) {
-			    	out << "  // hamming decoder for 4 + 3 = 7 bits" << endl;
+					out << "  // hamming decoder for 4 + 3 = 7 bits" << endl;
+
+					/*
+					 Berechnung der R-Bits
+
+					 1 = 001
+					 2 = 010
+					 3 = 011
+					 4 = 100
+					 5 = 101
+					 6 = 110
+					 7 = 111
+
+					r1: Ist das 0te bit gesetzt => 1010101
+					r2: Ist das 1te bit gesetzt => 1100110
+					r4: Ist das 2te bit gesetzt => 1111000
+
+					*/
+
+					out << "  r1 = ^(next_state_hamm & 7'b1010101);" << endl;
+					out << "  r2 = ^(next_state_hamm & 7'b1100110);" << endl;
+					out << "  r4 = ^(next_state_hamm & 7'b1111000);" << endl;
+					out << "  r = {r4,r2,r1};" << endl;
+					out << "  IN = next_state_hamm;" << endl;
+					out << "  IN[r-1] = ~IN[r-1];" << endl;
+					out << "  i=0; j=0;" << endl << endl;
+					out << "  while((i<n) || (j<k)) " << endl;
+					out << "  begin" << endl;
+					out << "    while(i==0 || i==1 || i==3)" << endl;
+					out << "      i=i+1;" << endl << endl;
+					out << "    next_state[j]=IN[i];" << endl;
+					out << "    i=i+1;" << endl;
+					out << "    j=j+1;" << endl;
+					out << "  end" << endl;
 			    } else {
 			    	out << "  // hamming direct output for 4 + 3 = 7 bits" << endl;
 			    	out << "next_state[0] = next_state_Hamming[2];" << endl;
@@ -614,10 +674,37 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 			case 15:
 			    if (!this->getParameter("HammingDirectOutput").toBool()) {
 					out << "  // hamming decoder for 11 + 4 = 15 bits" << endl;
-					out << "  r1 = ^(next_state_hamm & 11'b101_0101_0101);" << endl;
-					out << "  r2 = ^(next_state_hamm & 11'b110_0110_0110);" << endl;
-					out << "  r4 = ^(next_state_hamm & 11'b000_0111_1000);" << endl;
-					out << "  r8 = ^(next_state_hamm & 11'b111_1000_0000);" << endl;
+
+					/*
+					 Berechnung der R-Bits
+
+					 1 = 0001
+					 2 = 0010
+					 3 = 0011
+					 4 = 0100
+					 5 = 0101
+					 6 = 0110
+					 7 = 0111
+					 8 = 1000
+					 9 = 1001
+					10 = 1010
+					11 = 1011
+					12 = 1100
+					13 = 1101
+					14 = 1110
+					15 = 1111
+
+					r1: Ist das 0te bit gesetzt => 101010101010101
+					r2: Ist das 1te bit gesetzt => 110011001100110
+					r4: Ist das 2te bit gesetzt => 111100001111000
+					r8: Ist das 3te bit gesetzt => 111111110000000
+
+					*/
+
+					out << "  r1 = ^(next_state_hamm & 15'b101010101010101);" << endl;
+					out << "  r2 = ^(next_state_hamm & 15'b110011001100110);" << endl;
+					out << "  r4 = ^(next_state_hamm & 15'b111100001111000);" << endl;
+					out << "  r8 = ^(next_state_hamm & 15'b111111110000000);" << endl;
 					out << "  r = {r8,r4,r2,r1};" << endl;
 					out << "  IN = next_state_hamm;" << endl;
 					out << "  IN[r-1] = ~IN[r-1];" << endl;
@@ -636,14 +723,170 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 				break;
 			case 31:
 			    if (!this->getParameter("HammingDirectOutput").toBool()) {
-			    	out << "  // hamming decoder for 26 + 5 = 31 bits" << endl;
+					out << "  // hamming decoder for 26 + 5 = 31 bits" << endl;
+
+					/*
+					 Berechnung der R-Bits
+
+					 1 = 0001
+					 2 = 0010
+					 3 = 0011
+					 4 = 0100
+					 5 = 0101
+					 6 = 0110
+					 7 = 0111
+					 8 = 1000
+					 9 = 1001
+					10 = 1010
+					11 = 1011
+					12 = 1100
+					13 = 1101
+					14 = 1110
+					15 = 1111
+					16 = 10000
+					17 = 10001
+					18 = 10010
+					19 = 10011
+					20 = 10100
+					21 = 10101
+					22 = 10110
+					23 = 10111
+					24 = 11000
+					25 = 11001
+					26 = 11010
+					27 = 11011
+					28 = 11100
+					29 = 11101
+					30 = 11110
+					31 = 11111
+
+					r1: Ist das 0te bit gesetzt =>  1010101010101010101010101010101
+					r2: Ist das 1te bit gesetzt =>  1100110011001100110011001100110
+					r4: Ist das 2te bit gesetzt =>  1111000011110000111100001111000
+					r8: Ist das 3te bit gesetzt =>  1111111100000000111111110000000
+					r16: Ist das 3te bit gesetzt => 1111111111111111000000000000000
+
+					*/
+
+					out << "  r1 = ^(next_state_hamm & 31'b1010101010101010101010101010101);" << endl;
+					out << "  r2 = ^(next_state_hamm & 31'b1100110011001100110011001100110);" << endl;
+					out << "  r4 = ^(next_state_hamm & 31'b1111000011110000111100001111000);" << endl;
+					out << "  r8 = ^(next_state_hamm & 31'b1111111100000000111111110000000);" << endl;
+					out << "  r16 = ^(next_state_hamm & 31'b1111111111111111000000000000000);" << endl;
+					out << "  r = {r16,r8,r4,r2,r1};" << endl;
+					out << "  IN = next_state_hamm;" << endl;
+					out << "  IN[r-1] = ~IN[r-1];" << endl;
+					out << "  i=0; j=0;" << endl << endl;
+					out << "  while((i<n) || (j<k)) " << endl;
+					out << "  begin" << endl;
+					out << "    while(i==0 || i==1 || i==3 || i==7 || i ==15)" << endl;
+					out << "      i=i+1;" << endl << endl;
+					out << "    next_state[j]=IN[i];" << endl;
+					out << "    i=i+1;" << endl;
+					out << "    j=j+1;" << endl;
+					out << "  end" << endl;
 			    } else {
 			    	out << "  // hamming direct output for 26 + 5 = 31 bits" << endl;
 			    }
 			    break;
 			case 63:
 			    if (!this->getParameter("HammingDirectOutput").toBool()) {
-			    	out << "  // hamming decoder for 57 + 6 = 63 bits" << endl;
+					out << "  // hamming decoder for 57 + 6 = 63 bits" << endl;
+
+					/*
+					 Berechnung der R-Bits
+
+					 1 = 0001
+					 2 = 0010
+					 3 = 0011
+					 4 = 0100
+					 5 = 0101
+					 6 = 0110
+					 7 = 0111
+					 8 = 1000
+					 9 = 1001
+					10 = 1010
+					11 = 1011
+					12 = 1100
+					13 = 1101
+					14 = 1110
+					15 = 1111
+					16 = 10000
+					17 = 10001
+					18 = 10010
+					19 = 10011
+					20 = 10100
+					21 = 10101
+					22 = 10110
+					23 = 10111
+					24 = 11000
+					25 = 11001
+					26 = 11010
+					27 = 11011
+					28 = 11100
+					29 = 11101
+					30 = 11110
+					31 = 11111
+					32 = 100000
+					33 = 100001
+					34 = 100010
+					35 = 100011
+					36 = 100100
+					37 = 100101
+					38 = 100110
+					39 = 100111
+					40 = 101000
+					41 = 101001
+					42 = 101010
+					43 = 101011
+					44 = 101100
+					45 = 101101
+					46 = 101110
+					47 = 101111
+					48 = 110000
+					49 = 110001
+					50 = 110010
+					51 = 110011
+					52 = 110100
+					53 = 110101
+					54 = 110110
+					55 = 110111
+					56 = 111000
+					57 = 111001
+					58 = 111010
+					59 = 111011
+					60 = 111100
+					61 = 111101
+					62 = 111110
+					63 = 111111
+
+					r1: Ist das 0te bit gesetzt =>  101010101010101010101010101010101010101010101010101010101010101
+					r2: Ist das 1te bit gesetzt =>  110011001100110011001100110011001100110011001100110011001100110
+					r4: Ist das 2te bit gesetzt =>  111100001111000011110000111100001111000011110000111100001111000
+					r8: Ist das 3te bit gesetzt =>  111111110000000011111111000000001111111100000000111111110000000
+					r16: Ist das 4te bit gesetzt => 111111111111111100000000000000001111111111111111000000000000000
+					r32: Ist das 5te bit gesetzt => 111111111111111111111111111111110000000000000000000000000000000
+
+					*/
+
+					out << "  r1 = ^(next_state_hamm & 63'b101010101010101010101010101010101010101010101010101010101010101);" << endl;
+					out << "  r2 = ^(next_state_hamm & 63'b110011001100110011001100110011001100110011001100110011001100110);" << endl;
+					out << "  r4 = ^(next_state_hamm & 63'b111100001111000011110000111100001111000011110000111100001111000);" << endl;
+					out << "  r8 = ^(next_state_hamm & 63'b111111110000000011111111000000001111111100000000111111110000000);" << endl;
+					out << "  r16 = ^(next_state_hamm & 63'b111111111111111100000000000000001111111111111111000000000000000);" << endl;
+					out << "  r32 = ^(next_state_hamm & 63'b111111111111111111111111111111110000000000000000000000000000000);" << endl;
+					out << "  r = {r32,r16,r8,r4,r2,r1};" << endl;
+					out << "  IN = next_state_hamm;" << endl;
+					out << "  IN[r-1] = ~IN[r-1];" << endl;
+					out << "  i=0; j=0;" << endl << endl;
+					out << "  while((i<n) || (j<k)) " << endl;
+					out << "  begin" << endl;
+					out << "    while(i==0 || i==1 || i==3 || i==7 || i ==15 || i==31)" << endl;
+					out << "      i=i+1;" << endl << endl;
+					out << "    next_state[j]=IN[i];" << endl;
+					out << "    i=i+1;" << endl;
+					out << "    j=j+1;" << endl;
+					out << "  end" << endl;
 			    } else {
 			    	out << "  // hamming direct output for 57 + 6 = 63 bits" << endl;
 			    }
