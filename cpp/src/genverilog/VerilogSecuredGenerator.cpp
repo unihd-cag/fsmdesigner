@@ -189,11 +189,25 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
     // current_state Declaration
     //----------------------------------
     if (this->getParameter("TMR").toBool()) {
+       if (this->getParameter("Hamming").toBool()) {
         out << endl << "reg [" << (numberofoutputs - 1)
-                << ":0] current_state, next_state, next_state_hamm, next_state_1, next_state_2, next_state_3;" << endl;
+                << ":0] current_state, next_state;" << endl;
+	out << endl << "reg [" << (numberofoutputsHamming - 1)
+                << ":0] next_state_hamm, next_state_1, next_state_2, next_state_3;" << endl;
+       } else {
+	 out << endl << "reg [" << (numberofoutputs - 1)
+                << ":0] current_state, next_state, next_state_1, next_state_2, next_state_3;" << endl;
+       }
     } else {
+       if (this->getParameter("Hamming").toBool()) {
         out << endl << "reg [" << (numberofoutputs - 1)
-                << ":0] current_state, next_state, next_state_hamm;" << endl;
+                << ":0] current_state, next_state;" << endl;
+	out << endl << "reg [" << (numberofoutputsHamming - 1)
+                << ":0] next_state_hamm;" << endl;
+	 } else {
+	 out << endl << "reg [" << (numberofoutputs - 1)
+                << ":0] current_state, next_state;" << endl;
+       }	
     }
 
 
@@ -400,7 +414,7 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 				    	}
 				    } else {
 				    	if (this->getParameter("Hamming").toBool()) {
-							out  << ":   next_state = "
+							out  << ":   next_state_hamm = "
 									<< this->cleanString(targetDefaultState->getName()) << "_Hamming;"
 									<< endl;
 				    	} else {
@@ -435,7 +449,7 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 				} else {
 					if (this->getParameter("Hamming").toBool()) {
 						out << invec.c_str() << ", " << state->getName().c_str()
-								<< "}:   next_state = "
+								<< "}:   next_state_hamm = "
 								<< this->cleanString(targetDefaultState->getName())
 								<< "_Hamming;" << endl;
 					} else {
@@ -486,7 +500,7 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 						} else {
 							if (this->getParameter("Hamming").toBool()) {
 								out << ", " << state->getName().c_str()
-										<< "}:   next_state = "
+										<< "}:   next_state_hamm = "
 										<< this->cleanString(transEndState->getName())
 										<< "_Hamming;" << endl;
 							} else {
@@ -564,7 +578,11 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 		    if (this->getParameter("TMR").toBool()) {
 				out << "    default:  next_state_" << tmri << " = ";
 		    } else {
+			if (this->getParameter("Hamming").toBool()) {
+				out << "    default:  next_state_hamm = ";
+			} else {
 				out << "    default:  next_state = ";
+			}
 		    }
 
 		    if (this->getParameter("Hamming").toBool()) {
@@ -590,6 +608,54 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 
     // Hamming-Decoder
     if (this->getParameter("Hamming").toBool()) {
+
+	// Declaration of variables
+
+	switch (numberofoutputsHamming) {
+                        case 3:
+			    out << "parameter n=3,k=1;" << endl;
+			    out << "reg [k-1:0] out;" << endl;
+			    out << "reg r1,r2;" << endl;
+			    out << "reg [1:0] r;" << endl;
+			    out << "reg [n-1:0] IN;" << endl;
+			    out << "integer i,j;" << endl << endl;
+                                break;
+                        case 7:
+			    out << "parameter n=7,k=4;" << endl;
+			    out << "reg [k-1:0] out;" << endl;
+			    out << "reg r1,r2,r4;" << endl;
+			    out << "reg [2:0] r;" << endl;
+			    out << "reg [n-1:0] IN;" << endl;
+			    out << "integer i,j;" << endl << endl;  
+                                break;
+                        case 15:
+			    out << "parameter n=15,k=11;" << endl;
+			    out << "reg [k-1:0] out;" << endl;;
+			    out << "reg r1,r2,r4,r8;" << endl;
+			    out << "reg [3:0] r;" << endl;
+			    out << "reg [n-1:0] IN;" << endl;
+			    out << "integer i,j;" << endl << endl;
+                                break;
+                        case 31:
+			    out << "parameter n=31,k=26;" << endl;
+			    out << "reg [k-1:0] out;" << endl;
+			    out << "reg r1,r2,r4,r8,r16;" << endl;
+			    out << "reg [4:0] r;" << endl;
+			    out << "reg [n-1:0] IN;" << endl;
+			    out << "integer i,j;" << endl << endl;
+                                break;
+                        case 63:
+			    out << "parameter n=63,k=57;" << endl;
+			    out << "reg [k-1:0] out;" << endl;
+			    out << "reg r1,r2,r4,r8,r16,r32;" << endl;
+			    out << "reg [5:0] r;" << endl;
+			    out << "reg [n-1:0] IN;" << endl;
+			    out << "integer i,j;" << endl << endl;
+                                break;
+                        
+	
+	}
+
     	out << "always @(*) begin" << endl;
 
     	switch (numberofoutputsHamming) {
@@ -776,7 +842,7 @@ void VerilogSecuredGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 					r2: Ist das 1te bit gesetzt =>  1100110011001100110011001100110
 					r4: Ist das 2te bit gesetzt =>  1111000011110000111100001111000
 					r8: Ist das 3te bit gesetzt =>  1111111100000000111111110000000
-					r16: Ist das 3te bit gesetzt => 1111111111111111000000000000000
+					r16: Ist das 4te bit gesetzt => 1111111111111111000000000000000
 
 					*/
 
