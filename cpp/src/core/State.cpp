@@ -213,7 +213,7 @@ void State::setHammingOutput() {
     ostringstream oss("");
 
     cout << "codeword = ";
-    for (j=1; j<=n; j++) {
+    for (j=n; j>0; j--) {
     	cout << code[j];
     	oss << code[j];
     }
