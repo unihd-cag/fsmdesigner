@@ -64,9 +64,10 @@ void cmdsyntaxerror() {
             << " (-v1RemoveIntersections)" << endl
             << " (-force)? : Force generation even if errors occured" << endl
             << " (-noChecks)? : Skip FSM check before generating" << endl
-            << " (-secured)?"  << endl
-            << " (-tmr)?" << endl
-            << " (-hamming)?" << endl
+            << " (-secured)? : Activate secured generator"  << endl
+            << " (-tmr)? : Activate Triple Modular Reduncancy mode in secured generator" << endl
+            << " (-hamming)? Activate Hamming-Coding in secured generator" << endl
+            << " (-hammingdirectoutput)? Activate direct out when using Hamming-Coding" << endl
             << endl;
 }
 ;
