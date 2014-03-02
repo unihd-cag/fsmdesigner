@@ -50,6 +50,11 @@ set(CMAKE_BUILD_TYPE Debug)
 ## Show compiler command lines
 set(CMAKE_VERBOSE_MAKEFILE false)
  
+##########################################
+# Build-type depended flags
+########################################## 
+set(CMAKE_CXX_FLAGS_DEBUG "-g -rdynamic")
+
  
 ##########################################
 ## Output Directories and Crosscompiling

@@ -26,6 +26,7 @@
 // Includes
 //--------------
 
+
 #include <iostream>
 using namespace std;
 
@@ -46,9 +47,50 @@ using namespace std;
 #include <gui/FSMDesignerApplication.h>
 #include <gui/mergedGUI/MergedMainWindow.h>
 
+//-- Backtrace
+#ifndef NDEBUG
+#include <execinfo.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fstream>
+
+void handler(int sig) {
+  void *buffer[20];
+  size_t size;
+  char **c_strings = NULL;
+  // get void*'s for all entries on the stack
+  size = backtrace(buffer, 10);
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(buffer, size, STDERR_FILENO);
+  // try to print the stacktrace to a trace file
+  c_strings = backtrace_symbols(buffer, size);
+  if (c_strings != NULL) {
+    //TODO randomize the coredump name.
+    string path = "/tmp/fsm_stack_dump";
+    std::ofstream dump_file;
+    dump_file.open(path.c_str() );
+    for (int i = 0; i < size; ++i)
+      dump_file << c_strings[i] << std::endl;
+    dump_file.close();
+    fprintf(stderr, "Trace dump stored: %s\n", path.c_str() );
+    free(c_strings);
+  }
+  exit(1);
+}
+#endif
+//-- END Backtrace
+
 
 int main( int argc, char ** argv )
 {
+  // -- Backtrace: install signal handler
+  #ifndef NDEBUG
+  signal(SIGSEGV, handler);    
+  #endif
+  // -- END Backtrace
 	// Prepare Application
 	//--------------------------
     FSMDesignerApplication a( argc, argv );
