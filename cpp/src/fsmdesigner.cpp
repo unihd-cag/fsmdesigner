@@ -55,6 +55,7 @@ using namespace std;
 #include <stdlib.h>
 #include <unistd.h>
 #include <fstream>
+#include <ctime>
 
 void handler(int sig) {
   void *buffer[20];
@@ -68,8 +69,17 @@ void handler(int sig) {
   // try to print the stacktrace to a trace file
   c_strings = backtrace_symbols(buffer, size);
   if (c_strings != NULL) {
-    //TODO randomize the coredump name.
-    string path = "/tmp/fsm_stack_dump";
+    //TODO: make the time code portable?
+    time_t t = time(0);
+    struct tm * now = localtime ( &t );
+    int year  = now->tm_year + 1900;
+    int month = now->tm_mon + 1;
+    int day   = now->tm_mday;
+    int hour  = now->tm_hour + 1;
+    int min   = now->tm_min + 1;
+    std::string path = "/tmp/fsm_stack_dump_" + std::to_string(year) + "_" +
+      std::to_string(month) + "_" + std::to_string(day) + "_h" +
+      std::to_string(hour) + "_m" + std::to_string(min);
     std::ofstream dump_file;
     dump_file.open(path.c_str() );
     for (int i = 0; i < size; ++i)
