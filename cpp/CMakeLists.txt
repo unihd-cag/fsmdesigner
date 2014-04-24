@@ -53,7 +53,7 @@ set(CMAKE_VERBOSE_MAKEFILE false)
 ##########################################
 # Build-type depended flags
 ########################################## 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -rdynamic -std=c++11")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -rdynamic -std=c++0x")
 
  
 ##########################################
