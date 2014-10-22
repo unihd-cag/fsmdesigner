@@ -196,6 +196,11 @@ class State: public UniqueIDObject {
          */
         void removeStartingTransition(Trans * transition);
 
+        /** 
+         * @return the default transition from this state, or NULL if none has been defined 
+         */
+        Trans* getDefaultTransition();
+
 };
 
 #endif

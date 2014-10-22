@@ -40,7 +40,7 @@ using namespace std;
 
 //-- Core
 #include <core/Utils.h>
-
+#include <core/Trans.h>
 
 #include "State.h"
 
@@ -152,4 +152,22 @@ void State::addStartingTransition(Trans * transition) {
 
 void State::removeStartingTransition(Trans * transition) {
     this->startingTransitions.remove(transition);
+}
+
+/** 
+* @return the default transition from this state, or NULL if none has been defined 
+*/
+Trans* State::getDefaultTransition() {
+
+    Trans * result = NULL;
+    FOREACH_STATE_STARTING_TRANSITIONS(this)
+
+        if (transition->isDefault()) {
+            result = transition;
+            break;
+        }
+
+    END_FOREACH_STATE_STARTING_TRANSITIONS
+
+    return result;
 }
