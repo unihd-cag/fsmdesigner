@@ -41,6 +41,7 @@ using namespace std;
 //-- Generate
 #include <generate/GeneratorFactory.h>
 #include <genverilog/VerilogGenerator.h>
+#include <genvhdl/VHDLGenerator.h>
 #include <genverilog/SimvisionMmapGenerator.h>
 
 //-- Gui
@@ -129,6 +130,7 @@ int main( int argc, char ** argv )
     // Init Generators
     //--------------------------
     GeneratorFactory::getInstance()->registerGenerator("Verilog",new VerilogGenerator());
+    GeneratorFactory::getInstance()->registerGenerator("VHDL",new VHDLGenerator());
     GeneratorFactory::getInstance()->registerGenerator("Simvision_Mmap",new SimvisionMmapGenerator());
 
     // Show GUI

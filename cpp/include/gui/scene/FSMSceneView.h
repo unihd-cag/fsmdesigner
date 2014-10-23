@@ -159,6 +159,12 @@ class FSMSceneView: public QGraphicsView,
         /// Reload/Generate verilog for the currently displayed FSM
         void generateVerilogReload();
 
+        /// Generate VHDL for the currently displayed FSM
+        void generateVHDL();
+
+        /// Reload/Generate VHDL for the currently displayed FSM
+        void generateVHDLReload();
+
         /** \defgroup Place Place mode methods */
         /**@{*/
 

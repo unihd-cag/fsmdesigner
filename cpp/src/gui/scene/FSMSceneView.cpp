@@ -158,7 +158,16 @@ FSMSceneView::FSMSceneView(Scene* scene, QWidget* parent) :
     reloadVerilogButton->addAction(reloadVerilogAction);
     this->connect(reloadVerilogAction,SIGNAL(triggered()),SLOT(generateVerilog()));
 
+    this->controlToolBar->getToolBar()->addSeparator();
 
+    // Fast VHDL
+    QToolButton * reloadVHDLButton = this->controlToolBar->addActionButton(QIcon(QPixmap(":/icons/GenerateVHDL28")),"(Re)Generate VHDL");
+    this->connect(reloadVHDLButton->actions().first(),SIGNAL(triggered()),SLOT(generateVHDLReload()));
+
+    // Normal Generate
+    QAction * reloadVHDLAction = new QAction("Generate to...",reloadVerilogButton);
+    reloadVHDLButton->addAction(reloadVHDLAction);
+    this->connect(reloadVHDLAction,SIGNAL(triggered()),SLOT(generateVHDL()));
 
     this->controlToolBar->getToolBar()->addSeparator();
 
@@ -795,6 +804,142 @@ void FSMSceneView::generateVerilogReload() {
 
     //-- Open File
     QFile simvisionFile(path.replace(".v",".svcf"));
+    if (!simvisionFile.open(QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
+
+        QMessageBox warnBox(QMessageBox::Warning,"Cannot open File","The provided file to generate Simvision Mmap to cannot be opened for writing",QMessageBox::NoButton,this);
+        warnBox.exec();
+        return;
+
+    }
+
+    //-- Generate
+    QDataStream simvisionOutputStream(&simvisionFile);
+    generator->generate(fsm,&simvisionOutputStream);
+
+    //-- Close
+    delete generator;
+    simvisionFile.close();
+
+}
+
+void FSMSceneView::generateVHDL() {
+
+	//-- Get FSM
+	Fsm * fsm = dynamic_cast<Scene*> (this->scene())->getFsm();
+
+	// Verify FSM
+	//----------------
+	Verify * verifier = new Verify(fsm,this);
+	if (verifier->wanttoverify()) {
+		// Do verify
+		verifier->verifyFsm();
+		verifier->info();
+
+		// Check passed
+		if (!verifier->getVerified())
+			return;
+
+	}
+
+
+	//-- Default path is where the FSM file is
+    QDir location = Core::getInstance()->getProject()->getDirectory();
+
+    //-- FileName offer
+    QString defaultName = QString::fromStdString(fsm->getFsmName())+"_fsm.vhdl";
+
+    //-- Save path
+    QString path = QFileDialog::getSaveFileName(this,"Choose a VHDL File to save to",location.path(),"VHDL Files (*.vhdl)");
+    if (path.length()==0)
+        return;
+    fsm->setParameter("ui.generator.vhdl.lastPath",path.toStdString());
+
+	// Now that we have a last generated path -> call on reload
+	//---------------
+    this->generateVHDLReload();
+
+}
+
+void FSMSceneView::generateVHDLReload() {
+
+	//-- Is there a previously saved path ?
+
+	// Get FSM
+	Fsm * fsm = dynamic_cast<Scene*> (this->scene())->getFsm();
+
+
+
+    // Verify FSM
+    //----------------
+    Verify * verifier = new Verify(fsm,this);
+    verifier->verifyFsm();
+
+    // Check passed
+    if (!verifier->getVerified()) {
+        verifier->info();
+        return;
+    }
+
+
+    //-- If there is no previous recorded path -> ask for one
+    QString path = QString::fromStdString(fsm->getParameter("ui.generator.vhdl.lastPath",""));
+    if (path.size()==0) {
+
+        //-- Default path is where the FSM file is
+        QDir location = Core::getInstance()->getProject()->getDirectory();
+
+        //-- FileName offer
+        QString defaultName = QString::fromStdString(fsm->getFsmName())+"_fsm.v";
+
+        //-- Save path
+        path = QFileDialog::getSaveFileName(this,"Choose a VHDL File to save to",location.path(),"VHDL Files (*.vhdl)");
+        if (path.length()==0)
+            return;
+        fsm->setParameter("ui.generator.vhdl.lastPath",path.toStdString());
+
+    }
+
+    // Generate
+    //--------------------
+
+    //---- Verilog
+    //----------------------
+    Generator * generator = GeneratorFactory::getInstance()->newGenerator("VHDL");
+    if (generator==NULL) {
+        QMessageBox warnBox(QMessageBox::Warning,"Cannot find generator","There are no Generator registered under the 'VHDL' name. No VHDL can generated",QMessageBox::NoButton,this);
+        warnBox.exec();
+        return;
+    }
+
+    //-- Open File
+    QFile vhdlFile(path);
+    if (!vhdlFile.open(QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
+
+        QMessageBox warnBox(QMessageBox::Warning,"Cannot open File","The provided file to generate VHDL to cannot be opened for writing",QMessageBox::NoButton,this);
+        warnBox.exec();
+        return;
+
+    }
+
+    //-- Generate
+    QDataStream outputStream(&vhdlFile);
+    generator->generate(fsm,&outputStream);
+
+    //-- Close
+    delete generator;
+    vhdlFile.close();
+
+    //---- Simvision mmap
+    //---------------------
+    generator = GeneratorFactory::getInstance()->newGenerator("Simvision_Mmap");
+    if (generator==NULL) {
+        QMessageBox warnBox(QMessageBox::Warning,"Cannot find generator","There are no Generator registered under the 'Simvision_Mmap' name. No Simvision Mmap can generated",QMessageBox::NoButton,this);
+        warnBox.exec();
+        return;
+    }
+
+    //-- Open File
+    QFile simvisionFile(path.replace(".vhdl",".svcf"));
     if (!simvisionFile.open(QFile::Text | QFile::WriteOnly | QIODevice::Truncate)) {
 
         QMessageBox warnBox(QMessageBox::Warning,"Cannot open File","The provided file to generate Simvision Mmap to cannot be opened for writing",QMessageBox::NoButton,this);

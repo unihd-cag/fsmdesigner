@@ -55,6 +55,7 @@
         <file alias="Lock64">icons/icon-lock-64.png</file>  
         <file alias="GenerateVerilog28">icons/icon-generate-verilog-28.png</file>
         <file alias="GenerateVerilogFast28">icons/icon-generate-verilog-fast-28.png</file>
+        <file alias="GenerateVHDL28">icons/icon-generate-vhdl-28.png</file>
         <file alias="Rename">icons/Actions-edit-rename-icon.png</file>   
         <file alias="Save">icons/Actions-save-icon.png</file>
         <file alias="SaveAll">icons/Actions-save-all-icon.png</file>
