@@ -100,7 +100,7 @@ MergedMainWindow::MergedMainWindow() :
 
     //---- Recent Files
     //--------------------------
-    QStringList recentFiles = GuiSettings::getRecentFiles();
+    /*QStringList recentFiles = GuiSettings::getRecentFiles();
     FOREACH_STRING_LIST(QStringList::iterator , recentFiles, QString, recentFile)
 
         QAction * action = this->menu_Recent_Files->addAction(recentFile);
@@ -109,7 +109,7 @@ MergedMainWindow::MergedMainWindow() :
     END_FOREACH
     this->menu_Recent_Files->connect(this->menu_Recent_Files,
             SIGNAL(triggered(QAction*)), this, SLOT(openFile(QAction*)));
-
+*/
     // Also connect to welcomeTab
     this->connect(welcomeTab, SIGNAL(openedFile(QString)), this,
             SLOT(openFile(QString)));

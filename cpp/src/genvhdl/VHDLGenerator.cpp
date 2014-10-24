@@ -73,14 +73,30 @@ void VHDLGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
 
     int numberofinputs = fsm->getNumberOfInputs();
     int numberofoutputs = fsm->getNumberOfOutputs();
-    int resetstate = fsm->getResetState();
+    State * resetState = fsm->getStatebyID(fsm->getResetState());
 
-    // utils
+    //-- utils
     QString tab = QString(" ").repeated(4);
     QString tab2 = QString(" ").repeated(4*2);
     QString tab3 = QString(" ").repeated(4*3);
     QString tab4 = QString(" ").repeated(4*4);
     QString tab5 = QString(" ").repeated(4*5);
+
+    QStringList stateNames;
+    FOREACH_STATE(fsm)
+        stateNames << this->cleanString(state->getName());
+    END_FOREACH_STATE
+
+
+    QStringList inputNames;
+    for (int i = 0; i < numberofinputs ; i++) {
+        inputNames << QString::fromStdString(fsm->getInputName(i));
+    }
+
+    QStringList outputNames;
+    for (int i = 0; i < numberofoutputs ; i++) {
+        outputNames << QString::fromStdString(fsm->getOutputName(i));
+    }
 
     //calcHammingDistance();
     //extendStateEncoding();
@@ -116,26 +132,24 @@ void VHDLGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
     // Write entity description
     //----------------------------
     out << "entity " << fsm->getFsmName().c_str() << " is " << endl;
-    out << "    port ( "  << endl;
-    out << "            " << fsm->getClockName().c_str() << ": in std_logic; " << endl;
-    out << "            " << fsm->getResetName().c_str() << ": in std_logic; " << endl << endl;
+    out << tab << "port ( "  << endl;
+    out << tab2 <<   fsm->getClockName().c_str() << ": in std_logic; " << endl;
+    out << tab2 <<   fsm->getResetName().c_str() << ": in std_logic; " << endl << endl;
 
 
     //---- Input
-    out << "    -- Inputs" << endl << "    -------------- " << endl;
+    out << tab <<  "-- Inputs" << endl << "    -------------- " << endl;
     for (int i = 0; i < numberofinputs; i++) {
-
-    out << "            " << fsm->getInputName(i).c_str() << ": in std_logic; "   << endl;
+        out << tab2 << fsm->getInputName(i).c_str() << ": in std_logic; "   << endl;
     }
     out << endl;
 
     //---- Outputs
-    out << "    -- Outputs" << endl << "    -------------- " << endl;
+    out << tab << "-- Outputs" << endl << "    -------------- " << endl;
     for (int i = 0; i < numberofoutputs - 1; i++) {
-
-    out << "              " << fsm->getOutputName(i).c_str() << ": out std_logic;"   << endl;
+        out << tab2 << fsm->getOutputName(i).c_str() << ": out std_logic;"   << endl;
     }
-    out << "              " << fsm->getOutputName(numberofoutputs - 1).c_str() << ": out std_logic";
+    out << tab2 << fsm->getOutputName(numberofoutputs - 1).c_str() << ": out std_logic";
 
     //---- Forward declaration?
     /*if (this->getParameter("forward.async").toBool()) {
@@ -171,63 +185,36 @@ void VHDLGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
     out << "architecture behavorial of " << fsm->getFsmName().c_str() << " is " << endl;
 
 
-    // Write Parameters (States)
+    // Write States type
     //-----------------------------
-    FOREACH_STATE(fsm)
-        out << "constant " << state->getName().c_str() << " : std_logic_vector ( "<< (numberofoutputs-1) <<" downto 0) := \"" << state->getOutput().c_str() << "\"; " << endl;
-    END_FOREACH_STATE
-    out << endl;
+    out << tab << "type fsmStates is (" << stateNames.join(",") << ");" << endl << endl;
 
-    // current_state Declaration
+    // current_state and next_state Declaration
     //----------------------------------
-    out  << "signal current_state :  std_logic_vector ( "<< (numberofoutputs-1) <<" downto 0) := " << fsm->getStatebyID(fsm->getResetState())->getName().c_str() << ";" << endl;
-    /*for (int i = 0; i < numberofoutputs - 1; i++) {
-        out << fsm->getOutputName(i).c_str() << " & ";
-    }
-    out << fsm->getOutputName(numberofoutputs - 1).c_str();
-    out << ";" << endl ;*/
-
-    out << "signal next_state :  std_logic_vector ( "<< (numberofoutputs-1) <<" downto 0) := " << fsm->getStatebyID(fsm->getResetState())->getName().c_str() << ";" << endl;
-    out << endl << endl;
-
+    out << tab << "signal current_state, next_state : fsmStates := " << resetState->getName().c_str() << ";" << endl << endl;
+    
     // input vector declaration
     //----------------------
-    out << "signal inputvector : std_logic_vector(" << (numberofinputs - 1) << " downto 0); ";
-
-    
+    out << tab << "signal inputvector : std_logic_vector(" << (numberofinputs - 1) << " downto 0); ";
 
     // Begin
     //----------------------
+    out <<  endl;
     out << "begin" << endl << endl;
 
-    // Input vector assignment
+    // Input vector Comb. assignment to inputs
     //----------------------
-    out << "inputvector <= ";
-    for (int i = 0; i < numberofinputs - 1; i++) {
-        out << fsm->getInputName(i).c_str() << " & ";
-    }
-    out << fsm->getInputName(numberofinputs - 1).c_str();
-    out << ";" << endl << endl;
+    out << tab << "inputvector <= " << inputNames.join(" & ") << ";" << endl << endl;
 
-    // Write Process
-    //--------------------
-    out << tab << "process(clk,res_n) begin" << endl;
+    // Combinatorial Process for State case
+    //----------------------------------
+    out << tab << "process(inputvector,current_state)" << endl;
+    out << tab << "begin" << endl << endl;
+    out << tab2 << "case current_state is" << endl;
 
-    //----- Reset
-    out << tab2 << "if (res_n = '0') then" << endl;
-    for (int i = 0; i < fsm->getNumberOfOutputs(); i++) {
-        out << tab3 << fsm->getOutputName(i).c_str() << " <= current_state("<< i <<");" << endl;
-    }
-
-    //----- Clock process
-    out << tab2 << "elsif (rising_edge(clk)) then" << endl;
-
-    //---- Write an IF Per current state, with the case in the IF
-    //----------------------
     FOREACH_STATE(fsm)
         cout << "Working on State " << state->getName() << endl;
-
-        out << tab3 << "if (current_state = " << cleanString(state->getName()) << ") then" << endl;
+        out << tab3 << "when " << this->cleanString(state->getName()) << "=>" << endl;
 
         out << tab4 << "case inputvector is" << endl;
 
@@ -324,69 +311,6 @@ void VHDLGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
                 // Out
                 out << tab5 << "WHEN \"" << inputValue <<"\"  => next_state <= " << this->cleanString(targetDefaultState->getName()) << ";" << endl;
             }
-          
-
-            
-
-
-/*
-            int maxlen = defaultvalue.length();
-            int len = maxlen;
-            if (len > 0) {
-
-                out << "WHEN (\"";
-
-                while (len > fsm->getNumberOfInputs()) {
-                    string s = defaultvalue;
-                    do {
-                        len--;
-                    } while ((s[len] != '+') && (len != 0));
-                    s.assign(s, (len + 1),
-                            (maxlen - len - 1));
-                    defaultvalue.assign(defaultvalue, 0,
-                            len);
-                    char X;
-                    for (int i = 0; i < fsm->getNumberOfInputs();
-                            i++) {
-                        X = s[i];
-                        if (X == '-' || X == 'X') {
-                            out << "x";
-                        } else {
-                            out << X;
-                        }
-                    }
-                    out
-                            << "\" & "
-                            << state->getName().c_str()
-                            << ")" << endl;
-                    out << "    {" << fsm->getNumberOfInputs()
-                            << "'b";
-                }
-
-                // Output value
-                char X;
-                for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
-
-                    X = defaultvalue[i];
-                    if (X == '-' || X == 'X') {
-                        out << "x";
-                    } else {
-                        out << X;
-                    }
-                }
-
-                out
-                        << ", "
-                        << state->getName().c_str()
-                        << "}";
-
-
-                // End of default conditions
-                // Write end case
-                //-------------------
-                out  << " =>   next_state = " << this->cleanString(targetDefaultState->getName()) << ";" << endl;
-
-            }*/
 
         } else {
 
@@ -416,104 +340,94 @@ void VHDLGenerator::generate(Fsm * fsm, QDataStream * dataStream) {
                     // Write
                     out << tab5 << "WHEN  \"" << conditionInput << "\"  =>   next_state <= " << this->cleanString(transEndState->getName()) << ";" << endl;
   
-                    /*out << "    {" << fsm->getNumberOfInputs() << "'b";
-                    
-                    char X;
-                    for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
-                        X = conditionInput[i];
-                        if (X == '-' || X == 'X') {
-                            out << "x";
-                        } else {
-                            out << X;
-                        }
-                    }
-                    out << ", " << state->getName().c_str()
-                            << "}:   next_state = "
-                            << this->cleanString(transEndState->getName())
-                            << ";" << endl;*/
 
                 END_FOREACH_TRANSITION_CONDITIONS
             }
         END_FOREACH_STATE_STARTING_TRANSITIONS
+
+        // FOREACH Hyper transitions
+        //----------------------------------
+        out << tab3 << "-- Hypertransitions (if some)" << endl;
+        FOREACH_HYPERTRANSITIONS(fsm)
+
+            //-- Foreach conditions
+            FOREACH_HYPERTRANSITION_CONDITIONS(hypertransition)
+
+                // Prepare input vector
+                QString conditionInput = QString::fromStdString(condition->getInput());
+
+                // Clean
+                conditionInput = conditionInput.toLower().replace("x","-");
+
+                // Write
+                out << tab5 << "WHEN  \"" << conditionInput << "\"  =>   next_state <= " << this->cleanString(hypertransition->getTargetState()->getName()) << ";" << endl;
+
+             END_FOREACH_HYPERTRANSITION_CONDITIONS
+
+         END_FOREACH_HYPERTRANSITIONS
 
         // ADD Others to default transition
         //---------------
         out << tab5 << "WHEN OTHERS => next_state <= " << state->getDefaultTransition()->getEndState()->getName().c_str() << ";" << endl;
 
         out << tab4 << "end case;" << endl;
-        out << tab3 << "end if;" << endl << endl;
-
-        
-
-        
-
+ 
     END_FOREACH_STATE
-    // EOF States transitions //
+
+    // Dummy others
+    out << tab3 << "when OTHERS => " << endl;
+
+    // END COMB Process
+    out << tab2 << "end case;" << endl;
+    out << tab << "end process;" << endl << endl;
 
 
-    // FOREACH Hyper transitions
-    //----------------------------------
-    out << tab3 << "-- Hypertransitions (if some)" << endl;
-    FOREACH_HYPERTRANSITIONS(fsm)
+    // Seq Process to update current_state
+    //--------------------
+    out << tab << "-- Sequential Process to update current_state" << endl;
+    out << tab << "process(clk,res_n)" << endl;
+    out << tab << "begin" << endl;
 
-        //-- Foreach conditions
-        FOREACH_HYPERTRANSITION_CONDITIONS(hypertransition)
+    //----- Reset
+    out << tab2 << "if (res_n = '0') then" << endl;
+    out << tab3 << "current_state <= " << this->cleanString(resetState->getName()) << "; " << endl;
 
-            // Prepare input vector
-            QString conditionInput = QString::fromStdString(condition->getInput());
+    //----- Clock process
+    out << tab2 << "elsif (rising_edge(clk)) then" << endl;
 
-            // Clean
-            conditionInput = conditionInput.toLower().replace("x","-");
 
-            // Current State value is xxx because hypertransitions don't care about the current state
-            QString invec = QString("-").repeated(fsm->getNumberOfOutputs());
-
-            // Write
-            out << tab3 << "if (inputvector = \"" << conditionInput << "\") then" << endl;
-            out << tab4 <<  "next_state <= " << this->cleanString(hypertransition->getName()) << ";" << endl;
-            out << tab3 << "end if;" << endl;
-             
-            //out << "WHEN  (\"" << conditionInput << "\" & "<< invec << ") =>   next_state = " << this->cleanString(hypertransition->getName()) << ";" << endl;
-  
-
-                /*out << "    {" << fsm->getNumberOfInputs() << "'b";
-                string conditionInput = condition->getInput();
-                char X;
-                for (int i = 0; i < fsm->getNumberOfInputs(); i++) {
-                    X = conditionInput[i];
-                    if (X == '-' || X == 'X') {
-                        out << "x";
-                    } else {
-                        out << X;
-                    }
-                }
-                out << ", " << fsm->getNumberOfOutputs() << "'b";
-                for (int i = 0; i < fsm->getNumberOfOutputs(); i++) {
-                    out << "x";
-                }
-                out << "}:   next_state = "
-                        << this->cleanString(hypertransition->getTargetState()->getName())
-                        << ";" << endl;*/
-
-         END_FOREACH_HYPERTRANSITION_CONDITIONS
-
-     END_FOREACH_HYPERTRANSITIONS
-
-     // Update current_state and signal output
-     //------------------------
+     //----- Update current_state and signal output
      out << endl;
      out << tab3 << "current_state <= next_state;" << endl;
-     for (int i = 0; i < fsm->getNumberOfOutputs(); i++) {
-        out << tab3 << fsm->getOutputName(i).c_str() << " <= current_state("<< i <<");" << endl;
-     }
-     
 
 
-    // EOF Process
-    //--------------------
+    //-- EOF Process
     out << tab2 << "end if;" << endl;
     out << tab << "end process;" << endl << endl;
 
+    // Comb. Process to update outputs
+    //--------------------
+    out << tab << "-- Combinatorial Process to update outputs" << endl;
+    out << tab << "process(current_state)" << endl;
+    out << tab << "variable outputvector : std_logic_vector ( "<< (numberofoutputs-1) <<" downto 0); " << endl;
+    out << tab << "begin" << endl;
+
+    //----- Write an output decoding case to the output vector variable
+    out << tab2 << "case current_state is" << endl;
+    FOREACH_STATE(fsm)
+        out << tab3 << "when " << this->cleanString(state->getName()) << " => outputvector := \"" << state->getOutput().c_str() << "\" ;" << endl;
+    END_FOREACH_STATE
+    out << tab3 << "when OTHERS => outputvector:= \"" << resetState->getOutput().c_str() << "\";" << endl;
+    out << tab2 << "end case;" << endl << endl;
+
+    //----- Assign outputs to output vector, this is coded this way for simplicity
+    for (int i = 0; i < numberofoutputs; i++) {
+        out << tab2 << fsm->getOutputName(i).c_str() << " <= outputvector("<< i <<");" << endl;
+    }
+    out << endl;
+    
+    //---- EOF Process
+    out << tab << "end process;" << endl << endl;
 
 
     out << "end behavorial;" << endl;

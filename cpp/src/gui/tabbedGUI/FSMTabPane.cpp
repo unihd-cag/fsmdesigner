@@ -40,6 +40,7 @@ FSMTabPane::FSMTabPane(QWidget * parent) : QTabWidget(parent) {
 	//----------------------------
 	QPushButton * tabButton = new QPushButton(
 			QIcon(QPixmap(":/icons/add.png")), "");
+	tabButton->setToolTip("Add a new FSM");
 	this->connect(tabButton, SIGNAL(clicked()), SLOT(addFSM()));
 	this->setCornerWidget(tabButton, Qt::TopLeftCorner);
 
