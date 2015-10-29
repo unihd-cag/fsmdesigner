@@ -14,7 +14,7 @@ import org.netbeans.api.visual.widget.LayerWidget
 import org.netbeans.api.visual.widget.Widget
 import fsmdesigner.model.projectfsm
 import fsmdesigner.model.projectfsmstate
-import fsmdesigner.nbtry.StateWidget
+//import fsmdesigner.nbtry.StateWidget
 import fsmdesigner.ui.graph.UIState
 import fsmdesigner.ui.graph.UITransition
 import javax.swing.JButton

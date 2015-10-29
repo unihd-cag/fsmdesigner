@@ -3,15 +3,15 @@ package fsmdesigner.ui
 import java.io.File
 import com.idyria.osi.vui.lib.gridbuilder.GridBuilder
 import fsmdesigner.model.project
-import javafx.embed.swing.JFXPanel
-import javafx.scene.Scene
-import javafx.scene.control.ScrollPane
-import javafx.scene.web.WebView
+// import javafx.embed.swing.JFXPanel
+// import javafx.scene.Scene
+// import javafx.scene.control.ScrollPane
+// import javafx.scene.web.WebView
 import ooxoo.extras.JoinBufferIO
 import com.idyria.osi.ooxoo.core.buffers.structural.io.sax.StAXIOBuffer
 import fsmdesigner.ui.graph.fsm.FSMScene
 import com.idyria.osi.vui.impl.swing.builders.SwingNodeWrapper
-import javafx.application.Platform
+// import javafx.application.Platform
 import scala.io.Source
 
 object FSMDesignerSwingUIMain extends App with GridBuilder {
@@ -86,26 +86,26 @@ object FSMDesignerSwingUIMain extends App with GridBuilder {
 
               tp(expand)
               //-- Welcome Tab
-              tp.addTab("Welcome") {
-
-                //-- Create WWW JFX View
-                var wwwPanel = new JFXPanel
-
-                Platform.runLater(new Runnable {
-                  def run = {
-                    var welcomeBrowser = new WebView
-                    welcomeBrowser.getEngine.loadContent(Source.fromURL(getClass.getClassLoader().getResource("welcome/welcome.html"), "UTF-8").mkString)
-
-                    wwwPanel.setScene(new Scene(welcomeBrowser))
-                  }
-                })
-
-                //-- Add to Scroll pane for tab
-                scrollpane {
-                  sp => sp <= SwingNodeWrapper(wwwPanel)
-                }
-
-              }
+//               tp.addTab("Welcome") {
+// 
+//                 //-- Create WWW JFX View
+//                 var wwwPanel = new JFXPanel
+// 
+//                 Platform.runLater(new Runnable {
+//                   def run = {
+//                     var welcomeBrowser = new WebView
+//                     welcomeBrowser.getEngine.loadContent(Source.fromURL(getClass.getClassLoader().getResource("welcome/welcome.html"), "UTF-8").mkString)
+// 
+//                     wwwPanel.setScene(new Scene(welcomeBrowser))
+//                   }
+//                 })
+// 
+//                 //-- Add to Scroll pane for tab
+//                 scrollpane {
+//                   sp => sp <= SwingNodeWrapper(wwwPanel)
+//                 }
+// 
+//               }
           }
 
         }
