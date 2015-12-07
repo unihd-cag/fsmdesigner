@@ -1,13 +1,33 @@
 // set up SVG for D3
-var width  = 1344,
+var width  = 1024,
     height = 610,
     colors = d3.scale.category10();
+var y = 0;
 
-var svg = d3.select('body')
-  .append('svg')
-  .attr('oncontextmenu', 'return false;')
-  .attr('width', width)
-  .attr('height', height);
+var svg = d3.select('#graphic-editor .interface')
+	.append('svg')
+		.attr('oncontextmenu', 'return false;') //Was macht das??
+		.attr('width', width)
+		.attr('height', height)
+//		.attr('class', 'interface');
+
+var tableTab = d3.select('#graphic-editor .tables')
+	.append('svg')
+		.attr('oncontextmenu', 'return false')
+		.attr('width', 300)
+		.attr('height', 610);
+//		tableTab.append('text')
+//			.attr('x', 0)
+//			.attr('y', 20)
+//			.attr('font-size', 4)
+//			.attr('fill', '#000')
+//			.text('Zeile1');
+//		tableTab.append('text')
+//			.attr('x', 0)
+//			.attr('y', 40)
+//			.attr('font-size', 4)
+//			.attr('fill', '#000')
+//			.text('Zeile2');
 
 // set up initial nodes and links
 //  - nodes are known by 'id', not by index in array.
@@ -56,6 +76,7 @@ svg.append('svg:defs').append('svg:marker')
     .attr('d', 'M10,-5L0,0L10,5')
     .attr('fill', '#000');
 
+
 // line displayed when dragging new nodes
 var drag_line = svg.append('svg:path')
   .attr('class', 'link dragline hidden')
@@ -64,6 +85,7 @@ var drag_line = svg.append('svg:path')
 // handles to link and node element groups
 var path = svg.append('svg:g').selectAll('path'),
     circle = svg.append('svg:g').selectAll('g');
+//    table = tableTab.append('svg:g').selectAll('g');
 
 // mouse event vars
 var selected_node = null,
@@ -163,7 +185,7 @@ function restart() {
     })
     .on('mousedown', function(d) {
       if(d3.event.ctrlKey) return;
-
+      
       // select node
       mousedown_node = d;
       if(mousedown_node === selected_node) selected_node = null;
@@ -247,7 +269,8 @@ function mousedown() {
   svg.classed('active', true);
 
   if(d3.event.ctrlKey || mousedown_node || mousedown_link) return;
-
+  
+  if(d3.event.shiftKey) {
   // insert new node at point
   var point = d3.mouse(this),
       node = {id: ++lastNodeId, reflexive: false};
@@ -256,6 +279,7 @@ function mousedown() {
   nodes.push(node);
 
   restart();
+  }
 }
 
 function mousemove() {
@@ -299,9 +323,13 @@ function keydown() {
 
   if(lastKeyDown !== -1) return;
   lastKeyDown = d3.event.keyCode;
+  
+  if(d3.event.keyCode == 16) {
+    svg.classed('shift', true);
+  }
 
   // ctrl
-  if(d3.event.keyCode === 17) {
+  if(d3.event.keyCode == 17) {
     circle.call(force.drag);
     svg.classed('ctrl', true);
   }
@@ -328,6 +356,23 @@ function keydown() {
       }
       restart();
       break;
+    case 67: // C
+    	if(selected_node) {
+    		y += 20;
+//    		selected_node.reflexive = !selected_node.reflexive;
+    		tableTab.append('svg:text')
+    			.attr('x', 0)
+				.attr('y', y)
+				.attr('font-size', 4)
+				.attr('fill', '#000')
+				.text(function() {return selected_node.id;});
+    	}
+    	restart();
+    	break;
+    case 68: //D
+    	refreshTable();
+    	restart();
+    	break;
     case 76: // L
       if(selected_link) {
         // set link direction to left only
@@ -350,9 +395,17 @@ function keydown() {
   }
 }
 
+function refreshTable() {
+	tableTab.selectAll('text').remove();
+	y = 0;
+}
+
 function keyup() {
   lastKeyDown = -1;
 
+  if(d3.event.keyCode == 16) {
+    svg.classed('shift', false);
+  }
   // ctrl
   if(d3.event.keyCode === 17) {
     circle
@@ -360,6 +413,7 @@ function keyup() {
       .on('touchstart.drag', null);
     svg.classed('ctrl', false);
   }
+  
 }
 
 // app starts here
