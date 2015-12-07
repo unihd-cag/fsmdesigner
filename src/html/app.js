@@ -16,18 +16,7 @@ var tableTab = d3.select('#graphic-editor .tables')
 		.attr('oncontextmenu', 'return false')
 		.attr('width', 300)
 		.attr('height', 610);
-//		tableTab.append('text')
-//			.attr('x', 0)
-//			.attr('y', 20)
-//			.attr('font-size', 4)
-//			.attr('fill', '#000')
-//			.text('Zeile1');
-//		tableTab.append('text')
-//			.attr('x', 0)
-//			.attr('y', 40)
-//			.attr('font-size', 4)
-//			.attr('fill', '#000')
-//			.text('Zeile2');
+
 
 // set up initial nodes and links
 //  - nodes are known by 'id', not by index in array.
