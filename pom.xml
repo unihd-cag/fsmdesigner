@@ -1,144 +1,151 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>fsmdesigner</groupId>
-  <artifactId>fsmdesigner</artifactId>
-  <version>6.0.0-SNAPSHOT</version>
-  <name>FSMDesigner</name>
-  <parent>
-        <groupId>com.idyria.osi</groupId>
-        <artifactId>superpom-scala</artifactId>
-        <version>2.11.5.r1</version>
-  </parent>  
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-ooxoo-plugin</artifactId>
-        <version>3.1.1-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>generate-sources</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>net.alchim31.maven</groupId>
-            <artifactId>scala-maven-plugin</artifactId>
-            <configuration>
-              <addZincArgs>-no-color</addZincArgs>
-            </configuration>
-            <executions>
-              <execution>
-                <id>add-source</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>add-source</goal>
-                </goals>
-                <configuration>
-                  <sourceDir>${basedir}/src/examples/scala</sourceDir>
-                </configuration>
-              </execution>
-            </executions>
-      </plugin>
-    </plugins>
-  </build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fsmdesigner</groupId>
+	<artifactId>fsmdesigner</artifactId>
+	<version>6.0.0-SNAPSHOT</version>
+	<name>FSMDesigner</name>
+	<parent>
+		<groupId>com.idyria.osi</groupId>
+		<artifactId>superpom-scala</artifactId>
+		<version>2.11.7.r1</version>
+	</parent>
+	<build>
+		<plugins>
+		
+			<!-- Licenses -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.6</version>
+				<configuration>
+					<licenseName>gpl_v3</licenseName>
+					<extraExtensions>
+						<scala>java</scala>
+					</extraExtensions>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.9.1</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/scala</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/scala</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ooxoo-plugin</artifactId>
+				<version>3.1.1-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate-sources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+		</plugins>
+	</build>
 
 
-  <!-- Repositories to find OSI packages -->
-  <!-- ############################################## -->
-  <pluginRepositories>
-      <pluginRepository>
-          <id>sonatype</id>
-          <name>Sonatype OSS Snapshots Repository</name>
-          <url>http://oss.sonatype.org/content/groups/public</url>
-      </pluginRepository>
-      <!-- For old snapshots, please use groupId `com.jnaerator` and the
-          following repo -->
-      <pluginRepository>
-          <id>nativelibs4java-repo</id>
-          <url>http://nativelibs4java.sourceforge.net/maven</url>
-      </pluginRepository>
-      <pluginRepository>
-          <snapshots>
-              <enabled>false</enabled>
-          </snapshots>
-          <id>idyria.central</id>
-          <name>plugins-release</name>
-          <url>http://www.idyria.com/access/osi/artifactory/libs-release</url>
-      </pluginRepository>
-      <pluginRepository>
-          <snapshots>
-              <enabled>true</enabled>
-          </snapshots>
-          <id>idyria.snapshots</id>
-          <name>plugins-snapshot</name>
-          <url>http://www.idyria.com/access/osi/artifactory/libs-snapshot</url>
-      </pluginRepository>
-  </pluginRepositories>
-  <repositories>
-      <repository>
-          <id>sonatype</id>
-          <name>Sonatype OSS Snapshots Repository</name>
-          <url>http://oss.sonatype.org/content/groups/public</url>
-      </repository>
-      <!-- For old snapshots, please use groupId `com.jnaerator` and the
-          following repo -->
-      <repository>
-          <id>nativelibs4java-repo</id>
-          <url>http://nativelibs4java.sourceforge.net/maven</url>
-      </repository>
-      <repository>
-          <snapshots>
-                  <enabled>false</enabled>
-          </snapshots>
-          <id>idyria.central</id>
-          <name>libs-release</name>
-          <url>http://www.idyria.com/access/osi/artifactory/libs-release</url>
-      </repository>
-      <repository>
-              <snapshots>
-                      <enabled>true</enabled>
-              </snapshots>
-              <id>idyria.snapshots</id>
-              <name>libs-snapshot</name>
-              <url>http://www.idyria.com/access/osi/artifactory/libs-snapshot</url>
-      </repository>
-  </repositories>
+	<!-- Repositories to find OSI packages -->
+	<!-- ############################################## -->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype</id>
+			<name>Sonatype OSS Snapshots Repository</name>
+			<url>http://oss.sonatype.org/content/groups/public</url>
+		</pluginRepository>
+		<!-- For old snapshots, please use groupId `com.jnaerator` and the following 
+			repo -->
+		<pluginRepository>
+			<id>nativelibs4java-repo</id>
+			<url>http://nativelibs4java.sourceforge.net/maven</url>
+		</pluginRepository>
+		<pluginRepository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>idyria.central</id>
+			<name>plugins-release</name>
+			<url>http://www.idyria.com/access/osi/artifactory/libs-release</url>
+		</pluginRepository>
+		<pluginRepository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>idyria.snapshots</id>
+			<name>plugins-snapshot</name>
+			<url>http://www.idyria.com/access/osi/artifactory/libs-snapshot</url>
+		</pluginRepository>
+	</pluginRepositories>
+	<repositories>
+		<repository>
+			<id>sonatype</id>
+			<name>Sonatype OSS Snapshots Repository</name>
+			<url>http://oss.sonatype.org/content/groups/public</url>
+		</repository>
+		<!-- For old snapshots, please use groupId `com.jnaerator` and the following 
+			repo -->
+		<repository>
+			<id>nativelibs4java-repo</id>
+			<url>http://nativelibs4java.sourceforge.net/maven</url>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>idyria.central</id>
+			<name>libs-release</name>
+			<url>http://www.idyria.com/access/osi/artifactory/libs-release</url>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>idyria.snapshots</id>
+			<name>libs-snapshot</name>
+			<url>http://www.idyria.com/access/osi/artifactory/libs-snapshot</url>
+		</repository>
+	</repositories>
 
-  <dependencies>
-<!--       <dependency> -->
-<!--           <groupId>com.idyria.osi.aib</groupId> -->
-<!--           <artifactId>aib-core</artifactId> -->
-<!--           <version>3.0.0-SNAPSHOT</version> -->
-<!--       </dependency> -->
-      <dependency>
-          <groupId>com.idyria.osi.ooxoo</groupId>
-          <artifactId>ooxoo-core</artifactId>
-          <version>3.1.1-SNAPSHOT</version>
-      </dependency>
-<!--       <dependency> -->
-<!--           <groupId>com.idyria.osi.tea</groupId> -->
-<!--           <artifactId>tea</artifactId> -->
-<!--           <version>3.0.0-SNAPSHOT</version> -->
-<!--       </dependency> -->
-      <dependency>
-      	<groupId>org.codeartisans.thirdparties.swing</groupId>
-      	<artifactId>org-netbeans-api-visual</artifactId>
-      	<version>2.23.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.idyria.osi.vui</groupId>
-        <artifactId>vui-javafx</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-        <exclusions>
-        	<exclusion>
-        		<groupId>javafx</groupId>
-        		<artifactId>jfxrt</artifactId>
-        	</exclusion>
-        </exclusions>
-      </dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>com.idyria.osi.ooxoo</groupId>
+			<artifactId>ooxoo-core</artifactId>
+			<version>3.1.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.idyria.osi.vui2</groupId>
+			<artifactId>vui2-javafx</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 </project>
