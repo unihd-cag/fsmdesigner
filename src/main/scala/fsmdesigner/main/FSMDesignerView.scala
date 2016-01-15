@@ -4,6 +4,8 @@ import com.idyria.osi.vui.html.standlone.DefaultStandaloneHTMLBuilder
 import com.idyria.osi.vui.html.standlone.StandaloneHTMLView
 import com.idyria.osi.vui.html.basic.BasicHTMLView
 
+import java.net.URL
+
 /**
  * This is the main View for FSM designer
  * A View represents a UI Component. In this case, it will be the main GUI.
@@ -33,7 +35,7 @@ class FSMDesignerView extends BasicHTMLView with DefaultStandaloneHTMLBuilder {
         stylesheet(getClass.getClassLoader.getResource("app.css")) {
           
         }
-        script(getClass.getClassLoader.getResource("http://d3js.org/d3.v3.min.js"), "javascript") {
+        script(new URL("http://d3js.org/d3.v3.min.js"), "javascript") {
           
         }
         script(getClass.getClassLoader.getResource("app.js"), "javascript") {
@@ -56,8 +58,7 @@ class FSMDesignerView extends BasicHTMLView with DefaultStandaloneHTMLBuilder {
           "class=tables" @:div {
             
           }
-          
-        }
+         }
         
         // Here you can create HTML
         
