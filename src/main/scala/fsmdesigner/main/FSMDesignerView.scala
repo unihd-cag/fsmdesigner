@@ -35,12 +35,10 @@ class FSMDesignerView extends BasicHTMLView with DefaultStandaloneHTMLBuilder {
         stylesheet(getClass.getClassLoader.getResource("app.css")) {
           
         }
-        script(new URL("http://d3js.org/d3.v3.min.js"), "javascript") {
+        script(new URL("http://d3js.org/d3.v3.min.js")) {
           
         }
-        script(getClass.getClassLoader.getResource("app.js"), "javascript") {
-      
-        }
+       
         
       }
       
@@ -52,16 +50,18 @@ class FSMDesignerView extends BasicHTMLView with DefaultStandaloneHTMLBuilder {
         }
         
         "graphic-editor" #:div {
-          "class=interface" @:div {
+          "interface" :: div {
             
           }
-          "class=tables" @:div {
+          "tables" :: div {
             
           }
          }
         
         // Here you can create HTML
-        
+         script(getClass.getClassLoader.getResource("app.js")) {
+      
+        }
       }
    
     }
