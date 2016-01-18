@@ -32,7 +32,7 @@ class FSMDesignerView extends BasicHTMLView with DefaultStandaloneHTMLBuilder {
       head {
        
         // Here we can link Stylesheets and Scripts
-        stylesheet(getClass.getClassLoader.getResource("app.css")) {
+        stylesheet(getClass.getClassLoader.getResource("fsmgui.css")) {
           
         }
         script(new URL("http://d3js.org/d3.v3.min.js")) {
@@ -50,16 +50,16 @@ class FSMDesignerView extends BasicHTMLView with DefaultStandaloneHTMLBuilder {
         }
         
         "graphic-editor" #:div {
-          "interface" :: div {
+          "interface" ::div {
             
           }
-          "tables" :: div {
+          "tables" ::div {
             
           }
          }
         
         // Here you can create HTML
-         script(getClass.getClassLoader.getResource("app.js")) {
+         script(getClass.getClassLoader.getResource("fsmgui.js")) {
       
         }
       }

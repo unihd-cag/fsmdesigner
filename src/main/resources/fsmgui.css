@@ -1,0 +1,100 @@
+/* svg {
+   background-color: #FEC;
+   cursor: default;
+   -webkit-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   -o-user-select: none;
+   user-select: none;
+ }
+*/
+
+svg:not(.active).ctrl {
+  cursor: pointer;
+}
+
+svg:not(.active).shift {
+  cursor: crosshair;
+}
+
+
+path.link {
+  fill: none;
+  stroke: #000;
+  stroke-width: 5px;
+  cursor: default;
+}
+
+svg:not(.active):not(.ctrl) path.link {
+  cursor: pointer;
+}
+
+svg.ctrl path.link {
+cursor: move;
+}
+
+path.link.selected {
+  stroke-dasharray: 10,2;
+}
+
+path.link.dragline {
+  pointer-events: none;
+}
+
+path.link.hidden {
+  stroke-width: 0;
+}
+
+svg.ctrl circle.node {
+  cursor: move;
+}
+
+circle.node {
+  stroke-width: 1.5px;
+  cursor: pointer;
+}
+
+circle.node.reflexive {
+  stroke: #000 !important;
+  stroke-width: 2.5px;
+}
+
+circle.node.start_state {
+  fill: #FFF !important;
+  stroke: #000 !important;
+  stroke-width: 5px !important;
+}
+
+text {
+  font: 12px sans-serif;
+  pointer-events: none;
+}
+
+text.id {
+  text-anchor: middle;
+  font-weight: bold;
+}
+
+text.text {
+  text-anchor: middle;
+  font-weight: bold;
+}
+
+#graphic-editor .interface {
+  background-color: #FEC;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  position: absolute;
+  left: 320px;
+}
+
+#graphic-editor .tables {
+  background-color: #EFF;
+  width: 300px;
+  height: 610px;
+  position: relative;
+}
