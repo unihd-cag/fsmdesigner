@@ -43,6 +43,12 @@ pre {
   stroke-width: 1.5px;
 }
 
+.nodes .start_state {
+  fill: #FFF !important;
+  stroke: #000 !important;
+  stroke-width: 5px !important;
+}
+
 .edgePath path {
   stroke: #333;
   fill: #333;

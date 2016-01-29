@@ -24,6 +24,7 @@ for (i = 0; i < states.length; i++)
 	g.setNode(states[i].text, { shape: "circle" });
 //states.forEach(function(state) { g.setNode(state.id, { label: state.text }); }););
 
+// Edges must be set by the text of the states. Names should consequently be unique.
 g.setEdge(states[0].text, states[1].text, { label: "" });
 g.setEdge(states[1].text, states[2].text, { label: "" });
 g.setEdge(states[2].text, states[3].text, { label: "" });
@@ -33,7 +34,7 @@ g.setEdge(states[5].text, states[6].text, { label: "" });
 g.setEdge(states[4].text, states[0].text, { label: "" });
 g.setEdge(states[6].text, states[0].text, { label: "" });
 
-
+//g.node("IDLE").style = "stroke-width: 5px";
 
 var svg = d3.select("svg"),
     inner = svg.select("g");
