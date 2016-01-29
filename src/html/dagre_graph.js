@@ -4,9 +4,9 @@ var states = [
              {id: 1, reflexive: true, text: "H", start_state: false},
              {id: 2, reflexive: false, text: "D", start_state: false},
              {id: 3, reflexive: false, text: "READ", start_state: false},
-             {id: 4, reflexive: false, text: "Done", start_state: false},
+             {id: 4, reflexive: false, text: "Done_R", start_state: false},
              {id: 5, reflexive: false, text: "WRITE", start_state: false},
-             {id: 6, reflexive: false, text: "Done", start_state: false}
+             {id: 6, reflexive: false, text: "Done_W", start_state: false}
            ];
 //           lastNodeId = 2,
 var links = [
@@ -24,6 +24,14 @@ for (i = 0; i < states.length; i++)
 	g.setNode(states[i].text, { shape: "circle" });
 //states.forEach(function(state) { g.setNode(state.id, { label: state.text }); }););
 
+g.setEdge(states[0].text, states[1].text, { label: "" });
+g.setEdge(states[1].text, states[2].text, { label: "" });
+g.setEdge(states[2].text, states[3].text, { label: "" });
+g.setEdge(states[3].text, states[4].text, { label: "" });
+g.setEdge(states[2].text, states[5].text, { label: "" });
+g.setEdge(states[5].text, states[6].text, { label: "" });
+g.setEdge(states[4].text, states[0].text, { label: "" });
+g.setEdge(states[6].text, states[0].text, { label: "" });
 
 
 
