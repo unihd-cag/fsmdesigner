@@ -22,7 +22,7 @@ var links = [
 
 for (i = 0; i < states.length; i++)
 	g.setNode(states[i].text, { shape: "circle" });
-
+//states.forEach(function(state) { g.setNode(state.id, { label: state.text }); }););
 
 
 
