@@ -1,0 +1,906 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <author>Frank Lemke</author>
+ <class>MergedMainWindow</class>
+ <widget class="QMainWindow" name="MergedMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1166</width>
+    <height>994</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>FSMDesigner 5</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../../src/gui/resources/resources.qrc">
+    <normaloff>:/icons/FSMDesignerlogoicon.png</normaloff>:/icons/FSMDesignerlogoicon.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout">
+    <property name="spacing">
+     <number>6</number>
+    </property>
+    <property name="leftMargin">
+     <number>9</number>
+    </property>
+    <property name="topMargin">
+     <number>9</number>
+    </property>
+    <property name="rightMargin">
+     <number>9</number>
+    </property>
+    <property name="bottomMargin">
+     <number>9</number>
+    </property>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1166</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <widget class="QMenu" name="menu_Recent_Files">
+     <property name="title">
+      <string>&amp;Recent Files</string>
+     </property>
+     <addaction name="action_ClearMenu"/>
+     <addaction name="separator"/>
+    </widget>
+    <addaction name="action_New"/>
+    <addaction name="action_Open"/>
+    <addaction name="separator"/>
+    <addaction name="action_Save"/>
+    <addaction name="action_SaveAs"/>
+    <addaction name="separator"/>
+    <addaction name="actionExport_Image"/>
+    <addaction name="action_Print"/>
+    <addaction name="separator"/>
+    <addaction name="menu_Recent_Files"/>
+    <addaction name="separator"/>
+    <addaction name="action_Quit"/>
+   </widget>
+   <widget class="QMenu" name="menu_View">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <widget class="QMenu" name="menu_Toolbars_2">
+     <property name="title">
+      <string>Toolbar</string>
+     </property>
+     <addaction name="action_Maintoolbar"/>
+     <addaction name="action_Objecttoolbar"/>
+     <addaction name="action_Zoombar"/>
+    </widget>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="menu_Toolbars_2"/>
+   </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <widget class="QMenu" name="menu_Table">
+     <property name="title">
+      <string>Tabl&amp;e</string>
+     </property>
+     <addaction name="actionGlobal"/>
+    </widget>
+    <addaction name="action_Redo"/>
+    <addaction name="action_Undo"/>
+    <addaction name="separator"/>
+    <addaction name="actionCu_t"/>
+    <addaction name="action_Copy"/>
+    <addaction name="action_Paste"/>
+    <addaction name="action_Delete"/>
+    <addaction name="separator"/>
+    <addaction name="menu_Table"/>
+    <addaction name="separator"/>
+    <addaction name="actionPreferences"/>
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="action_About"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menu_Objects">
+    <property name="title">
+     <string>&amp;Objects</string>
+    </property>
+    <addaction name="action_State"/>
+    <addaction name="action_Transition"/>
+    <addaction name="action_Hypertrans"/>
+    <addaction name="separator"/>
+    <addaction name="action_Link"/>
+    <addaction name="action_Join"/>
+    <addaction name="action_New_Hierarchy"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <widget class="QMenu" name="menu_Simulation">
+     <property name="title">
+      <string>&amp;Simulation</string>
+     </property>
+     <addaction name="actionTestbench_generator"/>
+     <addaction name="action_Generate_Testbench_VHDL"/>
+     <addaction name="separator"/>
+     <addaction name="actionGenerate_Mnemonic_Map"/>
+     <addaction name="actionGenerate_SV_Project_Mnemonic_Map"/>
+     <addaction name="actionNot_yet_implemented_2"/>
+    </widget>
+    <widget class="QMenu" name="menu_Verification">
+     <property name="title">
+      <string>&amp;Verification</string>
+     </property>
+     <addaction name="actionNot_yet_implemented"/>
+    </widget>
+    <addaction name="separator"/>
+    <addaction name="menu_Simulation"/>
+    <addaction name="menu_Verification"/>
+    <addaction name="separator"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
+   <addaction name="menu_View"/>
+   <addaction name="menuTools"/>
+   <addaction name="menu_Objects"/>
+   <addaction name="menu_Help"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="MaintoolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>MaintoolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllToolBarAreas</set>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>28</width>
+     <height>28</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_New"/>
+   <addaction name="action_Open"/>
+   <addaction name="separator"/>
+   <addaction name="action_Save"/>
+   <addaction name="action_SaveAs"/>
+   <addaction name="separator"/>
+   <addaction name="action_Print"/>
+   <addaction name="action_Undo"/>
+   <addaction name="action_Redo"/>
+  </widget>
+  <widget class="QToolBar" name="ObjecttoolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>ObjecttoolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>28</width>
+     <height>28</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_State"/>
+   <addaction name="action_Transition"/>
+   <addaction name="action_Hypertrans"/>
+   <addaction name="separator"/>
+   <addaction name="action_Link"/>
+   <addaction name="action_Join"/>
+   <addaction name="action_New_Hierarchy"/>
+  </widget>
+  <widget class="QDockWidget" name="Properties">
+   <property name="whatsThis">
+    <string>This box shows properties of activated Object. The properties of a object can easily be manipulated here. </string>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Properties</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="propertiesWidgetContent">
+    <layout class="QVBoxLayout">
+     <property name="spacing">
+      <number>6</number>
+     </property>
+     <property name="leftMargin">
+      <number>9</number>
+     </property>
+     <property name="topMargin">
+      <number>9</number>
+     </property>
+     <property name="rightMargin">
+      <number>9</number>
+     </property>
+     <property name="bottomMargin">
+      <number>9</number>
+     </property>
+     <item>
+      <widget class="PropertyWidget" name="propertywidget"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="OutputList">
+   <property name="whatsThis">
+    <string/>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Outputs</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="outputListWidgetContent">
+    <layout class="QVBoxLayout">
+     <property name="spacing">
+      <number>6</number>
+     </property>
+     <property name="leftMargin">
+      <number>9</number>
+     </property>
+     <property name="topMargin">
+      <number>9</number>
+     </property>
+     <property name="rightMargin">
+      <number>9</number>
+     </property>
+     <property name="bottomMargin">
+      <number>9</number>
+     </property>
+     <item>
+      <widget class="OutputWidget" name="outputwidget"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="InputList">
+   <property name="whatsThis">
+    <string>All inputs of activated FSM are shown in this box.</string>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Inputs - Condition Name: </string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="inputListWidgetContent">
+    <layout class="QVBoxLayout">
+     <property name="spacing">
+      <number>6</number>
+     </property>
+     <property name="leftMargin">
+      <number>9</number>
+     </property>
+     <property name="topMargin">
+      <number>9</number>
+     </property>
+     <property name="rightMargin">
+      <number>9</number>
+     </property>
+     <property name="bottomMargin">
+      <number>9</number>
+     </property>
+     <item>
+      <widget class="ConditionWidget" name="inputwidget" native="true"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="ZoomtoolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>ZoomBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>28</width>
+     <height>28</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_ZoomIn"/>
+   <addaction name="action_ZoomOut"/>
+  </widget>
+  <action name="action_About">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>About FSMDesigner</string>
+   </property>
+   <property name="whatsThis">
+    <string>Shows About FSMDesigner.</string>
+   </property>
+  </action>
+  <action name="action_New">
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/filenew.png</normaloff>:/icons/filenew.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;New Project...</string>
+   </property>
+   <property name="whatsThis">
+    <string>Push this button to create a new Projekt and FSM.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="action_Open">
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/fileopen.png</normaloff>:/icons/fileopen.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Open...</string>
+   </property>
+   <property name="whatsThis">
+    <string>Opens a dialog to load a previous saved Project or FSM.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="action_Save">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/filesave.png</normaloff>:/icons/filesave.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+   <property name="whatsThis">
+    <string>Click this button for Quicksave.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_SaveAs">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/filesaveas.png</normaloff>:/icons/filesaveas.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save &amp;As ...</string>
+   </property>
+   <property name="whatsThis">
+    <string>This option aktivates a &quot;save as&quot; dialog to manage all possible options for saving projects or FSMs.</string>
+   </property>
+  </action>
+  <action name="action_Print">
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/fileprint.png</normaloff>:/icons/fileprint.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Print...</string>
+   </property>
+   <property name="whatsThis">
+    <string>Push this button to open the printer dialog, for printing FSMs. </string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="action_Quit">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/fileclose.png</normaloff>:/icons/fileclose.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="whatsThis">
+    <string>This is the quit button to close application.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionCu_t">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/editcut.png</normaloff>:/icons/editcut.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cu&amp;t</string>
+   </property>
+   <property name="whatsThis">
+    <string>Cut activated object by using this option.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="action_Copy">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/editcopy.png</normaloff>:/icons/editcopy.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Copy</string>
+   </property>
+   <property name="whatsThis">
+    <string>Option for copying activated objects.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="action_Paste">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/editpaste.png</normaloff>:/icons/editpaste.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Paste</string>
+   </property>
+   <property name="whatsThis">
+    <string>This option will paste copied or previously cutted object to the chosen place at the workbench.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="action_Delete">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/editdelete.png</normaloff>:/icons/editdelete.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Delete</string>
+   </property>
+   <property name="whatsThis">
+    <string>Delets activated object.</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="action_State">
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/state.png</normaloff>:/icons/state.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;State</string>
+   </property>
+   <property name="whatsThis">
+    <string>&quot;State-mode&quot; button. Creates a new State by clicking the workbench when activated.</string>
+   </property>
+  </action>
+  <action name="action_Transition">
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/trans.png</normaloff>:/icons/trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Transition</string>
+   </property>
+   <property name="whatsThis">
+    <string>Click this button for activating &quot;Transition-mode&quot;. To connect objects on workbench with transitions.</string>
+   </property>
+  </action>
+  <action name="action_Hypertrans">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/hyper.png</normaloff>:/icons/hyper.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Hypertrans</string>
+   </property>
+   <property name="whatsThis">
+    <string>Push here to switch to &quot;Hypertransition-mode&quot;. Creates global transitions.</string>
+   </property>
+  </action>
+  <action name="action_Link">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/link.png</normaloff>:/icons/link.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Link</string>
+   </property>
+   <property name="whatsThis">
+    <string>&quot;Link-mode&quot; button. Will create a link-object by clicking the workbench when activated. A Link is a short cut to a state, using links brings more clarity to a complex workbench.</string>
+   </property>
+  </action>
+  <action name="action_Join">
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/join.png</normaloff>:/icons/join.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Join</string>
+   </property>
+   <property name="whatsThis">
+    <string>Click this button to switch to &quot;Join-mode&quot;. To generate a join when activated.  A Join connects transitions to clean up workbench for better clarity.</string>
+   </property>
+  </action>
+  <action name="actionGlobal">
+   <property name="text">
+    <string>&amp;Globals...</string>
+   </property>
+   <property name="iconText">
+    <string>Globals</string>
+   </property>
+   <property name="toolTip">
+    <string>Globals</string>
+   </property>
+  </action>
+  <action name="action_New_Hierarchy">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/hierarchy.png</normaloff>:/icons/hierarchy.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;New Hierarchy</string>
+   </property>
+   <property name="iconText">
+    <string>New Hierarchy</string>
+   </property>
+   <property name="toolTip">
+    <string>New Hierarchy</string>
+   </property>
+   <property name="whatsThis">
+    <string>&quot;Hierarchy-mode&quot; buttton. Click here to create a new hierarchyleveltransfer for aktivated FSM. Hierarchylevels increase usage for bigger FSMs.</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="action_Maintoolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;MaintoolBar</string>
+   </property>
+  </action>
+  <action name="action_Objecttoolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;ObjecttoolBar</string>
+   </property>
+  </action>
+  <action name="action_Zoombar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;ZoomBar</string>
+   </property>
+  </action>
+  <action name="action_Undo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/undo.png</normaloff>:/icons/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Undo</string>
+   </property>
+   <property name="whatsThis">
+    <string>Click here to undo the last change. </string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="action_Redo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/redo.png</normaloff>:/icons/redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Redo</string>
+   </property>
+   <property name="whatsThis">
+    <string> Click here to redo the last successful undo step.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Pre&amp;ferences...</string>
+   </property>
+   <property name="whatsThis">
+    <string>Starts preferences-dialog for changing toolsettings.</string>
+   </property>
+  </action>
+  <action name="action_ClearMenu">
+   <property name="text">
+    <string>&amp;ClearMenu</string>
+   </property>
+   <property name="whatsThis">
+    <string>Deletes Recent File entries.</string>
+   </property>
+  </action>
+  <action name="actionTestbench_generator">
+   <property name="text">
+    <string>Generate &amp;Testbench Verilog</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionGenerate_Mnemonic_Map">
+   <property name="text">
+    <string>Generate SimVision &amp;Mnemonic Map</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionExport_Image">
+   <property name="text">
+    <string>&amp;Export Image...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="action_Generate_Testbench_VHDL">
+   <property name="text">
+    <string>&amp;Generate Testbench VHDL</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionGenerate_SV_Project_Mnemonic_Map">
+   <property name="text">
+    <string>Generate SV Project Mnemonic Map</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="action_ZoomIn">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/viewmag+.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>ZoomIn</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom in</string>
+   </property>
+  </action>
+  <action name="action_ZoomOut">
+   <property name="icon">
+    <iconset resource="../../../src/gui/resources/resources.qrc">
+     <normaloff>:/icons/viewmag-.png</normaloff>:/icons/viewmag-.png</iconset>
+   </property>
+   <property name="text">
+    <string>ZoomOut</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom out</string>
+   </property>
+  </action>
+  <action name="actionNot_yet_implemented">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>not yet implemented</string>
+   </property>
+  </action>
+  <action name="actionNot_yet_implemented_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>not yet implemented</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PropertyWidget</class>
+   <extends>QTreeView</extends>
+   <header>propertywidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>OutputWidget</class>
+   <extends>QTreeView</extends>
+   <header>outputwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ConditionWidget</class>
+   <extends>QWidget</extends>
+   <header>conditionwidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../../../src/gui/resources/resources.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>action_Maintoolbar</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MaintoolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>119</x>
+     <y>67</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>action_Zoombar</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ZoomtoolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>799</x>
+     <y>67</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>action_Objecttoolbar</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ObjecttoolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>622</x>
+     <y>67</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

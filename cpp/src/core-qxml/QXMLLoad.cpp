@@ -1,0 +1,735 @@
+/*
+ * QXMLLoad.cpp
+ *
+ *  Created on: Sep 30, 2010
+ *      Author: rleys
+ */
+
+
+
+
+// Includes
+//-----------------
+
+//-- STL
+#include <cmath>
+#include <iostream>
+#include <list>
+#include <string>
+#include <iterator>
+#include <exception>
+#include <stdexcept>
+//#include <errors.h>
+//#include <error.h>
+#include <sstream>
+using namespace std;
+
+//-- Qt
+#include <QtXml>
+#include <QtCore>
+#include <QFileInfo>
+
+//-- Core
+#include <core/Utils.h>
+#include <core/LoadFactory.h>
+#include <core/Core.h>
+#include <core/Fsm.h>
+#include <core/Project.h>
+#include <core/State.h>
+#include <core/Trans.h>
+#include <core/Trackpoint.h>
+#include <core/Join.h>
+
+#include "QXMLLoad.h"
+
+// Register the saver in factory
+Load_I * LoadFactory::loader = new QXMLLoad();
+
+
+
+
+QXMLLoad::QXMLLoad() {
+
+
+}
+
+QXMLLoad::~QXMLLoad() {
+}
+
+const char * QXMLLoad::getAttributeValue(const char * attribute,QDomElement element) {
+	return element.attribute(QString(attribute)).toStdString().c_str();
+
+}
+
+string QXMLLoad::getAttributeValueString(const char * attribute,QDomElement element) {
+    return element.attribute(QString(attribute)).toStdString();
+}
+
+ const QDomElement  QXMLLoad::getFirstMatchingChild(const char * childName,QDomElement element) {
+
+	return element.elementsByTagName(QString(childName)).item(0).toElement();
+}
+
+ QList<QDomElement> QXMLLoad::getChildElements(const char * childName,QDomElement element) {
+
+	QDomNodeList children = element.elementsByTagName(QString(childName));
+	QList<QDomElement> childrenList;
+	for (int i = 0;i<children.length();i++ )
+		childrenList.push_back(children.item(i).toElement());
+
+	return childrenList;
+}
+
+string QXMLLoad::getChildText(const char * childName,QDomElement element) {
+	return QXMLLoad::getFirstMatchingChild(childName,element).text().toStdString();
+}
+
+
+QDomDocument * QXMLLoad::parseFile(string file) {
+
+	// Create Document builder
+	//-------------
+	QDomDocument * document = new QDomDocument();
+
+
+
+	// Parse
+	//--------
+	try {
+		QFile xmlFile(file.c_str());
+		 if (!xmlFile.open(QIODevice::ReadOnly))
+		     throw runtime_error(string("File does not exist: ")+file);
+
+		//-- Parsing
+		int errorLine;
+		int errorColumn;
+		QString errorMessage;
+		if (!document->setContent(&xmlFile,true,&errorMessage,&errorLine,&errorColumn)) {
+			// Prepare error
+			stringstream buildedError;
+			buildedError << "Document Parsing Failed at Line" << errorLine << "," << errorColumn << ":" << errorMessage.toStdString();
+			throw runtime_error(buildedError.str());
+
+		}
+		return document;
+	}
+	catch (exception& e) {
+		cerr << "[QXMLLoad] Unexpected Exception: " << e.what() << endl;
+		throw e;
+		return NULL;
+	}
+
+	return document;
+
+
+}
+
+/// Load a project
+void QXMLLoad::loadProject(string file) {
+
+	this->load(file);
+}
+
+/// Load a single FSM
+void QXMLLoad::load(string file) {
+
+	// Parse
+	//-----------
+	QDomDocument * document = this->parseFile(file);
+	if (document==NULL)
+        return;
+
+	// Clear Available FSms from core
+	Core& c = *(Core::getInstance());
+	c.reset();
+
+
+
+	// Convert
+	//--------------------
+    this->convert(document);
+
+
+	// Analyse
+	//-------------
+
+	// Set project dir
+	QFileInfo fileInfo = QFileInfo(file.c_str());
+
+	c.getProject()->setFileInfo(fileInfo);
+
+
+	// Available fsms
+	QList<QDomElement> fsmList;
+
+
+	//-- Get Document Element local name
+	//-- Get FSMS if it is a project
+	if (document->documentElement().nodeName()==QString("project")) {
+
+		// Set name
+        c.getProject()->setName(QXMLLoad::getAttributeValueString("pname",document->documentElement()));
+
+
+		// List FSMS
+		QDomNodeList fsmNodes = document->documentElement().elementsByTagName(QString("fsm"));
+		for (int i=0;i<fsmNodes.length();i++) {
+			fsmList.push_back(fsmNodes.item(i).toElement());
+		}
+	} else if(document->documentElement().nodeName()==QString("fsm")) {
+		// Document Element is the only FSM
+		fsmList.push_back(document->documentElement());
+	}
+
+	//-- Process all the FSMS
+	for (QList<QDomElement>::iterator it = fsmList.begin();it!=fsmList.end();it++) {
+		this->parseFSM(*it);
+	}
+
+	// Clear memory
+	delete document;
+
+}
+
+void QXMLLoad::parseFSM(QDomElement fsmElement) {
+
+	// Preparation
+	int loopcounter =0;
+
+	// Get Core
+	Core& c = *(Core::getInstance());
+
+	// Add FSM to core
+	//-----------------
+	Fsm * fsm = c.getProject()->addFSM();
+
+
+
+	//-- Generators parameters
+	//--------------------------------------
+	QList<QDomElement> toolsParameters = QXMLLoad::getChildElements("ToolsParameters",fsmElement);
+	if (toolsParameters.size()>0) {
+
+		//-- Get parameters for a user
+		QList<QDomElement> userParameters = QXMLLoad::getChildElements("Parameters",toolsParameters.front());
+		for (QList<QDomElement>::iterator it=userParameters.begin();it!=userParameters.end();it++) {
+
+		    //---- Get user id
+            string userid = QXMLLoad::getAttributeValueString("userid",*it);
+
+		    //---- Get All parameters
+		    QList<QDomElement> parameters = QXMLLoad::getChildElements("Parameter",*it);
+		    for (QList<QDomElement>::iterator pit=parameters.begin();pit!=parameters.end();pit++) {
+
+		        // Record
+                fsm->setParameter(userid,QXMLLoad::getAttributeValueString("key",*pit),(*pit).text().toStdString());
+		    }
+		}
+	}
+
+	//-- Globals
+
+
+	//-- Inputs
+	QList<QDomElement> inputnames = QXMLLoad::getChildElements("name",QXMLLoad::getFirstMatchingChild("inputnames",fsmElement));
+	loopcounter =0;
+	for (QList<QDomElement>::iterator it=inputnames.begin();it!=inputnames.end();it++,loopcounter++) {
+		fsm->addInput((*it).text().toStdString().c_str());
+	}
+
+	//-- Outputs
+	QList<QDomElement> outputnames = QXMLLoad::getChildElements("name",QXMLLoad::getFirstMatchingChild("outputnames",fsmElement));
+	loopcounter =0;
+	for (QList<QDomElement>::iterator it=outputnames.begin();it!=outputnames.end();it++,loopcounter++) {
+		fsm->addOutput((*it).text().toStdString().c_str());
+	}
+
+	//-- States
+	QList<QDomElement> states = QXMLLoad::getChildElements("state",fsmElement);
+	loopcounter =0;
+	for (QList<QDomElement>::iterator it=states.begin();it!=states.end();it++,loopcounter++) {
+
+		//-- Create State and set parameters
+		State * currentState = new ::State(fsm->getNumberOfOutputs());
+        currentState->setId(stoul(QXMLLoad::getAttributeValueString("id",*it), 0, 10));
+		currentState->setName(QXMLLoad::getChildText("sname",*it));
+		currentState->setOutput(QXMLLoad::getChildText("output",*it));
+        currentState->setPosition(pair<double,double>(stod(QXMLLoad::getAttributeValueString("posx",*it),0),stod(QXMLLoad::getAttributeValueString("posy",*it),0)));
+        currentState->setColor(stoul(QXMLLoad::getAttributeValueString("color",*it), 0, 10));
+		currentState->setReset(true);
+		fsm->addState(currentState);
+
+	} // EO States --//
+
+
+
+	//-- Links
+	//----------------
+	QList<QDomElement> links = QXMLLoad::getChildElements("link",fsmElement);
+	loopcounter =0;
+	for (QList<QDomElement>::iterator it=links.begin();it!=links.end();it++,loopcounter++) {
+
+	    //-- Create
+        Link * link = new Link(fsm->getStatebyID(stoi(QXMLLoad::getAttributeValueString("goal",*it),0,10)),stod(QXMLLoad::getAttributeValueString("posx",*it),0),
+                stod(QXMLLoad::getAttributeValueString("posy",*it),0));
+        link->setId(stoul(QXMLLoad::getAttributeValueString("id",*it), 0, 10));
+
+	    //-- Color
+        link->setColor(stoul(QXMLLoad::getAttributeValueString("color",*it), 0, 10));
+
+		//-- Add
+	    fsm->addLink(link);
+
+
+
+	}
+
+	//-- Hypertrans
+	//----------------
+	QList<QDomElement> hypertrans = QXMLLoad::getChildElements("hypertrans",fsmElement);
+	loopcounter =0;
+	for (QList<QDomElement>::iterator it=hypertrans.begin();it!=hypertrans.end();it++,loopcounter++) {
+
+	    //-- Create
+	    Hypertrans * hyperTransition = new Hypertrans();
+        hyperTransition->setType(stoi(QXMLLoad::getChildText("type",*it),0,10) == 0 ? Hypertrans::FromReset : Hypertrans::FromAllStates);
+        hyperTransition->setPosition(pair<double,double>(stod(QXMLLoad::getAttributeValueString("posx",*it),0),stod(QXMLLoad::getAttributeValueString("posy",*it),0)));
+        hyperTransition->setId(stoul(QXMLLoad::getAttributeValueString("id",*it), 0, 10));
+        hyperTransition->setTargetState(fsm->getStatebyID(stoi(QXMLLoad::getAttributeValueString("targetState",*it),0,10)));
+        hyperTransition->setName(QXMLLoad::getChildText("name",*it));
+
+		//-- Color
+        hyperTransition->setColor(stoul(QXMLLoad::getAttributeValueString("color",*it), 0, 10));
+
+	    //-- Add
+        Hypertrans * hypertrans =  fsm->addHypertrans(hyperTransition);
+
+		//-- Conditions
+		QList<QDomElement> conditions = QXMLLoad::getChildElements("condition",*it);
+		int loopcounter2 =0;
+		for (QList<QDomElement>::iterator it2=conditions.begin();it2!=conditions.end();it2++,loopcounter2++) {
+
+			// add
+		    Condition* condition = hypertrans->addCondition(fsm->getNumberOfInputs());
+		    condition->setName(QXMLLoad::getChildText("cname",*it2));
+		    condition->setInput(QXMLLoad::getChildText("input",*it2));
+
+		} // EO Conditions --//
+
+		//-- Trackpoints ?
+
+	}
+
+
+	//-- Joins
+	//----------------
+	QList<QDomElement> joins = QXMLLoad::getChildElements("Join",fsmElement);
+	loopcounter =0;
+	for (QList<QDomElement>::iterator it=joins.begin();it!=joins.end();it++,loopcounter++) {
+
+
+
+		//-- Create
+		Join * newJoin = new Join();
+
+		//-- Id
+        newJoin->setId(stoul(QXMLLoad::getAttributeValueString("id",*it), 0, 10));
+
+		//-- Position
+        newJoin->setPosx(stod(QXMLLoad::getAttributeValueString("posx",*it),0));
+        newJoin->setPosy(stod(QXMLLoad::getAttributeValueString("posy",*it),0));
+
+		//-- target State
+        newJoin->setTargetState(fsm->getStatebyID(stoi(QXMLLoad::getAttributeValueString("targetState",*it),0,10)));
+
+		//-- Add join to FSM
+        fsm->addJoin(newJoin);
+
+		//---- Trackpoints
+		//-----------------------
+		QList<QDomElement> trackpoints = QXMLLoad::getChildElements("trackpoint",*it);
+		int loopcounter2 =0;
+		for (QList<QDomElement>::iterator it2=trackpoints.begin();it2!=trackpoints.end();it2++,loopcounter2++) {
+
+			//-- Add
+			Trackpoint * addedTrackpoint = newJoin->addTrackpoint();
+
+			//-- Position
+            addedTrackpoint->setPosition(pair<double,double>(stod(QXMLLoad::getAttributeValueString("posx",*it),0),stod(QXMLLoad::getAttributeValueString("posy",*it),0)));
+
+			//-- Link ?
+            bool link = stoi(QXMLLoad::getAttributeValueString("link",*it2),0,10)==1?true:false;
+            addedTrackpoint->setTargetLink(fsm->getLinkbyID(stoi(QXMLLoad::getAttributeValueString("linkid",*it2),0,10)));
+
+			//-- Color
+            addedTrackpoint->setColor(stoul(QXMLLoad::getAttributeValueString("color",*it), 0, 10));
+
+			//-- Hierarchy
+
+		}
+
+	}
+	// EOF Joins
+
+
+
+	//---- Transitions
+    //--------------------
+    QList<QDomElement> transitions = QXMLLoad::getChildElements("trans",fsmElement);
+    loopcounter =0;
+    for (QList<QDomElement>::iterator it=transitions.begin();it!=transitions.end();it++,loopcounter++) {
+
+        //-- Get start and end
+        State * start = fsm->getStatebyID(stoi(QXMLLoad::getChildText("start",*it),0,10));
+        State * end   = fsm->getStatebyID(stoi(QXMLLoad::getChildText("end",*it),0,10));
+
+
+        //-- Create
+        Trans * addedTransition = new Trans(start,end);
+        addedTransition->setId(stoul(QXMLLoad::getAttributeValueString("id",*it), 0, 10));
+
+        //-- Text
+        addedTransition->setName(string(QXMLLoad::getChildText("name",*it)));
+        addedTransition->setTextPosition(stod(QXMLLoad::getAttributeValueString("textposx",*it),0),
+                (stod(QXMLLoad::getAttributeValueString("textposy",*it),0)));
+
+        //-- Default
+        addedTransition->setDefault((stoi(QXMLLoad::getChildText("default",*it),0,10)==1?true:false));
+
+        //-- Add to FSM
+        fsm->addTrans(addedTransition);
+
+        //---- Manage trackpoints
+        //---------------------------
+        QList<QDomElement> trackpoints = QXMLLoad::getChildElements("trackpoint",*it);
+        int loopcounter2 =0;
+        for (QList<QDomElement>::iterator it2=trackpoints.begin();it2!=trackpoints.end();it2++,loopcounter2++) {
+
+            //-- Add
+            Trackpoint * addedTrackpoint = addedTransition->appendTrackpoint(
+                    stod(QXMLLoad::getAttributeValueString("posx",*it2),0),
+                            stod(QXMLLoad::getAttributeValueString("posy",*it2),0));
+
+            //-- Link ?
+            bool link = stoi(QXMLLoad::getAttributeValueString("link",*it2),0,10)==1?true:false;
+            if (link) {
+                addedTrackpoint->setTargetLink(fsm->getLinkbyID(stoi(QXMLLoad::getAttributeValueString("linkid",*it2),0,10)));
+            }
+
+            //-- Join
+            int joinid = stoi(QXMLLoad::getAttributeValueString("join",*it2),0,10);
+            addedTrackpoint->setJoin(fsm->getJoin(joinid));
+
+            //-- Color
+            addedTrackpoint->setColor(stoul(QXMLLoad::getAttributeValueString("color",*it), 0, 10));
+
+        }
+
+
+        //-- Conditions
+        QList<QDomElement> conditions = QXMLLoad::getChildElements("condition",*it);
+        loopcounter2 =0;
+        for (QList<QDomElement>::iterator it2=conditions.begin();it2!=conditions.end();it2++,loopcounter2++) {
+
+            // add
+            Condition * condition = addedTransition->addCondition(fsm->getNumberOfInputs());
+            condition->setName(QXMLLoad::getChildText("cname",*it2));
+            condition->setInput(QXMLLoad::getChildText("input",*it2));
+
+        } // EO Conditions --//
+
+
+    } // EO Transitions --//
+
+
+    //-- FSM attributes
+    fsm->setName(QXMLLoad::getAttributeValueString("fname",fsmElement));
+    fsm->setResetState(stoi(QXMLLoad::getAttributeValueString("resetstate",fsmElement),0,10));
+
+}
+
+void QXMLLoad::convert(QDomDocument * document) {
+
+	// Try to find the version of the FSM/project
+	//------------------------
+	uint majorVersion = 0;
+	uint minorVersion = 0;
+	if (document->documentElement().hasAttribute("version")) {
+
+		//-- Get string
+		QString version = document->documentElement().attribute("version");
+
+		//-- Split in major and minor version
+		majorVersion = version.split('.').at(0).toUInt();
+		minorVersion = version.split('.').at(1).toUInt();
+	}
+
+	// If we are at the current version, don't do anything
+	//----------------
+	if (majorVersion==FSMDesigner_VERSION_MAJOR && minorVersion == FSMDesigner_VERSION_MAJOR) {
+		return;
+	}
+	// Conversion Chain
+	//--------------------------------
+	else {
+
+	    //-- List FSMs
+	    QList<QDomElement> fsms;
+        if (document->documentElement().nodeName()==QString("project")) {
+            // List FSMS
+            QDomNodeList fsmNodes = document->documentElement().elementsByTagName(QString("fsm"));
+            for (int i=0;i<fsmNodes.length();i++) {
+                fsms+=(fsmNodes.item(i).toElement());
+            }
+        } else if(document->documentElement().nodeName()==QString("fsm")) {
+            // Document Element is the only FSM
+            fsms+=(document->documentElement());
+        }
+
+	    //---- Conversion from pre-5 (version stays 0)
+	    if (majorVersion==0) {
+
+	        // Pre5 conversion to version 5.0
+	        // Convert Joins
+            //-----------------------
+
+            QMap<int,QDomElement> joinsMap; /// target state <-> join
+
+
+            //---- Go through FSMS
+            //-------------------------
+
+            for (QList<QDomElement>::iterator fsm = fsms.begin();fsm!=fsms.end();fsm++) {
+
+
+                //----- Go through Transitions and trackpoints
+                //--------------------
+                QList<QDomElement> transitions = QXMLLoad::getChildElements("trans",(*fsm));
+
+                for (QList<QDomElement>::iterator it=transitions.begin();it!=transitions.end();it++) {
+
+
+                    //---- Go through trackpoints
+                    //---------------------------
+                    QList<QDomElement> trackpoints = QXMLLoad::getChildElements("trackpoint",*it);
+                    for (QList<QDomElement>::iterator it2=trackpoints.begin();it2!=trackpoints.end();it2++) {
+
+
+                        //-- Join ??
+                        int joinid = stoi(QXMLLoad::getAttributeValueString("join",*it2),0,10);
+                        if (joinid==1) {
+
+                            //-- Create or reuse a New XML Join for this target, and set the join to the produced id
+                            int targetState = stoi(QXMLLoad::getChildText("end",*it),0,10);
+                            QDomElement joinElement;
+                            if (!joinsMap.contains(targetState)) {
+
+                                //-- Create the join
+                                joinElement = document->createElement("Join");
+                                (*fsm).appendChild(joinElement);
+                                joinElement.setAttribute("id",(joinsMap.size())+1);
+                                joinElement.setAttribute("targetState",targetState);
+                                joinElement.setAttribute("posx", QString::fromStdString( QXMLLoad::getAttributeValueString("posx",*it2)));
+                                joinElement.setAttribute("posy", QString::fromStdString( QXMLLoad::getAttributeValueString("posy",*it2)));
+                                joinsMap[targetState] = joinElement;
+
+                                qDebug() << "Added a new <Join> element with id: " << joinElement.attribute("id","1");
+
+                            } else
+                                joinElement = joinsMap[targetState];
+
+
+                            //-- Set join id to the trackpoint
+                            (*it2).setAttribute("join",joinElement.attribute("id","1"));
+
+                        } // EOF convert join
+
+
+                    } // EOF trackpoints
+                } // EOF Transitions --//
+            } // EOF FSMs
+
+
+	        // We are now 5.0 compatible
+            majorVersion = 5;
+            minorVersion = 0;
+
+	    } // EOF Pre-5
+
+	    //---- Conversion from 5.0 to 5.1
+	    //----   * All states / transitions / Links must have ids
+	    if (majorVersion==5 && minorVersion==0) {
+
+	        // Set Version
+	        //---------------------
+	        document->documentElement().setAttribute("version","5.1");
+
+	        //---- Go through FSMS
+            //-------------------------
+            for (QList<QDomElement>::iterator fsm = fsms.begin();fsm!=fsms.end();fsm++) {
+
+                unsigned int ids = 1;
+
+                // Reset state must be incremented
+                //-------------------------
+                unsigned int resetstate = stoi(QXMLLoad::getAttributeValueString("resetstate",(*fsm)),0,10);
+                (*fsm).setAttribute("resetstate",Utils::itos(resetstate+1).c_str());
+
+
+                // States must have IDs
+                // Set the id to the number in the list is sufficient
+                //-----------------------------------
+                QList<QDomElement> states = QXMLLoad::getChildElements("state",(*fsm));
+                for (QList<QDomElement>::iterator it=states.begin();it!=states.end();it++,ids++) {
+                    stringstream ss ;
+                    ss << ids;
+                    (*it).setAttribute("id",Utils::itos(ids).c_str());
+
+                }
+
+                // Links Must Have IDS
+                // * Keep map with old IDs to new IDs to allow link resolution in transitions
+                // * Update goals: state all get the same id as before but with +1
+                //--------------
+                map<unsigned int,unsigned int> linksOldTONewIDs;
+                QList<QDomElement> links = QXMLLoad::getChildElements("link",(*fsm));
+                unsigned int linksCount = 0; // The counter is the old ID
+                for (QList<QDomElement>::iterator it=links.begin();it!=links.end();it++,ids++,linksCount++) {
+
+                    // ID
+                    (*it).setAttribute("id",Utils::itos(ids).c_str());
+
+                    // Goal
+                    unsigned int goal = stoi(QXMLLoad::getAttributeValueString("goal",*it),0,10)+1;
+                    (*it).setAttribute("goal",Utils::itos(goal).c_str());
+
+
+                    // Map goal to link id. Adapt transitions by using transitions target to find back link
+                    linksOldTONewIDs[goal] = ids;
+
+
+                }
+
+                // Joins Must Have IDs
+                // * Keep map with old IDs to new IDs to allow join resolution in transitions
+                // * Update targets: state all get the same id as before but with +1
+                //---------------------------
+                map<unsigned int,unsigned int> joinsOldTONewIDs;
+                QList<QDomElement> joins = QXMLLoad::getChildElements("Join",(*fsm));
+                unsigned int joinsCount = 1; // The counter is the old ID
+                for (QList<QDomElement>::iterator it=joins.begin();it!=joins.end();it++,ids++,joinsCount++) {
+
+                    // ID
+                    (*it).setAttribute("id",Utils::itos(ids).c_str());
+
+                    // Target
+                    unsigned int target = stoi(QXMLLoad::getAttributeValueString("targetState",*it),0,10)+1;
+                    (*it).setAttribute("targetState",Utils::itos(target).c_str());
+
+                    // Map old to new id
+                    joinsOldTONewIDs[joinsCount] = ids;
+                }
+
+                // Transitions must have IDs
+                //  * Set the id to the number in the list is sufficient
+                //  * Ids start at 1, make +1 on all state ids
+                //  * Scan the trackpoints, and adapt the link and join ids
+                //-----------------------------------
+                QList<QDomElement> transitions = QXMLLoad::getChildElements("trans",(*fsm));
+                for (QList<QDomElement>::iterator it=transitions.begin();it!=transitions.end();it++,ids++) {
+
+                    //-- Id
+                    stringstream ss ;
+                    ss << ids;
+                    (*it).setAttribute("id",ss.str().c_str());
+
+                    //-- +1 on state
+                    int start = stoi(QXMLLoad::getChildText("start",*it),0,10)+1;
+                    int end = stoi(QXMLLoad::getChildText("end",*it),0,10)+1;
+
+                    (*it).removeChild(QXMLLoad::getFirstMatchingChild("start",*it));
+                    QDomNode startElt = (*it).appendChild(document->createElement("start"));
+                    startElt.appendChild(document->createTextNode(QString().setNum(start)));
+
+                    (*it).removeChild(QXMLLoad::getFirstMatchingChild("end",*it));
+                    QDomNode endElt = (*it).appendChild(document->createElement("end"));
+                    endElt.appendChild(document->createTextNode(QString().setNum(end)));
+
+                    //-- Adapt Link and Join
+                    QList<QDomElement> trackpoints = QXMLLoad::getChildElements("trackpoint",(*it));
+                    for (QList<QDomElement>::iterator tit=trackpoints.begin();tit!=trackpoints.end();tit++) {
+
+                        //-- If the trackpoint is a link, adapt linkid
+                        bool link = stoi(QXMLLoad::getAttributeValueString("link",*tit),0,10)==1?true:false;
+                        if (link) {
+                            // Get new id from map and set
+
+                            unsigned int newid = linksOldTONewIDs[end];
+                            (*tit).setAttribute("linkid",Utils::itos(newid).c_str());
+                        }
+
+                        //-- If join > 0, adapt id
+                        int joinid = stoi(QXMLLoad::getAttributeValueString("join",*tit),0,10);
+                        if (joinid>0) {
+
+
+
+                            // Get new id from map and set
+                            unsigned int newid = joinsOldTONewIDs[joinid];
+                            (*tit).setAttribute("join",Utils::itos(newid).c_str());
+
+
+                            qDebug() << "Found trackpoint pointing to join " << joinid << ", switched to : " << newid;
+
+                        }
+
+                    }
+
+                }
+
+                // Hypertransitions must have IDs
+                //  * goal must be incremented and set to a targetState attribute
+                //----------------------------------------
+                QList<QDomElement> hypertransitions = QXMLLoad::getChildElements("hypertrans",(*fsm));
+                for (QList<QDomElement>::iterator it=hypertransitions.begin();it!=hypertransitions.end();it++,ids++) {
+
+                    //-- Id
+                    stringstream ss ;
+                    ss << ids;
+                    (*it).setAttribute("id",ss.str().c_str());
+
+                    //-- +1 on goal
+                    int goal = stoi(QXMLLoad::getChildText("goal",*it),0,10)+1;
+                    (*it).removeChild(QXMLLoad::getFirstMatchingChild("goal",*it));
+
+                    //-- Set goal to targetState
+                    (*it).setAttribute("targetState",QString().setNum(goal));
+
+
+
+                } // EOF Hypertransitions
+
+            } // EOF FSMs
+
+            // We are now 5.1 compatible
+            majorVersion = 5;
+            minorVersion = 1;
+
+
+	    } // EOF 5.0 to 5.1
+
+
+
+
+
+	}// EOF Conversion chain
+
+	// EOF Convert
+	//---------------------
+	//qDebug() << document->toString(0);
+	//exit(0);
+
+
+
+}
+

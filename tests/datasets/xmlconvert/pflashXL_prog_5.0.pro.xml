@@ -1,0 +1,1191 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<project pname='pflashXL_prog' version="5.0">
+  <fsm fname='prog_core' resetstate='8' numberofinputs='15' numberofoutputs='13'>
+<Generators>
+<LastGeneratedVerilogFile userid="linux:3010">/home/rleys/git/hw/xilinx/pflash-xc6v/hw/prog_core_fsm.v</LastGeneratedVerilogFile>
+</Generators>
+    <globals>
+        <name>clk</name>
+        <name>res_n</name>
+    </globals>
+    <inputnames>
+        <name>timing_done</name>
+        <name>user_cmd_buffer_program</name>
+        <name>user_cmd_word_program</name>
+        <name>user_cmd_clear_sr</name>
+        <name>user_cmd_eb</name>
+        <name>user_cmd_sc</name>
+        <name>user_cmd_read_word</name>
+        <name>user_cmd_block_unlock</name>
+        <name>user_cmd_read_esig</name>
+        <name>valid_cmd</name>
+        <name>valid_data</name>
+        <name>fl_status_register_pec</name>
+        <name>flash_ready</name>
+        <name>buffer_program_data_finished</name>
+        <name>read_word_is_read_mode</name>
+    </inputnames>
+    <outputnames>
+        <name>do_write</name>
+        <name>do_read</name>
+        <name>do_read_latch</name>
+        <name>do_latch</name>
+        <name>do_write_latch</name>
+        <name>stop_cmd</name>
+        <name>finished_cmd</name>
+        <name>stop_data</name>
+        <name>dummy0</name>
+        <name>dummy1</name>
+        <name>dummy2</name>
+        <name>dummy3</name>
+        <name>dummy4</name>
+    </outputnames>
+    <state posx='744' posy='444.007' color='4294901760' hlevel='0' >
+        <sname>Idle</sname>
+        <output>0000000100000</output>
+    </state>
+    <state posx='740.373' posy='591.959' color='4294901760' hlevel='0' >
+        <sname>Write_Cmd</sname>
+        <output>1000010101000</output>
+    </state>
+    <state posx='516' posy='826' color='4294901760' hlevel='0' >
+        <sname>Write_Addr_Data</sname>
+        <output>0000110110100</output>
+    </state>
+    <state posx='511.016' posy='956.328' color='4294901760' hlevel='0' >
+        <sname>P_Wait_SR_Finished</sname>
+        <output>0100010101100</output>
+    </state>
+    <state posx='978.502' posy='832.14' color='4294901760' hlevel='0' >
+        <sname>BP_Write_Number_Words</sname>
+        <output>1000010100000</output>
+    </state>
+    <state posx='979.13' posy='965.447' color='4294901760' hlevel='0' >
+        <sname>BP_write_Data</sname>
+        <output>0000110010000</output>
+    </state>
+    <state posx='978.013' posy='1099.38' color='4294901760' hlevel='0' >
+        <sname>BP_Write_Confirm</sname>
+        <output>1000010100101</output>
+    </state>
+    <state posx='977.64' posy='1213.07' color='4294901760' hlevel='0' >
+        <sname>BP_Wait_SR_Finished_End</sname>
+        <output>0100010100001</output>
+    </state>
+    <state posx='745.278' posy='329.94' color='4278233855' hlevel='0' >
+        <sname>Wait_ready</sname>
+        <output>0000010110000</output>
+    </state>
+    <state posx='979.759' posy='715.793' color='4294901760' hlevel='0' >
+        <sname>BP_Wait_SR_Finished_Start</sname>
+        <output>0100010110001</output>
+    </state>
+    <state posx='765' posy='964' color='4294901760' hlevel='0' >
+        <sname>EB_Wait_SR_Finished</sname>
+        <output>0100010111001</output>
+    </state>
+    <state posx='771' posy='830' color='4294901760' hlevel='0' >
+        <sname>EB_Address_Confirm</sname>
+        <output>0000110100100</output>
+    </state>
+    <state posx='547.281' posy='440.505' color='4294901760' hlevel='0' >
+        <sname>Finish</sname>
+        <output>0000011100000</output>
+    </state>
+    <state posx='384' posy='825' color='4294901760' hlevel='0' >
+        <sname>SC_WriteConfig</sname>
+        <output>0000110101001</output>
+    </state>
+    <state posx='1231.76' posy='725.864' color='4294901760' hlevel='0' >
+        <sname>RW_Bus_Read</sname>
+        <output>0010010111100</output>
+    </state>
+    <state posx='1380.73' posy='918.511' color='4294901760' hlevel='0' >
+        <sname>Bus_Read_Output</sname>
+        <output>0000000111000</output>
+    </state>
+    <state posx='1234' posy='600' color='4294901760' hlevel='0' >
+        <sname>RW_Check_ReadMode</sname>
+        <output>0000000100110</output>
+    </state>
+    <state posx='637.055' posy='903.808' color='4294901760' hlevel='0' >
+        <sname>Unlock_Confirm</sname>
+        <output>1000010110101</output>
+    </state>
+    <state posx='272' posy='826' color='4294901760' hlevel='0' >
+        <sname>ESIG_Read</sname>
+        <output>0100010101110</output>
+    </state>
+    <state posx='273' posy='933' color='4294901760' hlevel='0' >
+        <sname>ESIG_Read_Output</sname>
+        <output>0000000110100</output>
+    </state>
+    <state posx='1187.52' posy='965.501' color='4294901760' hlevel='0' >
+        <sname>BP_Wait_Written</sname>
+        <output>0000110110110</output>
+    </state>
+    <state posx='981.406' posy='559.096' color='4294901760' hlevel='0' >
+        <sname>Write_Cmd_And_Latch</sname>
+        <output>0000110101000</output>
+    </state>
+    <trans color='0' textposx='673.209' textposy='490.963' level='0' >
+        <name><![CDATA[trans_02]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>1</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>-0----0--1---00</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='645.555' textposy='388.373' level='0' >
+        <name><![CDATA[Wait]]></name>
+        <default>1</default>
+        <start>0</start>
+        <end>0</end>
+        <trackpoint posx='668' posy='421.679' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='686' posy='401.679' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='821.87' textposy='427.479' level='0' >
+        <name><![CDATA[read_word]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>16</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>------1001---00</input>
+        </condition>
+        <trackpoint posx='1233.73' posy='446.215' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='792.982' textposy='491.591' level='0' >
+        <name><![CDATA[trans_94]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>21</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>-1----0--1---00</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='592' textposy='745' level='0' >
+        <name><![CDATA[Program]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>2</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>10100000001--00</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='783.873' textposy='706.778' level='0' >
+        <name><![CDATA[Buffer_Program]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>9</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>110000000----00</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='644.283' textposy='704.714' level='0' >
+        <name><![CDATA[trans_20]]></name>
+        <default>1</default>
+        <start>1</start>
+        <end>12</end>
+        <trackpoint posx='706.473' posy='776.305' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='741.03' textposy='750.571' level='0' >
+        <name><![CDATA[EB_Confirm]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>11</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>100010000-----0</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='624' textposy='767' level='0' >
+        <name><![CDATA[trans_31]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>17</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>100000010-----0</input>
+        </condition>
+        <trackpoint posx='664' posy='760' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='285' textposy='750' level='0' >
+        <name><![CDATA[trans_34]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>18</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>100000001-----0</input>
+        </condition>
+        <trackpoint posx='280' posy='745' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='605.324' textposy='532.016' level='0' >
+        <name><![CDATA[wait_done]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>1</end>
+        <condition>
+            <cname><![CDATA[wait_done]]></cname>
+            <input>0--------------</input>
+        </condition>
+        <trackpoint posx='682.559' posy='546.194' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='658.327' posy='564.087' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='507.265' textposy='737.084' level='0' >
+        <name><![CDATA[trans_23]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>13</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>100001000-----0</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='456.101' textposy='881.523' level='0' >
+        <name><![CDATA[trans_18]]></name>
+        <default>0</default>
+        <start>2</start>
+        <end>3</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1--------------</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='563.64' textposy='830.861' level='0' >
+        <name><![CDATA[wait_done]]></name>
+        <default>1</default>
+        <start>2</start>
+        <end>2</end>
+        <trackpoint posx='576.546' posy='810.86' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='574.602' posy='857.528' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='500.795' textposy='983.885' level='0' >
+        <name><![CDATA[wait_pec_and_done]]></name>
+        <default>1</default>
+        <start>3</start>
+        <end>3</end>
+        <trackpoint posx='578.689' posy='936.853' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='578.191' posy='979.826' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='520.352' textposy='1004.63' level='0' >
+        <name><![CDATA[trans_24]]></name>
+        <default>0</default>
+        <start>3</start>
+        <end>12</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1--000-00--1-00</input>
+        </condition>
+        <trackpoint posx='516.481' posy='1044.67' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1010.38' textposy='884.664' level='0' >
+        <name><![CDATA[trans_22]]></name>
+        <default>0</default>
+        <start>4</start>
+        <end>5</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1--------------</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='1062.7' textposy='817.895' level='0' >
+        <name><![CDATA[wait_done]]></name>
+        <default>1</default>
+        <start>4</start>
+        <end>4</end>
+        <trackpoint posx='1064.91' posy='803.706' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1064.06' posy='851.334' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='979.105' textposy='1012.04' level='0' >
+        <name><![CDATA[all written]]></name>
+        <default>0</default>
+        <start>5</start>
+        <end>6</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>-10000-00----10</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='1040.06' textposy='983.122' level='0' >
+        <name><![CDATA[wait_written]]></name>
+        <default>1</default>
+        <start>5</start>
+        <end>20</end>
+        <trackpoint posx='1079.36' posy='984.857' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='990.309' textposy='1146.16' level='0' >
+        <name><![CDATA[trans_17]]></name>
+        <default>0</default>
+        <start>6</start>
+        <end>7</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1--------------</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='1057.45' textposy='1077.77' level='0' >
+        <name><![CDATA[wait_done]]></name>
+        <default>1</default>
+        <start>6</start>
+        <end>6</end>
+        <trackpoint posx='1053.72' posy='1062.85' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1052.84' posy='1116.83' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='981.559' textposy='1323.95' level='0' >
+        <name><![CDATA[trans_18]]></name>
+        <default>0</default>
+        <start>7</start>
+        <end>12</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>110000-00--1--0</input>
+        </condition>
+        <trackpoint posx='977.989' posy='1318.59' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1065.27' textposy='1187.14' level='0' >
+        <name><![CDATA[wait_pec_and_done]]></name>
+        <default>1</default>
+        <start>7</start>
+        <end>7</end>
+        <trackpoint posx='1066.1' posy='1171.96' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1068.59' posy='1235.52' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='780.719' textposy='373.89' level='0' >
+        <name><![CDATA[Ready]]></name>
+        <default>0</default>
+        <start>8</start>
+        <end>0</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>---000-00---100</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='712.855' textposy='244.361' level='0' >
+        <name><![CDATA[trans_23]]></name>
+        <default>1</default>
+        <start>8</start>
+        <end>8</end>
+        <trackpoint posx='684.469' posy='270.612' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='791.469' posy='265.612' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='977.121' textposy='765.512' level='0' >
+        <name><![CDATA[done and pec=1]]></name>
+        <default>0</default>
+        <start>9</start>
+        <end>4</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>110000-00--1-00</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='1016.46' textposy='744.192' level='0' >
+        <name><![CDATA[wait_pec_and_done]]></name>
+        <default>1</default>
+        <start>9</start>
+        <end>9</end>
+        <trackpoint posx='1063.52' posy='695.962' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1065.33' posy='747.754' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='750.252' textposy='1035.85' level='0' >
+        <name><![CDATA[trans_21]]></name>
+        <default>0</default>
+        <start>10</start>
+        <end>12</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>100010-00--1--0</input>
+        </condition>
+        <trackpoint posx='761' posy='1049' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='787.621' textposy='991.612' level='0' >
+        <name><![CDATA[wait_pec_and_done]]></name>
+        <default>1</default>
+        <start>10</start>
+        <end>10</end>
+        <trackpoint posx='838' posy='926' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='841' posy='995' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='766.069' textposy='879.688' level='0' >
+        <name><![CDATA[trans_21]]></name>
+        <default>0</default>
+        <start>11</start>
+        <end>10</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1--------------</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='805.964' textposy='777.461' level='0' >
+        <name><![CDATA[wait_done]]></name>
+        <default>1</default>
+        <start>11</start>
+        <end>11</end>
+        <trackpoint posx='827.388' posy='804.054' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='828.36' posy='849.75' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='581.27' textposy='418.756' level='0' >
+        <name><![CDATA[trans_22]]></name>
+        <default>1</default>
+        <start>12</start>
+        <end>0</end>
+    </trans>
+    <trans color='0' textposx='407.795' textposy='810.392' level='0' >
+        <name><![CDATA[trans_25]]></name>
+        <default>0</default>
+        <start>13</start>
+        <end>12</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1--------------</input>
+        </condition>
+        <trackpoint posx='381.362' posy='1038.06' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='358.721' textposy='754.998' level='0' >
+        <name><![CDATA[wait_done]]></name>
+        <default>1</default>
+        <start>13</start>
+        <end>13</end>
+        <trackpoint posx='380.151' posy='778.775' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='347.095' posy='785.581' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1205' textposy='778.53' level='0' >
+        <name><![CDATA[trans_26]]></name>
+        <default>0</default>
+        <start>14</start>
+        <end>15</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1--------------</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='1336.8' textposy='712.981' level='0' >
+        <name><![CDATA[wait_done]]></name>
+        <default>1</default>
+        <start>14</start>
+        <end>14</end>
+        <trackpoint posx='1332.69' posy='701.932' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1333.17' posy='747.449' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1166.23' textposy='536.643' level='0' >
+        <name><![CDATA[trans_29]]></name>
+        <default>1</default>
+        <start>15</start>
+        <end>12</end>
+        <trackpoint posx='1381.73' posy='1024.5' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1236.84' textposy='642.991' level='0' >
+        <name><![CDATA[trans_28]]></name>
+        <default>1</default>
+        <start>16</start>
+        <end>14</end>
+    </trans>
+    <trans color='0' textposx='634.299' textposy='956.842' level='0' >
+        <name><![CDATA[trans_33]]></name>
+        <default>0</default>
+        <start>17</start>
+        <end>12</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1--------------</input>
+        </condition>
+        <trackpoint posx='637' posy='1047' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='665.251' textposy='857.14' level='0' >
+        <name><![CDATA[wait_done]]></name>
+        <default>1</default>
+        <start>17</start>
+        <end>17</end>
+        <trackpoint posx='692.245' posy='882.806' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='688.356' posy='922.669' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='212.214' textposy='864.858' level='0' >
+        <name><![CDATA[trans_36]]></name>
+        <default>0</default>
+        <start>18</start>
+        <end>19</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1--------------</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='147.552' textposy='815.305' level='0' >
+        <name><![CDATA[wait_done]]></name>
+        <default>1</default>
+        <start>18</start>
+        <end>18</end>
+        <trackpoint posx='210.979' posy='797.248' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='211.951' posy='852.666' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='279.346' textposy='1007.99' level='0' >
+        <name><![CDATA[trans_35]]></name>
+        <default>1</default>
+        <start>19</start>
+        <end>12</end>
+        <trackpoint posx='273' posy='1036' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1049.17' textposy='915.947' level='0' >
+        <name><![CDATA[trans_91]]></name>
+        <default>0</default>
+        <start>20</start>
+        <end>5</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>1------------0-</input>
+        </condition>
+        <trackpoint posx='1079.36' posy='942.73' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1227.37' textposy='976.887' level='0' >
+        <name><![CDATA[wait_timing_done]]></name>
+        <default>1</default>
+        <start>20</start>
+        <end>20</end>
+        <trackpoint posx='1251.28' posy='931.344' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1252.42' posy='1021.29' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='977.927' textposy='612.876' level='0' >
+        <name><![CDATA[trans_95]]></name>
+        <default>0</default>
+        <start>21</start>
+        <end>9</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>110000000------</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='10' textposy='10' level='0' >
+        <name><![CDATA[trans_98]]></name>
+        <default>0</default>
+        <start>21</start>
+        <end>14</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>100000100-----0</input>
+        </condition>
+        <trackpoint posx='1087.8' posy='604.468' hldirection='0' hlevel='0' link='1' linkid='2' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='10' textposy='10' level='0' >
+        <name><![CDATA[trans_99]]></name>
+        <default>0</default>
+        <start>16</start>
+        <end>21</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>-00000100-----0</input>
+        </condition>
+        <trackpoint posx='1440.51' posy='600.905' hldirection='0' hlevel='0' link='1' linkid='3' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='10' textposy='10' level='0' >
+        <name><![CDATA[trans_100]]></name>
+        <default>1</default>
+        <start>21</start>
+        <end>12</end>
+        <trackpoint posx='1085.43' posy='520.151' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='849.951' textposy='595.88' level='0' >
+        <name><![CDATA[done and pec=0]]></name>
+        <default>0</default>
+        <start>9</start>
+        <end>21</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>110000-00--0-00</input>
+        </condition>
+        <trackpoint posx='913.234' posy='632.969' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='813.96' textposy='544.845' level='0' >
+        <name><![CDATA[wait_done]]></name>
+        <default>0</default>
+        <start>21</start>
+        <end>21</end>
+        <condition>
+            <cname><![CDATA[wait_done]]></cname>
+            <input>0--------------</input>
+        </condition>
+        <trackpoint posx='889.482' posy='542.715' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='890.67' posy='579.529' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1137.39' textposy='1043.13' level='0' >
+        <name><![CDATA[all_written]]></name>
+        <default>0</default>
+        <start>20</start>
+        <end>6</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>110000-00----10</input>
+        </condition>
+        <trackpoint posx='1187.56' posy='1036.74' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <link posx='548.953' posy='349.669' color='-16711936' hlevel='0' goal='12' />
+    <link posx='595.781' posy='618.883' color='-16711936' hlevel='0' goal='1' />
+    <link posx='1331' posy='671' color='-16711936' hlevel='0' goal='14' />
+    <link posx='976.174' posy='484.524' color='0' hlevel='0' goal='21' />
+    <hypertrans posx='431' posy='25' color='0' hlevel='0' >
+        <type>1</type>
+        <goal>0</goal>
+        <condition>
+            <cname></cname>
+            <input>0-011---</input>
+        </condition>
+    </hypertrans>
+  </fsm>
+  <fsm fname='rf_wrapper' resetstate='9' numberofinputs='13' numberofoutputs='7'>
+<Generators>
+<LastGeneratedVerilogFile userid="linux:3010">/local/home/rleys/svn/cag/hw/building_blocks/xc6v/pflashXL_prog/pflashXL_prog_wrapper_fsm.v</LastGeneratedVerilogFile>
+</Generators>
+    <globals>
+        <name>clk</name>
+        <name>res_n</name>
+    </globals>
+    <inputnames>
+        <name>stop_cmd</name>
+        <name>core_finished</name>
+        <name>stop_data</name>
+        <name>bp_all_send</name>
+        <name>br_all_read</name>
+        <name>cmd_bp</name>
+        <name>cmd_eb</name>
+        <name>cmd_clear_sr</name>
+        <name>cmd_buffer_read</name>
+        <name>cmd_read_word</name>
+        <name>cmd_program_word</name>
+        <name>cmd_lock_unlock_block</name>
+        <name>cmd_read_esig</name>
+    </inputnames>
+    <outputnames>
+        <name>ll_valid_cmd</name>
+        <name>dummy0</name>
+        <name>dummy1</name>
+        <name>dummy2</name>
+        <name>dummy3</name>
+        <name>dummy4</name>
+        <name>dummy5</name>
+    </outputnames>
+    <state posx='549' posy='195' color='4294901760' hlevel='0' >
+        <sname>Idle</sname>
+        <output>0000000</output>
+    </state>
+    <state posx='553.638' posy='465.871' color='4294901760' hlevel='0' >
+        <sname>BP_SendData</sname>
+        <output>0100000</output>
+    </state>
+    <state posx='566.936' posy='875.004' color='4294901760' hlevel='0' >
+        <sname>Finish</sname>
+        <output>0001000</output>
+    </state>
+    <state posx='545.164' posy='347.216' color='4294901760' hlevel='0' >
+        <sname>Start_Buffer_Program</sname>
+        <output>1000000</output>
+    </state>
+    <state posx='273' posy='522' color='4294901760' hlevel='0' >
+        <sname>Wait_SYNC</sname>
+        <output>0101000</output>
+    </state>
+    <state posx='564.448' posy='588.604' color='4294901760' hlevel='0' >
+        <sname>Clear_SR</sname>
+        <output>1111100</output>
+    </state>
+    <state posx='716.293' posy='292.819' color='4294901760' hlevel='0' >
+        <sname>EB_Start</sname>
+        <output>1100000</output>
+    </state>
+    <state posx='718.828' posy='451.5' color='4294901760' hlevel='0' >
+        <sname>EB_Wait_Finished</sname>
+        <output>0110000</output>
+    </state>
+    <state posx='564.448' posy='717.129' color='4294901760' hlevel='0' >
+        <sname>Clear_SR_Wait</sname>
+        <output>0011000</output>
+    </state>
+    <state posx='542.228' posy='-141.726' color='4294901760' hlevel='0' >
+        <sname>Wait_Core_Ready</sname>
+        <output>0111000</output>
+    </state>
+    <state posx='547' posy='71' color='4294901760' hlevel='0' >
+        <sname>Core_Init_Wait</sname>
+        <output>0110100</output>
+    </state>
+    <state posx='546.959' posy='-26.5468' color='4294901760' hlevel='0' >
+        <sname>Core_Init</sname>
+        <output>1101000</output>
+    </state>
+    <state posx='1284.69' posy='243.492' color='4294901760' hlevel='0' >
+        <sname>BR_Start</sname>
+        <output>1010000</output>
+    </state>
+    <state posx='885.723' posy='292.466' color='4294901760' hlevel='0' >
+        <sname>WP_Start</sname>
+        <output>1110000</output>
+    </state>
+    <state posx='1519.58' posy='249.256' color='4294901760' hlevel='0' >
+        <sname>WR_Start</sname>
+        <output>1001000</output>
+    </state>
+    <state posx='1518.49' posy='388.342' color='4294901760' hlevel='0' >
+        <sname>WR_Wait_Finished</sname>
+        <output>0111100</output>
+    </state>
+    <state posx='1520.66' posy='510.514' color='4294901760' hlevel='0' >
+        <sname>WR_Get_Data</sname>
+        <output>0001100</output>
+    </state>
+    <state posx='1053.86' posy='327.581' color='4294901760' hlevel='0' >
+        <sname>Block_LUnlock_Start</sname>
+        <output>1010100</output>
+    </state>
+    <state posx='1670.41' posy='251.342' color='4294901760' hlevel='0' >
+        <sname>ESIG_Start</sname>
+        <output>1000010</output>
+    </state>
+    <state posx='1678.41' posy='386.342' color='4294901760' hlevel='0' >
+        <sname>ESIG_Wait_Finished</sname>
+        <output>0111110</output>
+    </state>
+    <state posx='1686.41' posy='503.342' color='4294901760' hlevel='0' >
+        <sname>ESIG_Get_Data</sname>
+        <output>0001010</output>
+    </state>
+    <state posx='897.766' posy='440.595' color='4294901760' hlevel='0' >
+        <sname>WP_Wait_Finished</sname>
+        <output>0111010</output>
+    </state>
+    <state posx='1283.74' posy='475.609' color='4294901760' hlevel='0' >
+        <sname>BR_Get_Data</sname>
+        <output>0000010</output>
+    </state>
+    <state posx='1059.17' posy='519.748' color='4294901760' hlevel='0' >
+        <sname>Block_LUnlock_Wait_Core_Finished</sname>
+        <output>0010100</output>
+    </state>
+    <trans color='0' textposx='487' textposy='251' level='0' >
+        <name><![CDATA[trans_0]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>3</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00--0100-0000</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='615.681' textposy='145' level='0' >
+        <name><![CDATA[trans_8]]></name>
+        <default>1</default>
+        <start>0</start>
+        <end>0</end>
+        <trackpoint posx='621.681' posy='174' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='605.681' posy='148' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='579.388' textposy='217.478' level='0' >
+        <name><![CDATA[Erase_block]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>6</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00--0010-0000</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='554' textposy='254' level='0' >
+        <name><![CDATA[Clear_SR]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>5</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00--0001-0000</input>
+        </condition>
+        <trackpoint posx='436.021' posy='245.131' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='435.55' posy='584.666' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1135.92' textposy='197.086' level='0' >
+        <name><![CDATA[Buffer_read]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>12</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00--000010000</input>
+        </condition>
+        <trackpoint posx='1106.87' posy='203.353' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='813.369' textposy='242.681' level='0' >
+        <name><![CDATA[Word_Program]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>13</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00--000000100</input>
+        </condition>
+        <trackpoint posx='793.619' posy='249.673' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1208.54' textposy='136.498' level='0' >
+        <name><![CDATA[Word_read]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>14</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00--000001000</input>
+        </condition>
+        <trackpoint posx='1239.76' posy='162.159' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1517.24' posy='166.549' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='907.363' textposy='224.586' level='0' >
+        <name><![CDATA[Block_Lock_Unlock]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>17</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00--000000010</input>
+        </condition>
+        <trackpoint posx='1025.51' posy='224.965' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1143.43' textposy='96.8479' level='0' >
+        <name><![CDATA[Read_Electronic_Signatur@]]></name>
+        <default>0</default>
+        <start>0</start>
+        <end>18</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00--000000001</input>
+        </condition>
+        <trackpoint posx='1232.54' posy='125' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1671.51' posy='167.532' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='518' textposy='519' level='0' >
+        <name><![CDATA[trans_2]]></name>
+        <default>0</default>
+        <start>1</start>
+        <end>5</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00-10------00</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='611.681' textposy='427.871' level='0' >
+        <name><![CDATA[trans_5]]></name>
+        <default>1</default>
+        <start>1</start>
+        <end>1</end>
+        <trackpoint posx='607.681' posy='426.871' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='617.681' posy='475.871' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='360.569' textposy='578.212' level='0' >
+        <name><![CDATA[trans_7]]></name>
+        <default>0</default>
+        <start>2</start>
+        <end>4</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>11-----------</input>
+        </condition>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00-----------</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='640.421' textposy='875.004' level='0' >
+        <name><![CDATA[wait finish]]></name>
+        <default>1</default>
+        <start>2</start>
+        <end>2</end>
+        <trackpoint posx='640.884' posy='848.99' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='637.778' posy='910.076' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='524' textposy='388' level='0' >
+        <name><![CDATA[trans_1]]></name>
+        <default>0</default>
+        <start>3</start>
+        <end>1</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>10--0100-0000</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='425.681' textposy='325.216' level='0' >
+        <name><![CDATA[trans_14]]></name>
+        <default>1</default>
+        <start>3</start>
+        <end>3</end>
+        <trackpoint posx='494.681' posy='312.216' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='496.681' posy='368.216' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='278' textposy='195' level='0' >
+        <name><![CDATA[trans_8]]></name>
+        <default>0</default>
+        <start>4</start>
+        <end>0</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00--000000000</input>
+        </condition>
+        <trackpoint posx='273' posy='190' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='176' textposy='545' level='0' >
+        <name><![CDATA[trans_7]]></name>
+        <default>1</default>
+        <start>4</start>
+        <end>4</end>
+        <trackpoint posx='181' posy='477' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='171' posy='540' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='609.358' textposy='620.96' level='0' >
+        <name><![CDATA[trans_16]]></name>
+        <default>1</default>
+        <start>5</start>
+        <end>8</end>
+    </trans>
+    <trans color='0' textposx='722.191' textposy='361.765' level='0' >
+        <name><![CDATA[trans_12]]></name>
+        <default>0</default>
+        <start>6</start>
+        <end>7</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>10--0010-0000</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='752.336' textposy='270.819' level='0' >
+        <name><![CDATA[trans_13]]></name>
+        <default>1</default>
+        <start>6</start>
+        <end>6</end>
+        <trackpoint posx='778.811' posy='268.035' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='780.423' posy='311.336' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='721.828' textposy='505.466' level='0' >
+        <name><![CDATA[trans_10]]></name>
+        <default>0</default>
+        <start>7</start>
+        <end>5</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>00--0-1----00</input>
+        </condition>
+        <trackpoint posx='717.784' posy='535.819' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='782.784' textposy='435.5' level='0' >
+        <name><![CDATA[trans_11]]></name>
+        <default>1</default>
+        <start>7</start>
+        <end>7</end>
+        <trackpoint posx='788.431' posy='424.285' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='789.828' posy='469.5' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='581.864' textposy='767.045' level='0' >
+        <name><![CDATA[trans_8]]></name>
+        <default>0</default>
+        <start>8</start>
+        <end>2</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>11--0------00</input>
+        </condition>
+        <trackpoint posx='564.764' posy='791.777' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='624.546' textposy='703.279' level='0' >
+        <name><![CDATA[trans_15]]></name>
+        <default>1</default>
+        <start>8</start>
+        <end>8</end>
+        <trackpoint posx='627.539' posy='683.676' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='625.381' posy='738.388' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='331.943' textposy='79.1699' level='0' >
+        <name><![CDATA[trans_17]]></name>
+        <default>0</default>
+        <start>9</start>
+        <end>11</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>0---0------00</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='462.537' textposy='-93.7265' level='0' >
+        <name><![CDATA[trans_20]]></name>
+        <default>1</default>
+        <start>9</start>
+        <end>9</end>
+        <trackpoint posx='455.537' posy='-170.726' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='457.537' posy='-98.7265' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='577.27' textposy='113.117' level='0' >
+        <name><![CDATA[trans_18]]></name>
+        <default>0</default>
+        <start>10</start>
+        <end>0</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>-1--0------00</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='678' textposy='56' level='0' >
+        <name><![CDATA[trans_19]]></name>
+        <default>1</default>
+        <start>10</start>
+        <end>10</end>
+        <trackpoint posx='636' posy='50' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='648' posy='90' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='454.972' textposy='72.0122' level='0' >
+        <name><![CDATA[trans_21]]></name>
+        <default>1</default>
+        <start>11</start>
+        <end>10</end>
+    </trans>
+    <trans color='0' textposx='1353.89' textposy='270.952' level='0' >
+        <name><![CDATA[wait read end]]></name>
+        <default>1</default>
+        <start>12</start>
+        <end>15</end>
+    </trans>
+    <trans color='0' textposx='896.981' textposy='353.905' level='0' >
+        <name><![CDATA[trans_40]]></name>
+        <default>1</default>
+        <start>13</start>
+        <end>21</end>
+    </trans>
+    <trans color='0' textposx='1496.79' textposy='301.886' level='0' >
+        <name><![CDATA[trans_30]]></name>
+        <default>1</default>
+        <start>14</start>
+        <end>15</end>
+    </trans>
+    <trans color='0' textposx='1521.46' textposy='436.993' level='0' >
+        <name><![CDATA[EOF WR]]></name>
+        <default>0</default>
+        <start>15</start>
+        <end>16</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>11--000001000</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='1570.07' textposy='351.803' level='0' >
+        <name><![CDATA[trans_32]]></name>
+        <default>1</default>
+        <start>15</start>
+        <end>15</end>
+        <trackpoint posx='1591.07' posy='341.847' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1594.12' posy='408.493' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1357.92' textposy='423.783' level='0' >
+        <name><![CDATA[EOF WR for BR]]></name>
+        <default>0</default>
+        <start>15</start>
+        <end>22</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>11---00010000</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='1216.25' textposy='575.763' level='0' >
+        <name><![CDATA[trans_29]]></name>
+        <default>1</default>
+        <start>16</start>
+        <end>2</end>
+        <trackpoint posx='1520.1' posy='580.823' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1115.01' textposy='421.076' level='0' >
+        <name><![CDATA[trans_91]]></name>
+        <default>1</default>
+        <start>17</start>
+        <end>23</end>
+    </trans>
+    <trans color='0' textposx='1682.97' textposy='324.79' level='0' >
+        <name><![CDATA[trans_35]]></name>
+        <default>1</default>
+        <start>18</start>
+        <end>19</end>
+    </trans>
+    <trans color='0' textposx='1763.68' textposy='406.073' level='0' >
+        <name><![CDATA[trans_36]]></name>
+        <default>1</default>
+        <start>19</start>
+        <end>19</end>
+        <trackpoint posx='1751.68' posy='356.073' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1760.99' posy='399.803' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1691.35' textposy='434.07' level='0' >
+        <name><![CDATA[trans_37]]></name>
+        <default>0</default>
+        <start>19</start>
+        <end>20</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>11--0-------1</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='1373.94' textposy='556.102' level='0' >
+        <name><![CDATA[trans_38]]></name>
+        <default>1</default>
+        <start>20</start>
+        <end>2</end>
+        <trackpoint posx='1684.6' posy='572.99' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='831' textposy='543' level='0' >
+        <name><![CDATA[trans_41]]></name>
+        <default>0</default>
+        <start>21</start>
+        <end>5</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>11--0-----1--</input>
+        </condition>
+        <trackpoint posx='895.171' posy='591.363' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='959' textposy='428.086' level='0' >
+        <name><![CDATA[trans_42]]></name>
+        <default>1</default>
+        <start>21</start>
+        <end>21</end>
+        <trackpoint posx='950.155' posy='466.69' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='952.413' posy='414.948' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='10' textposy='10' level='0' >
+        <name><![CDATA[trans_84]]></name>
+        <default>0</default>
+        <start>22</start>
+        <end>2</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>----1--------</input>
+        </condition>
+        <trackpoint posx='1280.8' posy='581.992' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1281.22' textposy='360.054' level='0' >
+        <name><![CDATA[Read again]]></name>
+        <default>1</default>
+        <start>22</start>
+        <end>12</end>
+    </trans>
+    <trans color='0' textposx='10' textposy='10' level='0' >
+        <name><![CDATA[trans_92]]></name>
+        <default>0</default>
+        <start>23</start>
+        <end>2</end>
+        <condition>
+            <cname><![CDATA[]]></cname>
+            <input>-1-----------</input>
+        </condition>
+        <trackpoint posx='1060.2' posy='601.541' hldirection='0' hlevel='0' link='1' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='1095.4' textposy='464.874' level='0' >
+        <name><![CDATA[wait_finished]]></name>
+        <default>1</default>
+        <start>23</start>
+        <end>23</end>
+        <trackpoint posx='1124.39' posy='494.899' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='1125.43' posy='553.914' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <link posx='567.491' posy='948.345' color='-16711936' hlevel='0' goal='2' />
+  </fsm>
+</project>

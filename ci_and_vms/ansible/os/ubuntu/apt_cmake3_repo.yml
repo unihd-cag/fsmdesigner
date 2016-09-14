@@ -1,0 +1,5 @@
+- name: Add cmake 3.0 repo to apt.
+  apt_repository: repo="ppa:george-edison55/cmake-3.x"
+  when: ansible_distribution_release == "trusty"
+  # TODO: replace with the next line??
+  # when: ansible_distribution_version <= "14.5"

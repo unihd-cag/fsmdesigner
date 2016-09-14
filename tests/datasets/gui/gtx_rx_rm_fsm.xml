@@ -1,0 +1,252 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE fsm SYSTEM 'fsm.dtd'>
+<fsm fname='gtx_rx_rm_fsm' resetstate='0' numberofinputs='8' numberofoutputs='7' >
+    <globals>
+        <name>clk</name>
+        <name>res_n</name>
+    </globals>
+    <inputnames>
+        <name>ready_MGT2RM</name>
+        <name>see_ready0</name>
+        <name>tx_ready</name>
+        <name>see_ready1</name>
+        <name>see_align</name>
+        <name>align_done</name>
+        <name>rx_sync_done</name>
+        <name>deskew_done</name>
+    </inputnames>
+    <outputnames>
+        <name>ready</name>
+        <name>almost_ready</name>
+        <name>align</name>
+        <name>start_rx_sync</name>
+        <name>deskew</name>
+        <name>h0</name>
+        <name>reinit</name>
+    </outputnames>
+    <state posx='115' posy='179' color='4294901760' hlevel='0' >
+        <sname>look_for_ready</sname>
+        <output>0000000</output>
+    </state>
+    <state posx='874' posy='179' color='4278255487' hlevel='0' >
+        <sname>really_ready</sname>
+        <output>1000000</output>
+    </state>
+    <state posx='729' posy='178' color='4294967040' hlevel='0' >
+        <sname>almost_ready0</sname>
+        <output>0100000</output>
+    </state>
+    <state posx='362' posy='178' color='4294967040' hlevel='0' >
+        <sname>start_rx_sync0</sname>
+        <output>0001000</output>
+    </state>
+    <state posx='260' posy='180' color='4294967040' hlevel='0' >
+        <sname>align0</sname>
+        <output>0010000</output>
+    </state>
+    <state posx='474' posy='179' color='4294967040' hlevel='0' >
+        <sname>wait_sync_done</sname>
+        <output>0010010</output>
+    </state>
+    <state posx='604' posy='180' color='4294967040' hlevel='0' >
+        <sname>CA</sname>
+        <output>0000100</output>
+    </state>
+    <state posx='260' posy='258' color='4294967040' hlevel='0' >
+        <sname>reinit_others</sname>
+        <output>0000001</output>
+    </state>
+    <trans color='0' textposx='2' textposy='86' level='0' >
+        <name>waiting for ready</name>
+        <default>1</default>
+        <start>0</start>
+        <end>0</end>
+        <trackpoint posx='44' posy='114' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='929' textposy='212' level='0' >
+        <name>all ok</name>
+        <default>1</default>
+        <start>1</start>
+        <end>1</end>
+        <trackpoint posx='930' posy='242' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='876' textposy='57' level='0' >
+        <name>lost_ready</name>
+        <default>0</default>
+        <start>1</start>
+        <end>0</end>
+        <condition>
+            <cname></cname>
+            <input>0xxx----</input>
+        </condition>
+        <trackpoint posx='875' posy='56' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='525' posy='48' hldirection='0' hlevel='0' link='0' linkid='0' join='1' color='0' />
+    </trans>
+    <trans color='0' textposx='503' textposy='146' level='0' >
+        <name>sync_done</name>
+        <default>0</default>
+        <start>5</start>
+        <end>6</end>
+        <condition>
+            <cname>a</cname>
+            <input>1----11-</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='750' textposy='182' level='0' >
+        <name>char gone</name>
+        <default>0</default>
+        <start>2</start>
+        <end>1</end>
+        <condition>
+            <cname></cname>
+            <input>10100---</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='742' textposy='250' level='0' >
+        <name>receiving ready chars</name>
+        <default>1</default>
+        <start>2</start>
+        <end>2</end>
+        <trackpoint posx='759' posy='240' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='484' textposy='15' level='0' >
+        <name>lost_ready</name>
+        <default>0</default>
+        <start>2</start>
+        <end>0</end>
+        <condition>
+            <cname></cname>
+            <input>0xxx----</input>
+        </condition>
+        <trackpoint posx='525' posy='48' hldirection='0' hlevel='0' link='0' linkid='0' join='1' color='0' />
+    </trans>
+    <trans color='0' textposx='700' textposy='90' level='0' >
+        <name>see again</name>
+        <default>0</default>
+        <start>1</start>
+        <end>0</end>
+        <condition>
+            <cname></cname>
+            <input>11xx----</input>
+        </condition>
+        <trackpoint posx='525' posy='48' hldirection='0' hlevel='0' link='0' linkid='0' join='1' color='0' />
+    </trans>
+    <trans color='0' textposx='391' textposy='238' level='0' >
+        <name>lost_r0</name>
+        <default>0</default>
+        <start>6</start>
+        <end>7</end>
+        <condition>
+            <cname></cname>
+            <input>10x00---</input>
+        </condition>
+        <trackpoint posx='544' posy='238' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='347' posy='238' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='589' textposy='281' level='0' >
+        <name>lost_r1</name>
+        <default>0</default>
+        <start>2</start>
+        <end>7</end>
+        <condition>
+            <cname></cname>
+            <input>10000---</input>
+        </condition>
+        <trackpoint posx='706' posy='276' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+        <trackpoint posx='349' posy='277' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='178.95' textposy='178.65' level='0' >
+        <name>ready</name>
+        <default>0</default>
+        <start>0</start>
+        <end>4</end>
+        <condition>
+            <cname></cname>
+            <input>1-------</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='286.838' textposy='180.238' level='0' >
+        <name>done</name>
+        <default>0</default>
+        <start>4</start>
+        <end>3</end>
+        <condition>
+            <cname></cname>
+            <input>1----1--</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='320' textposy='142' level='0' >
+        <name></name>
+        <default>1</default>
+        <start>4</start>
+        <end>4</end>
+        <trackpoint posx='315' posy='137' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='396.934' textposy='183.959' level='0' >
+        <name></name>
+        <default>0</default>
+        <start>3</start>
+        <end>5</end>
+        <condition>
+            <cname></cname>
+            <input>------0-</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='429' textposy='108' level='0' >
+        <name></name>
+        <default>1</default>
+        <start>5</start>
+        <end>5</end>
+        <trackpoint posx='495' posy='121' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='390' textposy='136' level='0' >
+        <name></name>
+        <default>1</default>
+        <start>3</start>
+        <end>3</end>
+        <trackpoint posx='398' posy='123' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='623.366' textposy='144.29' level='0' >
+        <name>ca_done</name>
+        <default>0</default>
+        <start>6</start>
+        <end>2</end>
+        <condition>
+            <cname></cname>
+            <input>11-----1</input>
+        </condition>
+        <condition>
+            <cname></cname>
+            <input>1--1---1</input>
+        </condition>
+        <condition>
+            <cname></cname>
+            <input>1---1--1</input>
+        </condition>
+    </trans>
+    <trans color='0' textposx='615' textposy='455' level='0' >
+        <name></name>
+        <default>1</default>
+        <start>6</start>
+        <end>6</end>
+        <trackpoint posx='645' posy='239' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+    <trans color='0' textposx='536' textposy='181' level='0' >
+        <name>trans_21</name>
+        <default>0</default>
+        <start>6</start>
+        <end>0</end>
+        <condition>
+            <cname></cname>
+            <input>0-------</input>
+        </condition>
+        <trackpoint posx='525' posy='48' hldirection='0' hlevel='0' link='0' linkid='0' join='1' color='0' />
+    </trans>
+    <trans color='0' textposx='118' textposy='267' level='0' >
+        <name></name>
+        <default>1</default>
+        <start>7</start>
+        <end>0</end>
+        <trackpoint posx='116' posy='256' hldirection='0' hlevel='0' link='0' linkid='0' join='0' color='0' />
+    </trans>
+</fsm>

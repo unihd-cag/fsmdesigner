@@ -1,0 +1,8 @@
+mmap new -name rx -contents {
+    { 'b0000 -label "Idle" -linecolor #ff0000}
+    { 'b0000 -label "Write_Header_Data" -linecolor #ff0000}
+    { 'b0101 -label "Write_Last_data" -linecolor #ff0000}
+    { 'b1000 -label "Write_Header" -linecolor #ff0000}
+    { 'b0100 -label "Write_Data" -linecolor #ff0000}
+    { 'b1100 -label "Write_Last_Data_And_Header" -linecolor #ff0000}
+}

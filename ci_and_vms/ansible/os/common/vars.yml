@@ -1,0 +1,4 @@
+VAGRANT_HOME: '/home/vagrant'
+FSMD_DIR: '{{VAGRANT_HOME}}/fsmd'
+LOCAL_HOME: "{{lookup('env','HOME')}}"
+LOCAL_SSH: "{{LOCAL_HOME}}/.ssh"

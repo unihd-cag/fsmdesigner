@@ -1,0 +1,5 @@
+- name: Add g++ 5.x repo to apt.
+  apt_repository: repo="ppa:ubuntu-toolchain-r/test" state=present
+  when: ansible_distribution_release == "trusty"
+  # TODO: replace with the next line??
+  # when: ansible_distribution_version <= "14.5"

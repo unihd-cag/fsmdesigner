@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Settings base="uni.hd.ziti.fsmdesigner.ui">
+
+    <Group name="General" base="general">
+    
+        <Setting name="Display Help" base="help" type="bool"></Setting>
+        
+    </Group>
+
+    <Group name="Tabs" base="state">
+    
+        <Setting name="Position" base="tabs"></Setting>
+        
+    </Group>
+
+    <Group name="States" base="state">
+
+        <Setting name="Text Background Color" base="textBGColor" type="color"></Setting>
+        
+
+    </Group>
+
+    <Group name="Transitions" base="transition">
+    
+        <Setting name="Line Width" base="lineWidth" type="integer" hint="slider" min="1" max="5"></Setting>
+        
+    </Group>
+
+
+</Settings>
