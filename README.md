@@ -1,4 +1,4 @@
-fsmdesigner
+FSM Designer
 ===========
 
-FSMDesigner @CAG
+FSM Designer @CAG
