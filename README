@@ -2,5 +2,4 @@
 
 doc/     : Put some doc
 cpp/     : FSMDesigner sources and build system
-targets/ : Where to put build results/configs (like source package, rpm,.deb...) 
 scripts/ : Some useful scripts if needed
