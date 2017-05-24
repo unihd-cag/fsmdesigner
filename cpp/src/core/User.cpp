@@ -7,27 +7,33 @@
 
 // Includes
 //------------------
+#include "User.h"
 
 //-- Stdlib
 #include <unistd.h>
 #include <sys/types.h>
 #include <string>
 #include <sstream>
-#include <pwd.h>
+
 using namespace std;
 
 //-- Qt
 #include <QtCore>
 
-#ifdef WIN32
+
+
+#ifdef _WIN32
+
 #include <lmcons.h>
 #include <windows.h>
-//#include <LMCONS.h>
-#else
 
+
+#else
+//#include <windows.h>
+//#include <pwd.h>
 #endif
 
-#include "User.h"
+
 User::User() {
 	// TODO Auto-generated constructor stub
 
@@ -44,7 +50,7 @@ string User::getUserID() {
     string username;
 
     //-- Get User name depending on system
-    #ifdef WIN32
+    #ifdef _WIN32
 
 
        //-- Get username under windows, not the uid

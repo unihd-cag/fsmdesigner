@@ -33,7 +33,7 @@
 #include <QtGui>
 #include <QtCore>
 
-#include <ui_printui.h>
+#include "ui_printui.h"
 
 class PrintFSM: public QDialog, public Ui_printfsm {
     Q_OBJECT

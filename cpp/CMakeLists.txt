@@ -9,18 +9,18 @@ set (FSMDesigner_VERSION_PATCH 0)
 
 ### Determine revision
 SET(revisionsCount 0)
-IF(WIN32)
+IF(WIN32 AND NOT MINGW)
 	execute_process(
 		COMMAND git-get-revision.bat
 		OUTPUT_VARIABLE revisionsCount
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
-ELSE(WIN32)
+ELSE(WIN32 AND NOT MINGW)
 	execute_process(
 		COMMAND git log --all --pretty=oneline
 		COMMAND wc -l
 		OUTPUT_VARIABLE revisionsCount
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
-ENDIF(WIN32)
+ENDIF(WIN32 AND NOT MINGW)
 
 ## Add to Patch Version
 set (FSMDesigner_VERSION_PATCH ${FSMDesigner_VERSION_PATCH}~${revisionsCount})
@@ -31,11 +31,15 @@ message(STATUS "Patch version set from GIT to: ${revisionsCount}")
 ##########################################
 # Libraries needed
 ##########################################
-    
-set(CMAKE_MODULE_PATH "./macros/")
+   # message(STATUS "MSYS: ${MINGW}")
 
+set(CMAKE_MODULE_PATH "./macros/")
 ##Force cmake to use qt4
-set(QT_QMAKE_EXECUTABLE /usr/bin/qmake-qt4)
+if (MINGW)
+    set(QT_QMAKE_EXECUTABLE C:\\msys64\\mingw64\\bin\\qmake)
+else(MINGW)
+    set(QT_QMAKE_EXECUTABLE /usr/bin/qmake-qt4)
+endif(MINGW)
 
 #include dirs for QtCreator
 #include_directories("${FSMDesigner_SOURCE_DIR}/include/core/")
@@ -62,7 +66,7 @@ set(CMAKE_VERBOSE_MAKEFILE false)
 ########################################## 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Weffc++ -pedantic -std=c++11")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -rdynamic")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 
  
 ##########################################
@@ -126,6 +130,8 @@ foreach (package ${GUI_PACKAGES})
     include_directories("${FSMDesigner_SOURCE_DIR}/include/${package}")
 endforeach(package)
 
+include_directories("${CMAKE_CACHEFILE_DIR}")
+
 ## Sources #############################
 
 #### Manual definitions
@@ -162,7 +168,7 @@ target_link_libraries(genverilog_lib core_qxml_lib verification_lib)
 ###########################
 
 #### MOC
-set(QT4_WRAP_CPP_OUT_DIR ${GENERATED_PATH})
+#set(QT4_WRAP_CPP_OUT_DIR ${GENERATED_PATH})
 
 foreach (package ${GUI_PACKAGES})
     file(GLOB package_moc_src ${FSMDesigner_SOURCE_DIR}/include/${package}/*.h )
@@ -171,7 +177,7 @@ endforeach(package)
  
 
 #### UI
-set(QT4_WRAP_UI_OUT_DIR ${GENERATED_PATH})
+#set(QT4_WRAP_UI_OUT_DIR ${GENERATED_PATH})
 
 foreach (package ${GUI_PACKAGES})
     file(GLOB package_ui_src ${FSMDesigner_SOURCE_DIR}/include/${package}/*.ui )
@@ -181,7 +187,7 @@ endforeach(package)
 qt4_wrap_ui(gui_ui_headers ${gui_ui_src} -h)
 
 #### Resources
-set(QT4_ADD_RESOURCES_OUT_DIR ${GENERATED_PATH})
+#set(QT4_ADD_RESOURCES_OUT_DIR ${GENERATED_PATH})
 
 file(GLOB gui_resources_src ${FSMDesigner_SOURCE_DIR}/src/gui/resources/*.qrc )
 QT4_ADD_RESOURCES(gui_ui_resources ${gui_resources_src})

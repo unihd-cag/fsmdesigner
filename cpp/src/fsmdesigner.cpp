@@ -48,7 +48,7 @@ using namespace std;
 #include <gui/mergedGUI/MergedMainWindow.h>
 
 //-- Backtrace
-#ifndef NDEBUG
+#ifdef FDEBUG
 #include <execinfo.h>
 #include <signal.h>
 #include <stdio.h>
@@ -97,7 +97,7 @@ void handler(int sig) {
 int main( int argc, char ** argv )
 {
     // -- Backtrace: install signal handler
-#ifndef NDEBUG
+#ifdef FDEBUG
     signal(SIGSEGV, handler);
 #endif
     // -- END Backtrace
