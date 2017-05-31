@@ -1,9 +1,0 @@
-- name: Run CMake
-  action: command chdir=/home/vagrant/fsmd/cpp cmake .
-
-- name: Build FSM Designer
-  action: command chdir=/home/vagrant/fsmd/cpp make
-
-
-
-
