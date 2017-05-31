@@ -29,8 +29,7 @@ using namespace std;
 
 
 #else
-//#include <windows.h>
-//#include <pwd.h>
+#include <pwd.h>
 #endif
 
 

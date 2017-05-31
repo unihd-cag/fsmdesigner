@@ -130,7 +130,7 @@ foreach (package ${GUI_PACKAGES})
     include_directories("${FSMDesigner_SOURCE_DIR}/include/${package}")
 endforeach(package)
 
-include_directories("${CMAKE_CACHEFILE_DIR}")
+include_directories("${CMAKE_BINARY_DIR}")
 
 ## Sources #############################
 
