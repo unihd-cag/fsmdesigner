@@ -17,7 +17,7 @@ stage("Debian") {
         sh "cd $target/build/ && cmake .. -G 'Unix Makefiles'"
         sh "cd $target/build && make"
         sh "cd $target/build && make package"
-        archiveArtifacts artifacts: "build/*.deb", onlyIfSuccessful: true
+        archiveArtifacts artifacts: "$target/build/*.deb", onlyIfSuccessful: true
     }
     
 }
@@ -32,7 +32,7 @@ stage("Mingw") {
         sh "cd $target/build/ && cmake .. -G 'Unix Makefiles' -DCMAKE_TOOLCHAIN_FILE=./macros/CC_WIN64_MINGW.cmake"
         sh "cd $target/build && make"
         sh "cd $target/build && make package"
-        //archiveArtifacts artifacts: "build/*.deb", onlyIfSuccessful: true
+        archiveArtifacts artifacts: "$target/build/*.exe", onlyIfSuccessful: true
     }
     
     
