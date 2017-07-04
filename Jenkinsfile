@@ -24,7 +24,7 @@ stage("Debian") {
 
 stage("Mingw") {
     
-    node("linux mingw nsis") {
+    node("nsis") {
         
         target = "mingw"
         pullCode(target)
