@@ -22,7 +22,7 @@ stage("Debian") {
     
 }
 
-stage("Mingw") {
+/*stage("Mingw") {
     
     node("nsis") {
         
@@ -36,4 +36,4 @@ stage("Mingw") {
     }
     
     
-}
+}*/
