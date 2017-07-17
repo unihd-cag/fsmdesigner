@@ -19,9 +19,9 @@ stage("Debian Source Package") {
 
 architecture="amd64"
 
-stage("Jessie Backports") {
+stage("Oldstable (Jessie)") {
 
-    distribution="jessie-backports"
+    distribution="oldstable"
 
     node("debian") {
         sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture make deb-build"
