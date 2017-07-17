@@ -20,9 +20,9 @@ deb-build: ARCHITECTURE?=amd64
 deb-build:
 	@mkdir -p .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
 	@rm -Rf .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/*
-	@sudo MIRRORSITE=http://ftp.de.debian.org/debian/ pbuilder --create --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
-	@sudo MIRRORSITE=http://ftp.de.debian.org/debian/ pbuilder --update --override-config --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
-	@sudo MIRRORSITE=http://ftp.de.debian.org/debian/ pbuilder --build --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE) .deb/*.dsc
+	@sudo env MIRRORSITE=http://ftp.de.debian.org/debian/ pbuilder --create --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
+	@sudo env MIRRORSITE=http://ftp.de.debian.org/debian/ pbuilder --update --override-config --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
+	@sudo env MIRRORSITE=http://ftp.de.debian.org/debian/ pbuilder --build --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE) .deb/*.dsc
 	@cp -v /var/cache/pbuilder/result/fsmdesigner* .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
 	@debsign --re-sign -k$(DEBKEY) .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/*.changes
 
