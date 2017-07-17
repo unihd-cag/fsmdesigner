@@ -18,13 +18,12 @@ deb-src:
 deb-build: DISTRIBUTION?=UNRELEASED
 deb-build: ARCHITECTURE?=amd64
 deb-build:
-	@sudo rm -Rf var/cache/pbuilder/result/
 	@mkdir -p .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
 	@rm -Rf .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/*
 	@sudo pbuilder --create --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
 	@sudo pbuilder --update --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
 	@sudo pbuilder --build --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE) .deb/*.dsc
-	@cp /var/cache/pbuilder/result/* .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
+	@cp -v /var/cache/pbuilder/result/fsmdesigner* .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
 	@debsign --re-sign -k$(DEBKEY) .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/*.changes
 
 # @sudo pbuilder --create --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
