@@ -24,7 +24,7 @@ stage("Oldstable (Jessie)") {
     distribution="oldstable"
 
     node("debian") {
-        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture make deb-build"
+        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture MIRRORSITE=http://ftp.de.debian.org/debian/  make deb-build"
         archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
     }
 }
@@ -32,7 +32,7 @@ stage("Oldstable (Jessie)") {
 stage("Testing") {
     distribution="testing"
     node("debian") {
-        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture make deb-build"
+        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture MIRRORSITE=http://ftp.de.debian.org/debian/ make deb-build"
         archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
     }
 }
