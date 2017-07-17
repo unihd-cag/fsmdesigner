@@ -19,7 +19,20 @@ stage("Debian Source Package") {
 
 architecture="amd64"
 
+// Debian
+//---------------------
 stage("Oldstable (Jessie)") {
+
+    distribution="oldstable"
+
+    node("debian") {
+        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture MIRRORSITE=http://ftp.de.debian.org/debian/  make deb-build"
+        archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
+    }
+}
+
+
+stage("Stable") {
 
     distribution="oldstable"
 
@@ -36,6 +49,32 @@ stage("Testing") {
         archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
     }
 }
+
+// Ubuntu
+//-----------
+mirrorSite="http://nova.clouds.archive.ubuntu.com/ubuntu/"
+stage("Ubuntu Trusty (14.04.5 LTS)") {
+    distribution="trusty"
+    node("debian") {
+        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture MIRRORSITE=$mirrorSite make deb-build"
+        archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
+    }
+}
+stage("Ubuntu Xenial (16.04 LTS)") {
+    distribution="xenial"
+    node("debian") {
+        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture MIRRORSITE=$mirrorSite make deb-build"
+        archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
+    }
+}
+stage("Ubuntu Zesty (17.04)") {
+    distribution="zesty"
+    node("debian") {
+        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture MIRRORSITE=$mirrorSite make deb-build"
+        archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
+    }
+}
+
 
 /*stage("Debian") {
     
