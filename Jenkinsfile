@@ -7,7 +7,33 @@ void pullCode(String dir) {
     	userRemoteConfigs: [[url: "https://github.com/unihd-cag/fsmdesigner.git"]]]
 }
 
-stage("Debian") {
+
+stage("Debian Source Package") {
+    
+    node("debian") {
+        pullCode("source")
+        sh "cd source && make deb-src"
+        archiveArtifacts artifacts: ["source/.deb/*.dsc","source/.deb/*.changes","source/.deb/*.xy"], onlyIfSuccessful: true
+    }
+}
+
+stage("Jessie Backports") {
+    node("debian") {
+        sh "rm -f source/.deb./*.deb"
+        sh "DISTRIBUTION=jessie-backports ARCHITECTURE=amd64 cd source && make deb-build"
+        archiveArtifacts artifacts: ["source/.deb/*.deb"], onlyIfSuccessful: true
+    }
+}
+
+stage("Testing") {
+    node("debian") {
+        sh "rm -f source/.deb./*.deb"
+        sh "DISTRIBUTION=testing ARCHITECTURE=amd64 cd source && make deb-build"
+        archiveArtifacts artifacts: ["source/.deb/*.deb"], onlyIfSuccessful: true
+    }
+}
+
+/*stage("Debian") {
     
     node("debian") {
         
@@ -21,7 +47,7 @@ stage("Debian") {
         archiveArtifacts artifacts: "$target/build/*.deb", onlyIfSuccessful: true
     }
     
-}
+}*/
 
 /*stage("Mingw") {
     

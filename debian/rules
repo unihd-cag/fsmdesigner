@@ -5,8 +5,11 @@
 
 override_dh_auto_build:
 	mkdir -p build
-	cd build && cmake -G "Unix Makefiles" ..
+	cd build && rm -f CMakeCache.txt && cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$$(pwd)/../debian/fsmdesigner/usr ..
 	cd build && make
 
 override_dh_auto_install:
-	$(MAKE) PREFIX=$$(pwd)/debian/odfi/usr install
+	echo "Install: $(pwd)"
+	cd build && make install
+	
+#$(MAKE) PREFIX=$$(pwd)/debian/fsmdesigner/usr -C build install
