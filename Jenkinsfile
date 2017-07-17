@@ -14,6 +14,7 @@ stage("Debian") {
         target = "debian"
         pullCode(target)
         sh "mkdir -p $target/build"
+        sh "rm -Rf $target/build/*.deb"
         sh "cd $target/build/ && cmake .. -G 'Unix Makefiles'"
         sh "cd $target/build && make"
         sh "cd $target/build && make package"
