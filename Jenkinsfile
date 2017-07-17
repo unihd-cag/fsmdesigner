@@ -34,7 +34,7 @@ stage("Oldstable (Jessie)") {
 
 stage("Stable") {
 
-    distribution="oldstable"
+    distribution="stable"
 
     node("debian") {
         sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture MIRRORSITE=http://ftp.de.debian.org/debian/  make deb-build"
