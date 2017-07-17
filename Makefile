@@ -20,6 +20,7 @@ deb-build: ARCHITECTURE?=amd64
 deb-build:
 	@mkdir -p .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
 	@rm -Rf .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/*
+	@sudo pbuilder --create --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
 	@sudo pbuilder --update --override-config --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
 	@sudo pbuilder --build --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE) .deb/*.dsc
 	@cp -v /var/cache/pbuilder/result/fsmdesigner* .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
