@@ -13,23 +13,27 @@ stage("Debian Source Package") {
     node("debian") {
         pullCode("source")
         sh "cd source && make deb-src"
-        archiveArtifacts artifacts: ["source/.deb/*.dsc","source/.deb/*.changes","source/.deb/*.xy"], onlyIfSuccessful: true
+        archiveArtifacts artifacts: "source/.deb/*.dsc,source/.deb/*.changes,source/.deb/*.xy", onlyIfSuccessful: true
     }
 }
 
+architecture="amd64"
+
 stage("Jessie Backports") {
+
+    distribution="jessie-backports"
+
     node("debian") {
-        sh "rm -f source/.deb./*.deb"
-        sh "DISTRIBUTION=jessie-backports ARCHITECTURE=amd64 cd source && make deb-build"
-        archiveArtifacts artifacts: ["source/.deb/*.deb"], onlyIfSuccessful: true
+        sh "DISTRIBUTION=$distribution ARCHITECTURE=$architecture cd source && make deb-build"
+        archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
     }
 }
 
 stage("Testing") {
+    distribution="testing"
     node("debian") {
-        sh "rm -f source/.deb./*.deb"
-        sh "DISTRIBUTION=testing ARCHITECTURE=amd64 cd source && make deb-build"
-        archiveArtifacts artifacts: ["source/.deb/*.deb"], onlyIfSuccessful: true
+        sh "DISTRIBUTION=$distribution ARCHITECTURE=$architecture cd source && make deb-build"
+        archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
     }
 }
 
