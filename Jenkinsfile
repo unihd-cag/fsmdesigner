@@ -24,7 +24,7 @@ stage("Jessie Backports") {
     distribution="jessie-backports"
 
     node("debian") {
-        sh "DISTRIBUTION=$distribution ARCHITECTURE=$architecture cd source && make deb-build"
+        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture make deb-build"
         archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
     }
 }
@@ -32,7 +32,7 @@ stage("Jessie Backports") {
 stage("Testing") {
     distribution="testing"
     node("debian") {
-        sh "DISTRIBUTION=$distribution ARCHITECTURE=$architecture cd source && make deb-build"
+        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture make deb-build"
         archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
     }
 }
