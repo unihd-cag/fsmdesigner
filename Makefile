@@ -15,14 +15,15 @@ deb-src:
 	@cp -Rf debian .deb/fsmdesigner_$(VERSION).orig/
 	@cd .deb/fsmdesigner_$(VERSION).orig/ && debuild -d -k$(DEBKEY) -S
 
-deb-build: DISTRIBUTION?=UNRELEASED
+deb-build: DISTRIBUTION?=stable
 deb-build: ARCHITECTURE?=amd64
+deb-build: MIRRORSITE?=http://ftp.fr.debian.org/debian/
 deb-build:
 	@mkdir -p .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
 	@rm -Rf .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/*
-	@sudo env MIRRORSITE=http://ftp.de.debian.org/debian/ pbuilder --create --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
-	@sudo env MIRRORSITE=http://ftp.de.debian.org/debian/ pbuilder --update --override-config --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
-	@sudo env MIRRORSITE=http://ftp.de.debian.org/debian/ pbuilder --build --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE) .deb/*.dsc
+	@sudo pbuilder --create --mirror $MIRRORSITE --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
+	@sudo pbuilder --update --mirror $MIRRORSITE --override-config --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
+	@sudo pbuilder --build  --mirror $MIRRORSITE --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE) .deb/*.dsc
 	@cp -v /var/cache/pbuilder/result/fsmdesigner* .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
 	@debsign --re-sign -k$(DEBKEY) .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/*.changes
 
