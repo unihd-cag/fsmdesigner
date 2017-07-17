@@ -67,6 +67,13 @@ stage("Ubuntu Xenial (16.04 LTS)") {
         archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
     }
 }
+stage("Ubuntu Yakkety (16.10)") {
+    distribution="yakkety"
+    node("debian") {
+        sh "cd source && DISTRIBUTION=$distribution ARCHITECTURE=$architecture MIRRORSITE=$mirrorSite make deb-build"
+        archiveArtifacts artifacts: "source/.deb/$distribution/$architecture/*.deb", onlyIfSuccessful: true
+    }
+}
 stage("Ubuntu Zesty (17.04)") {
     distribution="zesty"
     node("debian") {

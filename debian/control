@@ -2,8 +2,8 @@ Source: fsmdesigner
 Maintainer: Richard Leys <leys.richard@gmail.com>
 Section: misc
 Priority: optional
-Standards-Version: 3.9.6
-Build-Depends: debhelper (>= 9) , cmake (>= 3.0.0), libqt4-dev (>=4:4.0.0)
+Standards-Version: 3.9.7
+Build-Depends: debhelper (>= 9) , cmake (>= 2.8.0), libqt4-dev (>=4:4.0.0)
 
 Package: fsmdesigner
 Architecture: any
