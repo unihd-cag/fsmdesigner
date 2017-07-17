@@ -21,9 +21,9 @@ deb-build: MIRRORSITE?=http://ftp.fr.debian.org/debian/
 deb-build:
 	@mkdir -p .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
 	@rm -Rf .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/*
-	@sudo pbuilder --create --mirror $MIRRORSITE --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
-	@sudo pbuilder --update --mirror $MIRRORSITE --override-config --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
-	@sudo pbuilder --build  --mirror $MIRRORSITE --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE) .deb/*.dsc
+	@sudo pbuilder --create --mirror $(MIRRORSITE) --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
+	@sudo pbuilder --update --mirror $(MIRRORSITE) --override-config --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE)
+	@sudo pbuilder --build  --mirror $(MIRRORSITE) --distribution $(DISTRIBUTION) --architecture $(ARCHITECTURE) .deb/*.dsc
 	@cp -v /var/cache/pbuilder/result/fsmdesigner* .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/
 	@debsign --re-sign -k$(DEBKEY) .deb/$(DISTRIBUTION)/$(ARCHITECTURE)/*.changes
 
