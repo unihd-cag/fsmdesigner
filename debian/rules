@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	mkdir -p build
+	cd build && cmake -G "Unix Makefiles" ..
+	cd build && make
+
+override_dh_auto_install:
+	$(MAKE) PREFIX=$$(pwd)/debian/odfi/usr install
